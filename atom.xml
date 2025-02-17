@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>BMZ Blog</title>
+  
+  <subtitle>层楼终究误少年</subtitle>
+  <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://dive2cloud-bmz.github.io/"/>
+  <updated>2025-02-17T08:15:47.048Z</updated>
+  <id>https://dive2cloud-bmz.github.io/</id>
+  
+  <author>
+    <name>Dive2Cloud Bie</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>选项模式</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F/</id>
+    <published>2025-02-17T08:13:31.000Z</published>
+    <updated>2025-02-17T08:15:47.048Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在程序开发中，经常会遇到模块间的相互依赖问题，比如</summary>
+        
+      
+    
+    
+    
+    <category term="design pattern" scheme="https://dive2cloud-bmz.github.io/categories/design-pattern/"/>
+    
+    
+    <category term="optional pattern" scheme="https://dive2cloud-bmz.github.io/tags/optional-pattern/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>软件开发原则</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%8E%9F%E5%88%99/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%8E%9F%E5%88%99/</id>
+    <published>2025-02-17T08:11:32.000Z</published>
+    <updated>2025-02-17T08:12:35.858Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;开闭原则&quot;&gt;&lt;a href=&quot;#开闭原则&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="software engineering" scheme="https://dive2cloud-bmz.github.io/tags/software-engineering/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>docker</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/docker/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/docker/</id>
+    <published>2025-02-17T07:55:07.000Z</published>
+    <updated>2025-02-17T08:26:57.872Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;本质&quot;&gt;&lt;a href=&quot;#本质&quot; class=&quot;headerlink&quot; title=&quot;本质&quot;&gt;&lt;/a&gt;本质&lt;/h2&gt;&lt;p&gt;想要了解 docker，首先要知道容器 和 虚拟机之间的区别。&lt;br&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="cloud native" scheme="https://dive2cloud-bmz.github.io/categories/cloud-native/"/>
+    
+    
+    <category term="Docker" scheme="https://dive2cloud-bmz.github.io/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>page cache</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/page-cache/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/page-cache/</id>
+    <published>2025-02-17T07:52:20.000Z</published>
+    <updated>2025-02-17T07:53:26.385Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;读取&quot;&gt;&lt;a href=&quot;#读取&quot; class=&quot;headerlink&quot; title=&quot;读取&quot;&gt;&lt;/a&gt;读取&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/02/17/page-cache/read.png&quot;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;app 调用系统</summary>
+        
+      
+    
+    
+    
+    
+    <category term="page cache" scheme="https://dive2cloud-bmz.github.io/tags/page-cache/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DDD-领域驱动设计</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/DDD-%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/DDD-%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/</id>
+    <published>2025-02-17T07:50:30.000Z</published>
+    <updated>2025-02-17T07:51:35.354Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;这篇文章写的不错&lt;br&gt;&lt;a href=&quot;https://juejin.cn/post/7298160530292703244&quot;&gt;https://juejin.cn/post/7298160530292703244&lt;/a&gt;&lt;/p&gt;
+&lt;h2</summary>
+        
+      
+    
+    
+    
+    
+    <category term="DDD" scheme="https://dive2cloud-bmz.github.io/tags/DDD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RAFT</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/RAFT/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/RAFT/</id>
+    <published>2025-02-17T07:30:47.000Z</published>
+    <updated>2025-02-17T07:49:47.629Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;33 前言&lt;br&gt;简单了解直接看 &lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="分布式事务" scheme="https://dive2cloud-bmz.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+    
+    
+    <category term="RAFT" scheme="https://dive2cloud-bmz.github.io/tags/RAFT/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分布式事务-3PC</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-3PC/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-3PC/</id>
+    <published>2025-02-17T07:25:06.000Z</published>
+    <updated>2025-02-17T07:30:02.571Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;为了解决 2PC</summary>
+        
+      
+    
+    
+    
+    <category term="分布式事务" scheme="https://dive2cloud-bmz.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+    
+    
+    <category term="3PC" scheme="https://dive2cloud-bmz.github.io/tags/3PC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分布式事务-2PC</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/17/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-2PC/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/17/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-2PC/</id>
+    <published>2025-02-17T07:22:31.000Z</published>
+    <updated>2025-02-17T07:24:46.235Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;角色&quot;&gt;&lt;a href=&quot;#角色&quot; class=&quot;headerlink&quot; title=&quot;角色&quot;&gt;&lt;/a&gt;角色&lt;/h2&gt;&lt;p&gt;一个协调者&lt;br&gt;N 个执行者&lt;/p&gt;
+&lt;h2 id=&quot;思路&quot;&gt;&lt;a href=&quot;#思路&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="分布式事务" scheme="https://dive2cloud-bmz.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+    
+    
+    <category term="2PC" scheme="https://dive2cloud-bmz.github.io/tags/2PC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Go plugin</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/Go-plugin/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/Go-plugin/</id>
+    <published>2025-02-14T09:50:41.000Z</published>
+    <updated>2025-02-17T08:38:22.219Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;go-pluign 是 Hashicorp 公司主导的开源项目，2013 年正在开发的 Packer 项目需要使用插件，但当时 Go 还未推出动态加载插件库特性，因此 Hashicorp 公司就自己开始着手实现。另外，在其开源的 Nomad、Consul、Vault 和</summary>
+        
+      
+    
+    
+    
+    <category term="Go" scheme="https://dive2cloud-bmz.github.io/categories/Go/"/>
+    
+    
+    <category term="go-plugin" scheme="https://dive2cloud-bmz.github.io/tags/go-plugin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>hashicorp</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/hashicorp/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/hashicorp/</id>
+    <published>2025-02-14T09:49:01.000Z</published>
+    <updated>2025-02-14T09:50:16.037Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;HashiCorp提供了大量的DevOps 基础设施自动化工具，集开发、运营和安全性于一体，可以帮助开发者编写和部署应用程序，加速应用程序分发，助力企业提升开发效率。&lt;/p&gt;
+&lt;h2 id=&quot;服务列表&quot;&gt;&lt;a href=&quot;#服务列表&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="Chat" scheme="https://dive2cloud-bmz.github.io/categories/Chat/"/>
+    
+    
+    <category term="hashicorp" scheme="https://dive2cloud-bmz.github.io/tags/hashicorp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>cloud-init</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/cloud-init/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/cloud-init/</id>
+    <published>2025-02-14T09:43:33.000Z</published>
+    <updated>2025-02-17T08:26:57.872Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;我们不光是大数据开发者，更是云计算开发者。了解云计算的工具很有必要。&lt;/p&gt;
+&lt;h2 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="cloud native" scheme="https://dive2cloud-bmz.github.io/categories/cloud-native/"/>
+    
+    
+    <category term="cloud-init" scheme="https://dive2cloud-bmz.github.io/tags/cloud-init/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>aws-instance-controller</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/aws-instance-controller/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/aws-instance-controller/</id>
+    <published>2025-02-14T09:37:14.000Z</published>
+    <updated>2025-02-17T08:26:57.872Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;反编译过 aws-emr 在虚机内的控制进程 instance-controller&lt;br&gt;&lt;img src=&quot;/2025/02/14/aws-instance-controller/flow.png&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;构造方法&quot;&gt;&lt;a href=&quot;#构造方法&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="cloud native" scheme="https://dive2cloud-bmz.github.io/categories/cloud-native/"/>
+    
+    
+    <category term="管控" scheme="https://dive2cloud-bmz.github.io/tags/%E7%AE%A1%E6%8E%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache hbase</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-hbase/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-hbase/</id>
+    <published>2025-02-14T06:33:55.000Z</published>
+    <updated>2025-02-17T08:37:12.092Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;架构&quot;&gt;&lt;a href=&quot;#架构&quot; class=&quot;headerlink&quot; title=&quot;架构&quot;&gt;&lt;/a&gt;架构&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/02/14/apache-hbase/arch1.png&quot;&gt;&lt;/p&gt;
+&lt;h3</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="hbase" scheme="https://dive2cloud-bmz.github.io/tags/hbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache ambari</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-ambari/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-ambari/</id>
+    <published>2025-02-14T06:21:08.000Z</published>
+    <updated>2025-02-14T06:33:13.829Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;官方定义&quot;&gt;&lt;a href=&quot;#官方定义&quot; class=&quot;headerlink&quot; title=&quot;官方定义&quot;&gt;&lt;/a&gt;官方定义&lt;/h2&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="ambari" scheme="https://dive2cloud-bmz.github.io/tags/ambari/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache dolphinscheduler</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-dolphinscheduler/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-dolphinscheduler/</id>
+    <published>2025-02-14T06:12:28.000Z</published>
+    <updated>2025-02-14T06:17:24.984Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;特性&quot;&gt;&lt;a href=&quot;#特性&quot; class=&quot;headerlink&quot; title=&quot;特性&quot;&gt;&lt;/a&gt;特性&lt;/h2&gt;&lt;h3 id=&quot;简单易用&quot;&gt;&lt;a href=&quot;#简单易用&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="dolphinscheduler" scheme="https://dive2cloud-bmz.github.io/tags/dolphinscheduler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache sqoop2</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-sqoop2/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-sqoop2/</id>
+    <published>2025-02-14T03:56:12.000Z</published>
+    <updated>2025-02-14T06:11:09.606Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;SQOOP1&quot;&gt;&lt;a href=&quot;#SQOOP1&quot; class=&quot;headerlink&quot; title=&quot;SQOOP1&quot;&gt;&lt;/a&gt;SQOOP1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/02/14/apache-sqoop2/1arch.png&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="sqoop" scheme="https://dive2cloud-bmz.github.io/tags/sqoop/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache flume</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-flume/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-flume/</id>
+    <published>2025-02-14T03:48:07.000Z</published>
+    <updated>2025-02-14T03:55:45.461Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="flume" scheme="https://dive2cloud-bmz.github.io/tags/flume/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache storm</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/14/apache-storm/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/14/apache-storm/</id>
+    <published>2025-02-14T03:35:31.000Z</published>
+    <updated>2025-02-17T08:44:31.124Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆&lt;br&gt;&lt;img src=&quot;/2025/02/14/apache-storm/arch.png&quot; alt=&quot;架构图&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;组件&quot;&gt;&lt;a href=&quot;#组件&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/categories/bigdata/"/>
+    
+    
+    <category term="storm" scheme="https://dive2cloud-bmz.github.io/tags/storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Go 分析项目各个包的调用链</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/13/Go-%E5%88%86%E6%9E%90%E9%A1%B9%E7%9B%AE%E5%90%84%E4%B8%AA%E5%8C%85%E7%9A%84%E8%B0%83%E7%94%A8%E9%93%BE/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/13/Go-%E5%88%86%E6%9E%90%E9%A1%B9%E7%9B%AE%E5%90%84%E4%B8%AA%E5%8C%85%E7%9A%84%E8%B0%83%E7%94%A8%E9%93%BE/</id>
+    <published>2025-02-13T09:53:27.000Z</published>
+    <updated>2025-02-14T03:47:35.771Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;使用 go-callvis 对 go 项目分析调用关系，可以看到每个包下每个函数（以及 receiver 方法）调用了哪些其他包，或者被哪些包调用&lt;br&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="Go" scheme="https://dive2cloud-bmz.github.io/categories/Go/"/>
+    
+    
+    <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Go 项目模块划分原则</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/02/13/Go-%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86%E5%8E%9F%E5%88%99/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/02/13/Go-%E9%A1%B9%E7%9B%AE%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86%E5%8E%9F%E5%88%99/</id>
+    <published>2025-02-13T09:50:11.000Z</published>
+    <updated>2025-02-13T09:52:55.542Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;模块拆分&quot;&gt;&lt;a href=&quot;#模块拆分&quot; class=&quot;headerlink&quot; title=&quot;模块拆分&quot;&gt;&lt;/a&gt;模块拆分&lt;/h2&gt;&lt;p&gt;Go语言的顶层设计特性，使得它在模块划分上与其他编程语言存在显著差异，很多其他语言的 Web 框架都采用 MVC</summary>
+        
+      
+    
+    
+    
+    <category term="Go" scheme="https://dive2cloud-bmz.github.io/categories/Go/"/>
+    
+    
+    <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
+    
+  </entry>
+  
+</feed>
