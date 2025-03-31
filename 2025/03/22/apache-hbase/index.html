@@ -1,0 +1,1208 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="apache hbase, BMZ BLOG">
+    <meta name="description" content="架构
+hmaster
+处理dml ddl 请求
+region 分配和迁移 
+管理 rs, 宕机恢复 
+清理过期文件(hlog hfile)
+
+region server
+响应 IO 请求
+写 WAL(hlog)
+实际数据先写入缓存,后落盘,">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>apache hbase | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop-icon.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop-icon.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">apache hbase</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/bigdata/">
+                                <span class="chip bg-color">bigdata</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-03-22
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-03-26
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.1k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    12 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="/.io//03/22/apache-hbase/arch1.png" alt="架构图"></p>
+<h3 id="hmaster"><a href="#hmaster" class="headerlink" title="hmaster"></a>hmaster</h3><ol>
+<li>处理dml ddl 请求</li>
+<li>region 分配和迁移 </li>
+<li>管理 rs, 宕机恢复 </li>
+<li>清理过期文件(hlog hfile)</li>
+</ol>
+<h3 id="region-server"><a href="#region-server" class="headerlink" title="region server"></a>region server</h3><ol>
+<li>响应 IO 请求</li>
+<li>写 WAL(hlog)</li>
+<li>实际数据先写入缓存,后落盘,所以 hlog 有两个作用:</li>
+</ol>
+<ul>
+<li>为了保证数据可用性,写缓存之前先顺序写 hlog</li>
+<li>hbase 主从复制</li>
+</ul>
+<ol start="4">
+<li>block cache<br>读缓存: LRU 或 Bucket</li>
+<li>Region<br>数据表分片,一个表的各个 region 放到不同的 rs 上;<br>region 由很多个 store 组成,每个 store 对应一个列簇;</li>
+<li>Store<br>store 由 1 个 memstore 和 N 个 hfile 构成;<br>当落盘策略触发时,memstore 会异步 flush 数据 到 hfile 中,当 hfile 大小超过阈值,则会执行 compact</li>
+</ol>
+<h3 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h3><p>大数据生态的一致性协调组件,不过多赘述<br>在 hbase 架构里有下面作用:</p>
+<ol>
+<li>监测 master 宕机事件<br>选举 master</li>
+<li>管理核心元数据<br>记录 hbase:meta 所在的 rs 地址</li>
+<li>监测 rs 宕机<br>让 hmaster 知道并恢复宕机 rs 上的 region</li>
+<li>表级别分布式锁(在2版本不知道还用不用)</li>
+<li>region 状态变更<br>可能在 process v2 优化过</li>
+</ol>
+<h3 id="hdfs"><a href="#hdfs" class="headerlink" title="hdfs"></a>hdfs</h3><p>各种 hbase 文件的存储服务.<br>hfile hlog tmp数据 损坏的数据 和 archive 数据</p>
+<h2 id="数据结构-LSM"><a href="#数据结构-LSM" class="headerlink" title="数据结构 LSM"></a>数据结构 LSM</h2><p>由内存的跳表+磁盘上的有序文件组成,额外还有布隆过滤器来判断 key 是否存储在某个块上</p>
+<h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><p>跳表<br>特点就是 分层 有序 无穷首尾 上层链表是下层链表的子集<br>查询复杂度是 O(logn)<br>非常直接的空间换时间的检索方式</p>
+<h3 id="kv-存储格式"><a href="#kv-存储格式" class="headerlink" title="kv 存储格式"></a>kv 存储格式</h3><p><img src="/.io//03/22/apache-hbase/kv.png"><br>因为key 是有序的,<br>排序的优先级为: 1.rowkey 2.cf 3.column 4.timestamp<br>越大约靠前</p>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>从 LSM 的结构和特点上,引出三个问题</p>
+<ol>
+<li>效率怎样?<br>写性能好,读性能差<br>写入是基于 MVCC 的,所以写 LSM 时都是 append 操作,在之前的时代磁盘顺序写就是比随机写快很多的</li>
+<li>memstore 怎么转化为 hfile?<br>memstore flush 时先创建一个快照,再生产一个新的 memstore 给新的写入,然后把快照异步写成 hfile</li>
+<li>hfile 过多怎么办?<br>汇总多个 hfile 时需要选出需要的数据版本,这会占用大量的磁盘 IO.<br>compact 使用多路归并的方式合并 hfile</li>
+</ol>
+<h3 id="Why-HDFS"><a href="#Why-HDFS" class="headerlink" title="Why HDFS"></a>Why HDFS</h3><p>LSM 所有操作都是顺序写 -&gt; 和 hdfs 完全契合<br>文件最终是由 compact 各个小的 hfile 到一个大的 hfile -&gt; hdfs 适合存储大文件</p>
+<h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>hbase get 时利用 bloom 过滤大量无效的块,节省磁盘 io</p>
+<h2 id="写过程"><a href="#写过程" class="headerlink" title="写过程"></a>写过程</h2><p><img src="/.io//03/22/apache-hbase/write.png"></p>
+<ol>
+<li>客户端</li>
+</ol>
+<ul>
+<li>请求zk,拿到hbase:meta所在regionserver </li>
+<li>请求定位到meta表所在的region server,拿到实际要写入的region server </li>
+<li>将数据序列化后发送写请求给存数据的 region server</li>
+</ul>
+<ol start="2">
+<li>RS 视角</li>
+</ol>
+<ul>
+<li>拿到客户端请求,反序列化put对象,进行一些必要的检查(region是否只读,memstore是否超限等)</li>
+<li>拿到行锁acquire locks </li>
+<li>内存中构建wal对象,一次写入操作中所有kv构建一条walEdits,并顺序写入到Hlog </li>
+<li>写入memstore </li>
+<li>释放行锁 </li>
+<li>同步hlog对象到hdfs中,如果同步失败,memstore中会执行回滚. </li>
+<li>结束写事务,回复client<br>此时 client 认为此次写入完成了;<br>后续 rs 会异步 flush memstore 到 hfile</li>
+</ul>
+<h2 id="什么时候-flush-成-hfile"><a href="#什么时候-flush-成-hfile" class="headerlink" title="什么时候 flush 成 hfile"></a>什么时候 flush 成 hfile</h2><p>默认有4个触发条件,额外还有一些配置或运维人员手动命令会影响</p>
+<ol>
+<li>Memstore级别<br>单个memstore达到flush.size</li>
+<li>Region级别<br>一个Region中所有memstore大小总和超过 multiplier * flush.size</li>
+<li>Regionserver级别<br>Regionserver中所有memstore大小总和超过低水位阈值 lower.limit * global.memstore.size,此时先flush 最大的memstore,依次执行,如果此时吞吐量高导致memstore大小又超过阈值,rs会阻塞写入,直到flush小于阈值.</li>
+<li>额外配置级别</li>
+</ol>
+<ul>
+<li>hlog数达到上限 rs.maxlogs,此时会选择最早的hlog进行flush </li>
+<li>定期flush,默认一小时,但是有一定的随机延时,保证不是同一时间一起flush </li>
+<li>运维手动执行 flush ‘tb_name’或者 flush ‘region’</li>
+</ul>
+<h2 id="读流程"><a href="#读流程" class="headerlink" title="读流程"></a>读流程</h2><p>读比写复杂,没有特别详细研究过.</p>
+<blockquote>
+<p>从面试时知道 hbase 自己实现过一个 hdfs client:FanOutOneBlockAsyncDFSOutput<br>原理应该是允许多线程写入多个 datanode,而不是通过 pipeline,而且异步的的,加速写入.<br>简单介绍一下流程</p>
+</blockquote>
+<ol>
+<li>客户端视角</li>
+</ol>
+<ul>
+<li>请求zk,拿到hbase:meta所在regionserver </li>
+<li>请求定位到meta表所在的region server,拿到实际要的数据在哪些region server上哪些region </li>
+<li>将大scan拆分成多个rpc,发送读请求给实际region server.</li>
+</ul>
+<ol start="2">
+<li>rs 视角</li>
+</ol>
+<ul>
+<li>接受到用户请求,构建三层scanner. </li>
+<li>条件过滤,淘汰不满足条件的scanner,每个有效的scanner seek到startKey </li>
+<li>合并构建最小堆.按照scanner排序规则kv由小到大排序,不断pop这个优先级队列来获取kv有序集合.</li>
+</ul>
+<p><img src="/.io//03/22/apache-hbase/read.png"></p>
+<blockquote>
+<p>前两种 scanner多是调度作用,实际的查找还是通过 storefilescanner 和 memstorescanner<br>过滤策略有几种,先前介绍的布隆过滤器是其中一种<br>前面介绍的lsm数据存储结构存储的 key 是有序的</p>
+</blockquote>
+<h2 id="Region-和-RIT"><a href="#Region-和-RIT" class="headerlink" title="Region 和 RIT"></a>Region 和 RIT</h2><p>hbase 1.2 中 region 有如下13种类型<br><img src="/.io//03/22/apache-hbase/region-state.png"></p>
+<h3 id="unassign-命令"><a href="#unassign-命令" class="headerlink" title="unassign 命令"></a>unassign 命令</h3><p>unassign 会让某个(些) region 下线.</p>
+<p>Hbase 1.X 流程</p>
+<ol>
+<li>Master改zk状态为closing,自己内存状态pending_close</li>
+<li>master发送close的rpc给rs</li>
+<li>Rs先改zk,master监听到zk状态改变后,更新master状态closing</li>
+<li>Rs执行真正的操作,如果region正在clush或者compact等待操作完成,否则将该region下所有memstore强制flush然后关闭.</li>
+<li>关闭成功后zk更新状态zk_region_closed,master监听后将自己的region状态改成closed</li>
+</ol>
+<h3 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h3><p>hbase 1.X 流程<br>会让某个 region 上线</p>
+<ol>
+<li>Master改zk状态offline,自己内存状态pending_open.</li>
+<li>master发送open的rpc给rs</li>
+<li>Rs先改zk状态为<br>zk_region_opening,master监听到zk状态改变后,更新master状态opening.</li>
+<li>Rs执行打开操作,初始化相关的服务.</li>
+<li>打开成功后zk更新状态zk_region_opened,master监听后将自己的region状态改成open</li>
+</ol>
+<h3 id="RIT"><a href="#RIT" class="headerlink" title="RIT"></a>RIT</h3><p>说 RIT 之前,先要知道 hbase 的状态都存到哪些地方<br>在 HBASE 1.X 中,状态存储在三个地方:</p>
+<ol>
+<li>Meta表: 存储region所在rs,不存在中间状态</li>
+<li>Master: 集群所有region信息,都是由rs通过zk通知给master的,所以master的状态是比实际状态滞后的.(web ui上的状态都是master内存的信息)</li>
+<li>Zk中: 临时的信息,作为master和rs信息的媒介.<br>总结下来, HBASE 1.X 的集群,当这三个地方存储的 region 状态出现不一致,则称之为 RIT</li>
+</ol>
+<h3 id="举一个-RIT-的例子"><a href="#举一个-RIT-的例子" class="headerlink" title="举一个 RIT 的例子"></a>举一个 RIT 的例子</h3><p>Rs成功打开了一个region,但是远程更新hbase:meta时没成功;<br>此时master维护的region状态是opening<br>zk上是zk_region_opening<br>而hbase:meta存储的这个region所在rs是null,但是region已经在rs上打开了.</p>
+<blockquote>
+<p>上面写了很多在 HBASE 1.X,实际上 HBASE 2.X 借助 procedure v2 实现了 assignManager V2,彻底改变这些状态的流转过程<br>也是因为这个改造, RIT 在 HBASE 2.X 没有特别容易触发.<br>当然我没有详细研究过 hbase 2.x 里 procedure v2 的源码.只使用过 hbck2 工具运维过 HBASE 集群,处理大量 RIT 过</p>
+</blockquote>
+<h3 id="HBASE-2-X-的改造简要介绍"><a href="#HBASE-2-X-的改造简要介绍" class="headerlink" title="HBASE 2.X 的改造简要介绍"></a>HBASE 2.X 的改造简要介绍</h3><ol>
+<li>region 状态改动全部需要经过 master, rs 自己不能修改 region 中的状态</li>
+<li>依靠 procedure v2 的锁机制,专门实现了 assignProcedure</li>
+<li>状态流转完全不依赖 ZK,全部以 master 的为准</li>
+<li>状态展示提供到 hbase web ui 里 procedure&#x2F;locks 的页面</li>
+</ol>
+<p>这样做之后,彻底改变了 HBASE 1.X 容易触发 RIT,经常需要人手工运维<br>当然这么做也有缺点,就是在 procedure WAL 损坏时,会发生灾难性的 region 无法恢复,很可能丢数.</p>
+<h2 id="SNAPSHOT"><a href="#SNAPSHOT" class="headerlink" title="SNAPSHOT"></a>SNAPSHOT</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>Hbase 数据备份恢复&#x2F;迁移发展</p>
+<ol>
+<li>Distcp + 关机备份. </li>
+<li>copyTable,通过mr任务备份. </li>
+<li>Snapshot 在线备份.<br>涉及的场景:</li>
+</ol>
+<ul>
+<li>每天备份一次snapshot,定期清理过期快照,方便业务发生严重失误时能够回滚到前一个快照点.</li>
+<li>对集群进行升级,确保升级异常可以不影响数据.</li>
+<li>在线迁移数据,结合snapshot和复制技术.</li>
+<li>导出离线数据,可以进行olap分析</li>
+</ul>
+<h3 id="如何生成和使用快照恢复数据"><a href="#如何生成和使用快照恢复数据" class="headerlink" title="如何生成和使用快照恢复数据"></a>如何生成和使用快照恢复数据</h3><ol>
+<li>hbase shell</li>
+</ol>
+<ul>
+<li>snapshot $表名 $快照名 </li>
+<li>restore_snapshot $快照名 </li>
+<li>clone_snapshot $快照名 $新表名</li>
+</ul>
+<ol start="2">
+<li>exportSnapshot<br>将生成好的 snapshot 从 hdfsA 集群迁移到 hdfs B 集群<br>这个步骤是借助 mr 任务进行的.如果没有 mr 环境,则本地启动一个 mr 串行任务迁移</li>
+</ol>
+<h3 id="理念"><a href="#理念" class="headerlink" title="理念"></a>理念</h3><p>Snapshot本质上不会复制数据,而是生成元数据的引用<br>Snapshot生成时,先flush memstore,再对hfile建立指针.</p>
+<h3 id="snapshot-实现过程"><a href="#snapshot-实现过程" class="headerlink" title="snapshot 实现过程"></a>snapshot 实现过程</h3><ol>
+<li>表的各个region进行memsotre flush -&gt; 还记得memstore是什么级别的吗?</li>
+<li>region info 元数据记录在每个region下的snapshot中</li>
+<li>Region的所有hfile记录到snapshot中<br>hdfs上tmp目录有如下新文件<br>&#x2F;$hbase-dir&#x2F;.hbase-snapshot&#x2F;.tmp&#x2F;$snapshotname&#x2F;.snapshotinfo<br>&#x2F;$hbase-dir&#x2F;.hbase-snapshot&#x2F;.tmp&#x2F;$snapshotname&#x2F;.data.manifest</li>
+<li>Master汇总region snapshot结果<br>hdfs上新增了下面几个文件<br>&#x2F;$hbase-dir&#x2F;.hbase-snapshot&#x2F;$snapshotname&#x2F;data.manifest<br>&#x2F;$hbase-dir&#x2F;.hbase-snapshot&#x2F;$snapshotname&#x2F;.snapshotinfo<br>&#x2F;$hbase-dir&#x2F;.hbase-snapshot&#x2F;$snapshotname&#x2F;.inprogress</li>
+</ol>
+<h3 id="为什么-clone-snapshot-命令是秒级完成的"><a href="#为什么-clone-snapshot-命令是秒级完成的" class="headerlink" title="为什么 clone_snapshot 命令是秒级完成的"></a>为什么 clone_snapshot 命令是秒级完成的</h3><p>先说他的作用:复制快照到一个新的表<br>再说他的过程:</p>
+<ol>
+<li>预检查</li>
+<li>在tmp目录下生成.tabledesc</li>
+<li>在tmp目录中,根据manifest新建region目录以及关联hfile</li>
+<li>将表目录从tmp移动到实际数据位置</li>
+<li>修改hbase:meta,添加新region信息</li>
+<li>region assign到各个rs,在zk中将新表znode状态改为enabled.</li>
+</ol>
+<h3 id="运维小技巧"><a href="#运维小技巧" class="headerlink" title="运维小技巧"></a>运维小技巧</h3><h4 id="重启-rs-会触发-serverCrashProcedure-重新分配-region-需要时间-而且容易触发-RIT"><a href="#重启-rs-会触发-serverCrashProcedure-重新分配-region-需要时间-而且容易触发-RIT" class="headerlink" title="重启 rs 会触发 serverCrashProcedure,重新分配 region 需要时间,而且容易触发 RIT"></a>重启 rs 会触发 serverCrashProcedure,重新分配 region 需要时间,而且容易触发 RIT</h4><h4 id="出现-RIT-时不要无脑重启服务-先使用-hback-或-hbck2-工具排查原因"><a href="#出现-RIT-时不要无脑重启服务-先使用-hback-或-hbck2-工具排查原因" class="headerlink" title="出现 RIT 时不要无脑重启服务,先使用 hback 或 hbck2 工具排查原因"></a>出现 RIT 时不要无脑重启服务,先使用 hback 或 hbck2 工具排查原因</h4><h4 id="hbck2-只在-HBASE-2-0-6-版本以上可用"><a href="#hbck2-只在-HBASE-2-0-6-版本以上可用" class="headerlink" title="hbck2 只在 HBASE 2.0.6 版本以上可用"></a>hbck2 只在 HBASE 2.0.6 版本以上可用</h4><h4 id="RIT-有一个停服的恢复步骤"><a href="#RIT-有一个停服的恢复步骤" class="headerlink" title="RIT 有一个停服的恢复步骤"></a>RIT 有一个停服的恢复步骤</h4><ol>
+<li>先 hbase hbck &gt; hbck.log 查看情况.会看到哪些 region 有问题,处于什么状态</li>
+<li>提取 hbck.log 中 region 的 encode name<br>grep “&#x3D;&gt;” hbck.log | awk -F”.” ‘{print $2}’ &gt; ~&#x2F;zx.1<br>grep “&#x3D;&gt;” hbck.log | awk -F”.” ‘{print $2” CLOSED”}’ &gt; ~&#x2F;zx.2</li>
+<li>zx.1 文件能看出多少 region 不一致<br>cat zx.1 |wc -l</li>
+<li>zx.1 中是纯粹的 region encode name. zx.2 是有 CLOSED 后缀的 encode name.当 hbck2 的版本大于 1.3 时,可以批量手动改变 region 状态<br>但是我之前运维使用 hbck2 1.1 版本,不支持批量,可以手动替换挨个 region 执行<br>hbase hbck -j hbase-hbck2-1.1.0.jar setRegionState 2bb110fca1ef1c4c24213ab87c9262bd CLOSED<br>由于每个 hbase hbck 命令会启动一个 jvm,200个 jvm 串行可能耗费很久(小时级别),我的建议是多个机器并行执行不同的批次<br>执行完成后,所有有问题的 REGION 已经手动进入 CLOSED 状态</li>
+<li>将 STANDBY HMASTER(master-1)停机,避免重启后切主导致 hmaster 内存信息不一致</li>
+<li>使用 hbck2 清除当前所以 procedure 的流程,避免锁导致后续操作阻塞<br>procedure id 可以在 hmaster web ui 上看到,bypass 是强行消除<br>hbase hbck -j &#x2F;opt&#x2F;bmr&#x2F;hbase&#x2F;hbase-operator-tools&#x2F;hbase-hbck2-1.1.0.jar bypass PROCEDURE ID</li>
+<li>重启 active master 刷新内存中 region 的真实状态</li>
+<li>重启成功后会加载小段时间,我们带 procedure 都执行完成后,使用 hbck2 的批量 assigns 命令将 zx.1 中这些 CLOSED region 上线<br>hbase hbck -j hbase-hbck2-1.1.0.jar assigns -i .&#x2F;zx.1</li>
+<li>再次执行 hbase hbck 查看集群 region 状态</li>
+</ol>
+<h4 id="当-rowkey-设计不够散列时-容易在某几个-region-server-上堆积大量的-region"><a href="#当-rowkey-设计不够散列时-容易在某几个-region-server-上堆积大量的-region" class="headerlink" title="当 rowkey 设计不够散列时,容易在某几个 region server 上堆积大量的 region"></a>当 rowkey 设计不够散列时,容易在某几个 region server 上堆积大量的 region</h4><p>一般这时候要看 hdfs 本地性.<br>可以先分散 datanode 数据,然后再让 hbase 自动根据 compaction 分散</p>
+<h4 id="compression"><a href="#compression" class="headerlink" title="compression"></a>compression</h4><p>设置表级别的压缩,减少传输带宽</p>
+<h4 id="rs-服务的-region-数"><a href="#rs-服务的-region-数" class="headerlink" title="rs 服务的 region 数"></a>rs 服务的 region 数</h4><p>CDH 还是官方有过介绍,在追求性能的情况下,每个 rs 管理的 region 数在100-200是最优的,不要超过300,超过应该扩容后做 region balance<br>不然很容易造成 rs 级别的 memstore flush,导致 某个 rs 写请求处理慢.<br>粗略配置 region 个数的计算公式为:<br>((RS Xmx) * hbase.regionserver.global.memstore.size) &#x2F; (hbase.hregion.memstore.flush.size)<br>基于这个公式部署你对 hbase 的预期,并在 region 数目超限时及时扩容,保持集群稳定</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2025/03/22/apache-hbase/">https://dive2cloud-bmz.github.io/2025/03/22/apache-hbase/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/bigdata/">
+                                    <span class="chip bg-color">bigdata</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2025/03/22/aws-instance-controller/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="aws-instance-controller">
+                        
+                        <span class="card-title">aws-instance-controller</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-03-22
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/cloud/">
+                        <span class="chip bg-color">cloud</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/03/21/apache-ambari/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="apache ambari">
+                        
+                        <span class="card-title">apache ambari</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-21
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/bigdata/">
+                        <span class="chip bg-color">bigdata</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2025</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">67k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

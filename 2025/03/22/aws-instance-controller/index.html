@@ -1,0 +1,1060 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="aws-instance-controller, BMZ BLOG">
+    <meta name="description" content="反编译过 aws-emr 在虚机内的控制进程 instance-controller
+构造方法1234567891011121314151617181920212223242526272829303132333435363738394041">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>aws-instance-controller | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop-icon.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop-icon.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">aws-instance-controller</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/cloud/">
+                                <span class="chip bg-color">cloud</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-03-22
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-03-27
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    1.7k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    8 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>反编译过 aws-emr 在虚机内的控制进程 instance-controller<br><img src="/.io//03/22/aws-instance-controller/image1.png"></p>
+<h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">private static Logger log = LoggerFactory.getLogger(InstanceController.class);</span><br><span class="line">private int internalInterfaceServicePort = 8444;</span><br><span class="line">private int externalInterfaceServicePort = 8443;</span><br><span class="line">private final HeartbeatFileCreator heartbeatFileCreator;</span><br><span class="line">private final Ec2Metadata ec2Metadata;</span><br><span class="line">private ExtraInstanceData extraInstanceData;</span><br><span class="line">private volatile HibernateConnector hibernateConnector;</span><br><span class="line">private volatile InstanceConfigurator instanceConfigurator;</span><br><span class="line">private volatile BootstrapActionLog bootstrapActionLog = null;</span><br><span class="line">private volatile Updater localInstanceStateUpdater;</span><br><span class="line">private final SslConfigurer sslConfigurer;</span><br><span class="line">private volatile MasterProtoBufServer masterExternalInterfaceServer;</span><br><span class="line">private volatile MasterProtoBufServer masterInternalInterfaceServer;</span><br><span class="line">private volatile StepGarbageCollector stepGarbageCollector;</span><br><span class="line">private volatile DiskSpaceManager diskSpaceManager;</span><br><span class="line">private volatile Poller poller;</span><br><span class="line">private volatile DeleteKerberosPrincipalExecutor deleteKerberosPrincipalExecutor;</span><br><span class="line">private volatile JobFlowStateUpdater jobFlowStateUpdater;</span><br><span class="line">private volatile RemoteInstanceConfigurator slaveConfigurator;</span><br><span class="line">private volatile RemoteInstanceStateUpdater slaveStateUpdater;</span><br><span class="line">private volatile StepExecutionManager masterStepExecutionManager;</span><br><span class="line">private volatile KerberosTicketManager kerberosTicketManager;</span><br><span class="line">private volatile MetricsCollectorManager metricsCollectorManager;</span><br><span class="line">private volatile ConcreteRpcServer concreteRpcServer;</span><br><span class="line">private volatile MetricConnector metricConnector;</span><br><span class="line">private ShutdownActionRunner shutdownActionRunner = null;</span><br><span class="line">private AppShutDownActioner appShutDownActioner = null;</span><br><span class="line">private LakeFormationLifecycle lakeFormationLifecycle = null;</span><br><span class="line">private final Context context;</span><br><span class="line">private final String instanceId;</span><br><span class="line">private final ResourceManagerWebService resourceManagerWebService;</span><br><span class="line">private final HistoryServerWebService historyServerWebService;</span><br><span class="line">private final MapReduceApplicationMasterWebService mapReduceApplicationMasterWebService;</span><br><span class="line">private volatile InstanceMetricsCollector instanceMetricsCollector;</span><br><span class="line">private volatile MetricsCollectorClientProvider metricsCollectorClientProvider;</span><br><span class="line">private volatile MetricsCollectorCoreTaskManager metricsCollectorCoreTaskManager;</span><br><span class="line">private final boolean isMaster;</span><br><span class="line">private final boolean isSlave;</span><br><span class="line">public static final Object dbUpdateLock = new Object();</span><br><span class="line">HibernateDb hdb;</span><br><span class="line"></span><br><span class="line">public InstanceController(Context context) throws IOException &#123;</span><br><span class="line">    this.context = context;</span><br><span class="line"> this.ec2Metadata = context.getEc2Metadata();</span><br><span class="line"> this.extraInstanceData = context.getExtraInstanceData();</span><br><span class="line"> String icDbDir = context.getApplicationProperties().getICDbDir(); // 通过 &quot;ic.db.dir&quot; ，默认&quot;/emr/instance-controller/db&quot;</span><br><span class="line"> this.hdb = new HibernateDb(icDbDir, true); //使用 hsqldb dialect + hibernate 做数据持久化；</span><br><span class="line"> this.isMaster = UserDataProvider.getUserData().isMaster;</span><br><span class="line"> this.isSlave = UserDataProvider.getUserData().isSlave;</span><br><span class="line"> this.instanceId = this.ec2Metadata.getInstanceId();</span><br><span class="line"> this.sslConfigurer = new SslConfigurer(UserDataProvider.getUserData());</span><br><span class="line"></span><br><span class="line"> try &#123;</span><br><span class="line">        this.sslConfigurer.configure();</span><br><span class="line"> &#125; catch (NoSuchAlgorithmException | KeyStoreException | CertificateException | InvalidKeySpecException var5) &#123;</span><br><span class="line">        log.error(var5.getClass().getName(), var5);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    this.heartbeatFileCreator = new HeartbeatFileCreator(context.getApplicationProperties().getHeartbeatDir());</span><br><span class="line"> this.hibernateConnector = this.hdb.getHibernateConnector();</span><br><span class="line"> this.stepGarbageCollector = new StepGarbageCollector(context, this.hibernateConnector);</span><br><span class="line"> this.kerberosTicketManager = new KerberosTicketManager(context);</span><br><span class="line"> context.setKerberosTicketManager(this.kerberosTicketManager);</span><br><span class="line"> ApplicationUtil.initializeS3Policies(this.hibernateConnector);</span><br><span class="line"> ApplicationUtil.initializeS3DebuggingPolicies(this.hibernateConnector);</span><br><span class="line"> if (this.isMaster || this.isSlave &amp;&amp; UserDataProvider.getUserData().isPrivateSubnetCluster) &#123;</span><br><span class="line">        this.startExternalProtoBufServer();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    if (context.getExtraInstanceData() == null) &#123;</span><br><span class="line">        log.info(&quot;ExtraInstanceData is null, will wait for call from clustermanager&quot;);</span><br><span class="line"> this.extraInstanceData = ApplicationUtil.waitForExtraInstanceDataAndLoad(context);</span><br><span class="line"> context.setExtraInstanceData(this.extraInstanceData);</span><br><span class="line"> &#125; else &#123;</span><br><span class="line">        this.extraInstanceData = context.getExtraInstanceData();</span><br><span class="line"> log.info(&quot;ExtraInstanceData is already initialized: &#123;&#125;&quot;, this.extraInstanceData.writeToJsonString());</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    if (ApplicationUtil.isV2FrameworkEnabled(context.getApplicationProperties(), context.getExtraInstanceData())) &#123;</span><br><span class="line">        log.info(&quot;v2 framework enabled, restarting&quot;);</span><br><span class="line"> System.exit(0);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    this.resourceManagerWebService = new ResourceManagerClient(context);</span><br><span class="line"> this.historyServerWebService = new HistoryServerClient(context);</span><br><span class="line"> this.mapReduceApplicationMasterWebService = new MapReduceApplicationMasterClient(context);</span><br><span class="line"> this.metricConnector = new MetricConnectorImpl(context, this.resourceManagerWebService, this.historyServerWebService, this.mapReduceApplicationMasterWebService);</span><br><span class="line"> this.localInstanceStateUpdater = new Updater(this.hibernateConnector, this.extraInstanceData, new Callback() &#123;</span><br><span class="line">        public void onUpdate(CommonInstanceRecord before, CommonInstanceRecord after) &#123;</span><br><span class="line">            if (InstanceController.this.bootstrapActionLog != null) &#123;</span><br><span class="line">                InstanceController.this.bootstrapActionLog.onInstanceRecordUpdated(InstanceController.this.instanceId, before, after);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"> this.instanceConfigurator = new InstanceConfigurator(context, this.hibernateConnector, this.localInstanceStateUpdater, this.resourceManagerWebService, this);</span><br><span class="line"> if (this.isMaster) &#123;</span><br><span class="line">        log.info(&quot;Starting poller...&quot;);</span><br><span class="line"> AppMonitorRegistry appMonitorRegistry = new AppMonitorRegistry(context);</span><br><span class="line"> InstanceJointStatusMap instanceJointStatusMap = new InstanceJointStatusMap(context.getApplicationProperties().getNoCheckInThresholdToConsiderTerminatedInMin());</span><br><span class="line"> this.poller = (new Builder()).withHibernateConnector(this.hibernateConnector).withContext(context).withAppMonitorRegistry(appMonitorRegistry).withJointStatusMap(instanceJointStatusMap).build();</span><br><span class="line"> this.poller.start();</span><br><span class="line"> log.info(&quot;Starting delete kerberos principals executor&quot;);</span><br><span class="line"> this.deleteKerberosPrincipalExecutor = (new aws157.instancecontroller.common.DeleteKerberosPrincipalExecutor.Builder()).withHibernateConnector(this.hibernateConnector).withContext(context).withJointStatusMap(instanceJointStatusMap).build();</span><br><span class="line"> this.deleteKerberosPrincipalExecutor.start(DeleteKerberosPrincipalExecutor.DEFAULT_INITIAL_DELAY_IN_MIN, DeleteKerberosPrincipalExecutor.DEFAULT_PERIOD_IN_MIN);</span><br><span class="line"> this.metricsCollectorManager = new MetricsCollectorManager(context, true);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    this.metricsCollectorClientProvider = new MetricsCollectorClientProvider();</span><br><span class="line"> if (this.isSlave) &#123;</span><br><span class="line">        this.metricsCollectorManager = new MetricsCollectorManager(context, false);</span><br><span class="line"> this.metricsCollectorCoreTaskManager = new MetricsCollectorCoreTaskManager(context, this.metricsCollectorManager, this.createInternalClient());</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">    InstanceControllerExternalServiceImpl.completeInitialization(this.instanceConfigurator, this.metricConnector, this.poller);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><h3 id="userdata"><a href="#userdata" class="headerlink" title="userdata"></a>userdata</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public boolean isMaster;</span><br><span class="line">public boolean isSlave;</span><br><span class="line">public Boolean appsRepoProvisionedByNodeProvisioner;</span><br><span class="line">public String publicKey;</span><br><span class="line">public List&lt;String&gt; extraInstanceDataPresignedUrls;</span><br><span class="line">public List&lt;String&gt; serializedKeyStoreContainerPresigneUrl;</span><br><span class="line">public String systemLogSignedPolicy;</span><br><span class="line">public String clusterId;</span><br><span class="line">public EmrNodeTlsContext nodeTlsContext;</span><br><span class="line">public RpcConfiguration rpcConfiguration;</span><br><span class="line">public boolean isPrivateSubnetCluster = false;</span><br><span class="line">public boolean multiMasterEnabled = false;</span><br><span class="line">public KeyStoreContainer instanceKeyStoreContainer;</span><br><span class="line">public DiskEncryptionConfiguration diskEncryptionConfiguration;</span><br><span class="line">public AwsClientConfiguration instanceAwsClientConfiguration;</span><br></pre></td></tr></table></figure>
+<p>从&#x2F;var&#x2F;aws&#x2F;emr&#x2F;userData.json直接gson转化</p>
+<ol>
+<li>userData.json不存在时使用 com.amazonaws.util.EC2MetadataUtils.getUserData() 能够获取ec2MetaData,从而获取到 json 中类似的内容，这块是 aws 另外一个 jar 包的能力，暂时看不到无法知道细节。</li>
+<li>extraInstanceData<br>context 没有 ：通过&#x2F;emr&#x2F;instance-controller&#x2F;lib&#x2F;info&#x2F;extraInstanceData.json文件中获取，如果文件不存在，则从 ec2MetaData 中获取，如果还没有就sleep(10s)轮训从文件或ec2MetaData 中获取直到拿到内容，拿到后写入到&#x2F;emr&#x2F;instance-controller&#x2F;lib&#x2F;info&#x2F;extraInstanceData.json。<br>context 有：直接从 context 中拿<br>拿到后会去根据 extraInstanceData 是否启动了 v2 frame 来重启 instanceController，也就是说 v1 v2 framework 一个是从 default 配置来，一个是从 extraInstanceData 来；</li>
+<li>master &amp; slave<br>通过&#x2F;var&#x2F;aws&#x2F;emr&#x2F;userData.json 或 com.amazonaws.util.EC2MetadataUtils.getUserData() 里确定，猜测在启动 ec2 的时候置入到文件。</li>
+<li>hibernate<br>通过icDbDir配置的路径配合 hsql 进行持久化，配置如下<br><img src="/.io//03/22/aws-instance-controller/icdbdir.png"><br>各种地方都加入了 hibernate 进行辅助，比如 stepGarbageCollector</li>
+<li>ssl configurer<br><img src="/.io//03/22/aws-instance-controller/ssl.png"></li>
+<li>heartbeatFileCreator<br>通过这个类创建 heartBeatWatcher ，里面创建了一个本地文件，一种是 $baseDir&#x2F;logpusher 一种是 $baseDir&#x2F;uplink，还有一种可能是测试用的 $baseDir&#x2F;null。<br>心跳的最后时间在这个文件里更新，通过文件的更新时间来确定心跳是否 outdated。写死 heart beat delay 1800000 millis。</li>
+<li>stepGarbageCollector</li>
+<li>kerberosTicketManager<br>PS:有一个选项是可以配置外部 KDC，根据 context 中的传参可以确定使用那里的 kdc，外部 kdc 不记录 kerberos 相关状态。 </li>
+<li>externalProtobufServer<br>InstanceControllerExternalServiceImpl<br>initialize<br>completeInitialization<br>configure<br>addSteps &#x2F;&#x2F; 增加 step<br>getStatus<br>setSignedPolicy<br>setDebuggingSignedPolicy<br>getMetricsAndEvents<br>setManagedResizeConfiguration<br>configureMaster<br>modifyConfiguration<br>ping<br>shutdown<br>cleanupSteps<br>getEvents<br>cancelSteps<br>setAdditionalConfig<br>getStepsStatus<br>仅master 和 userData.privateSubNetCluster 的 slave 启动，最大线程数10个。</li>
+<li>internalProtobufServer<br>master slave 均启动，最大线程数100个。</li>
+<li>rm client</li>
+<li>history server client</li>
+<li>am client</li>
+<li>metrics collector</li>
+<li>localInstanceStateUpdater<br>本地实例的状态会记录到 hsql 中，上来就把 bootstrapactionlog 的状态更新，估计是为了启动虚机失败的时候立刻能从 hsql 中查到状态等；</li>
+<li>instanceConfigurator ps:能看出来这块代码的风格已经变化了。<br>new InstanceConfigurator(context, this.hibernateConnector, this.localInstanceStateUpdater, this.resourceManagerWebService, this)</li>
+</ol>
+<ul>
+<li>pid file : &#x2F;var&#x2F;run&#x2F;node-provisioner.pid</li>
+<li>hadoopConnector &#x2F;&#x2F; 稍微有点僵硬，按理说应该放在 task 的概念里，应该是从早起hadoop 1.x 慢慢迭代过来的<br>State JobStatus DataNodeState NameNodeState等<br>有一些过时的命令，全部操作都是通过 bash -l -c xxx 的形式。操作挺全的，decommission datanode 、 hdfs report（非常多）、 job status 、kill job、namenode format 、bootstrapStandby、zkfc format、newEditsOnly<br>每次执行完还会 saveCommandOutputToFiles ，记录在 &#x2F;emr&#x2F;instance-controller&#x2F;log&#x2F;hadoop-commands&#x2F; 下面按时间戳分为执行 stdout 和 stderr 两个文件</li>
+<li>singleThreadExecutor 单线程的线程池来 submit task；<br>doConfigure(configFiles) 就是其中的一类 task<br>doReconfiguration</li>
+<li>doInitConfiguration<br>用到了concreteRPCServer,后面详细介绍<br><img src="/.io//03/22/aws-instance-controller/doinit.png"></li>
+</ul>
+<ol start="17">
+<li>master 上启动 poller<br>Poller 使用 builder 模式初始化，包含</li>
+</ol>
+<ul>
+<li>hibernateConnector</li>
+<li>appMonitorRegistry<br>有一个名为AppPoller-Bg-Thread的定时线程池，运行每个 appMonitor；<br>appMonitor 里默认包括 hdfs 、yarn、 presto 的appMonitor，hbase 的monitor 是 null，且只有 hbase-client。本身还有一个抽象方法，是后续扩展其他组件用的。</li>
+<li>gracefulShrink</li>
+<li>context</li>
+<li>instanceJointStatusMap</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">private static final long LOST_CUTOFF_MILLIS = TimeUnit.MINUTES.toMillis(10L); / / 默认10微妙</span><br><span class="line">private static final int AGE_THRESHOLD_TO_CONSIDER_NODE_STATE_IS_STABLE_IN_SEC = (int)TimeUnit.MINUTES.toSeconds(10L); / / 默认10秒</span><br><span class="line">private final long timeThresholdToConsiderTerminatedInSec; / / 默认max(ic.no-checkin-threshold-to-consider-terminated-in-min, 30) 后转化成秒， 如果不传就是3600秒</span><br></pre></td></tr></table></figure>
+<ol start="18">
+<li>每台虚机的信息映射<br>ConcurrentSkipListMap&lt;String, InstanceJointStatus&gt; instances &#x3D; new ConcurrentSkipListMap&lt;&gt;();</li>
+<li>虚机 id 和 dnsName 映射<br>HashMap&lt;String, String&gt; privateDNSNameToInstanceId &#x3D; new HashMap&lt;&gt;();</li>
+<li>虚机 id 和 privateIp 映射<br>HashMap&lt;String, String&gt; privateIpToInstanceId &#x3D; new HashMap&lt;&gt;();<br>InstanceJointStatus包含<br>id, hostname, remoteInstanceState, datanodeStatus, yarnNode, prestoNode, hdfsDrainTime, yarnDrainTime, hdfsActive, yarnActive, prestoActive<br>InstanceJointState 代表各个服务的状态，使用枚举类描述<br>RUNNING(0, 0),<br>IDLE(1, 1),<br>STARTING(2, 2),<br>DECOMMISSIONING(3, 3),<br>DECOMMISSIONED(4, 4),<br>FAILED(5, 5),<br>LOST(6, 6);<br>有一个比较重要的概念是 remoteInstanceState，这个最终是通过 DAO 获取的，应该是各个 instance 的状态都实时存储在 同一个 hsql 里。</li>
+<li>gracefulShrink<br>暂未细致研究，缩容时重要服务的 decommision ，然后下线等等。</li>
+<li>循环renew kerberos ticket<br>&#x2F;&#x2F; todo 细研究poller，主要是拉取各种信息和状态存库，然后有一些上传<br>master 上 do Short Poll jobs ：<br>pollEmrInstanceState<br>pollEmrStepsDbState<br>updateJointStates<br>updateLocalNodeProvisionerState<br>master 上 do Long Poll jobs ：<br>pollEmrStepsDbState();<br>pollMasterInstanceReactions();<br>pollEmrInstanceState();<br>pollAppStatus();<br>pollInstanceGroups();<br>doRollingReconfiguration();<br>KerberosUtils.renewKerberosTicketIfExpired(this.context);<br>doGracefulShrink();<br>updateJointStates();<br>pollLogPusherState();<br>healthMonitor.checkReactions();</li>
+</ol>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2025/03/22/aws-instance-controller/">https://dive2cloud-bmz.github.io/2025/03/22/aws-instance-controller/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/cloud/">
+                                    <span class="chip bg-color">cloud</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2025/03/22/cloud-init/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="cloud init">
+                        
+                        <span class="card-title">cloud init</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-03-22
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/cloud/">
+                        <span class="chip bg-color">cloud</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/03/22/apache-hbase/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="apache hbase">
+                        
+                        <span class="card-title">apache hbase</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-22
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/bigdata/">
+                        <span class="chip bg-color">bigdata</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2025</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">67k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

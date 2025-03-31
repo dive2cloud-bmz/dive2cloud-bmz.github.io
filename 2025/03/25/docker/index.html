@@ -1,0 +1,1099 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="docker, BMZ BLOG">
+    <meta name="description" content="本质想要了解 docker，首先要知道容器 和 虚拟机之间的区别。虚拟机是利用硬件虚拟化技术，将一台物理机分隔成多个逻辑隔离的单元，不同虚拟机共享相同的物理机硬件。虚拟机是在物理机的基础上做分隔，每个虚拟机都是独立的一个操作系统，互不干扰，">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>docker | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop-icon.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop-icon.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">docker</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/docker/">
+                                <span class="chip bg-color">docker</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-03-25
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-03-31
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.7k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    15 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="本质"><a href="#本质" class="headerlink" title="本质"></a>本质</h2><p>想要了解 docker，首先要知道容器 和 虚拟机之间的区别。<br><img src="/.io//diff.png"><br>虚拟机是利用硬件虚拟化技术，将一台物理机分隔成多个逻辑隔离的单元，不同虚拟机共享相同的物理机硬件。虚拟机是在物理机的基础上做分隔，每个虚拟机都是独立的一个操作系统，互不干扰，所以它的隔离性非常好。图中的GuestOS就是一个独立的操作系统，而 Docker 中的应用都是在同一个操作系统中。<br>Docker 的目的是将运行起来的应用，隔离在一个有边界的进程中，仿佛这个边界（容器）里只有它自己，而看不到操作系统周围的其他进程</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><img src="/.io//core.png"><br>docker容器能隔离宿主机有三个核心技术，分别是 ns cgroups rootfs<br>cgroups 是 ns 的一个类型，但是他尤为重要，所以单独列出</p>
+<h3 id="首先我们思考一个问题：容器与进程有何不同？"><a href="#首先我们思考一个问题：容器与进程有何不同？" class="headerlink" title="首先我们思考一个问题：容器与进程有何不同？"></a>首先我们思考一个问题：容器与进程有何不同？</h3><ul>
+<li><p>进程：就是程序运行起来后的计算机执行环境的总和。<br>即：计算机内存中的数据、寄存器里的值、堆栈中的指令、被打开的文件，以及各种设备的状态信息的一个集合。</p>
+</li>
+<li><p>容器：核心就是通过约束和修改进程的动态表现，从而为其创造出一个“边界”。<br>对于 Docker 等大多数 Linux 容器来说，Cgroups 技术是用来制造约束的主要手段，而 Namespace 技术则是用来修改进程视图的主要方法。<br>当我们通过docker run -it启动并进入一个容器之后，会发现不论是进程、网络还是文件系统，好像都被隔离了,就像这样</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# docker run -it busybox</span><br><span class="line">/ # </span><br><span class="line">/ # ps</span><br><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 root      0:00 sh</span><br><span class="line">    7 root      0:00 ps</span><br><span class="line">/ # ip a </span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">120: eth0@if121: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue </span><br><span class="line">    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">/ # ls</span><br><span class="line">bin    dev    etc    home   lib    lib64  proc   root   sys    tmp    usr    var</span><br></pre></td></tr></table></figure>
+<p>ps 命令看不到宿主机上的进程<br>ip 命令也只能看到容器内部的网卡<br>ls 命令看到的文件好像也和宿主机不一样<br>DOCKER 让容器和宿主机隔离开的核心，是依靠 <strong>linux 的 namespace</strong> 技术来实现了视图隔离。</p>
+<h3 id="Linux-Namespace"><a href="#Linux-Namespace" class="headerlink" title="Linux Namespace"></a>Linux Namespace</h3><p>NameSpace是Linux中用来做资源隔离和虚拟化的特性。目的是将某个特定的全局系统资源通过抽象方法使得 namespace 中的进程看起来<strong>拥有它们自己的隔离的全局系统资源实例</strong><br>Linux提供了如下几种 NameSpace<br><img src="/.io//ns.png"><br>相关的底层函数<br><img src="/.io//ns-api.png"></p>
+<ul>
+<li>clone、unshare：加入新 namespace</li>
+</ul>
+<ul>
+<li>unshare 是使 当前进程 加入新的 namespace</li>
+<li>clone 是创建一个新的子进程，然后让 子进程 加入新的 namespace，而当前进程保持不变</li>
+</ul>
+<ul>
+<li>setsns：加入已有 namespace</li>
+<li>ioctl_ns：主要用于查询</li>
+</ul>
+<p>查看一个进程的 ns:<br><code>ls -l /proc/[pid]/ns</code><br><img src="/.io//proc-ns.png"><br>LINUX 限制了 namespace 的数量，比如在我这台虚机中，一个虚机中 PID 最多创建62355个：<br><code>cat /proc/sys/user/max_pid_namespaces</code><br><code>62355</code><br>既然数量有限制，那已经创建的 namespace 什么时候会被销毁回收呢？<br>答案：当一个 namespace 中的所有进程都结束或者移出该 namespace 时，该 namespace 将会被销毁。<br>这也解释了为什么没有创建 namespace 的 API，因为刚创建的 namespace 没有任何进程，立马就会被回收。<br>也有特殊情况，查看<a target="_blank" rel="noopener" href="https://www.lixueduan.com/posts/docker/05-namespace/">https://www.lixueduan.com/posts/docker/05-namespace/</a> 见真招<br>一句话描述：<strong>当 namespace 有被使用时就不会被回收，反之则会被回收。</strong></p>
+<h4 id="PID"><a href="#PID" class="headerlink" title="PID"></a>PID</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/home/sammy# ps -ef | grep python</span><br><span class="line">root 2198 2179 0 00:06 ? 00:00:00 python app.py</span><br><span class="line"></span><br><span class="line">root@devstack:/home/sammy# ps -ef | grep 2179</span><br><span class="line">root 2179 765 0 00:06 ? 00:00:00 docker-containerd-shim 8b7dd09fbcae00373207f01e2acde45740871c9e3b98286b5458b4ea09f41b3e /var/run/docker/libcontainerd/8b7dd09fbcae0038b4ea09f41b3e docker-runc</span><br><span class="line">root 2198 2179 0 00:06 ? 00:00:00 python app.py</span><br><span class="line">root 2249 1692 0 00:06 pts/0 00:00:00 grep --color=auto 2179</span><br><span class="line"></span><br><span class="line">root@devstack:/home/sammy# docker exec -it web31 ps -ef</span><br><span class="line">UID PID PPID C STIME TTY TIME CMD</span><br><span class="line">root 1 0 0 16:06 ? 00:00:00 python app.py</span><br></pre></td></tr></table></figure>
+<p>我们能看到同一个进程，在容器内外的 PID 是不同的：</p>
+<ul>
+<li>在容器内 PID 是 1，PPID 是 0。</li>
+<li>在容器外 PID 是 2198， PPID 是 2179 即 docker-containerd-shim 进程.</li>
+</ul>
+<p>containerd, container-shim 和 container 关系 如下<br><img src="/.io//relation.png"></p>
+<p>总结：pid namespace 通过将 host 上 PID 映射为容器内的 PID， 使得容器内的进程看起来有个独立的 PID 空间。</p>
+<h4 id="UTS"><a href="#UTS" class="headerlink" title="UTS"></a>UTS</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/home/sammy# hostname</span><br><span class="line">devstack</span><br><span class="line">root@devstack:/home/sammy# docker exec -it web31 hostname</span><br><span class="line">8b7dd09fbcae</span><br></pre></td></tr></table></figure>
+
+<h4 id="USER"><a href="#USER" class="headerlink" title="USER"></a>USER</h4><p>docker 1.10 版本之前，是不支持 user namespace 的。因为在这之前这个特性有安全问题</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/home/sammy# docker exec -ti web34 id</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root)</span><br><span class="line">root@devstack:/home/sammy# id</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动一个容器： docker run -d -v &#x2F;bin:&#x2F;host&#x2F;bin –name web34 training&#x2F;webapp python app.py </li>
+<li>此时进程的用户在容器内和外都是root，它在容器内可以对 host 上的 &#x2F;bin 目录做任意修改<br>docker 1.10 之后，让容器内有一个假的 root 用户，他在容器内是 root，在容器外会映射到非root 用户了。也就是user ns 实现了 host users 和 container users 之间的映射。具体步骤不展示了，知道有这个映射就好</li>
+</ul>
+<h4 id="NETWORK"><a href="#NETWORK" class="headerlink" title="NETWORK"></a>NETWORK</h4><p>当 docker 实例被创建出来后，使用 ip netns 命令无法看到容器实例对应的 network namespace。这是因为 ip netns 命令是从 &#x2F;var&#x2F;run&#x2F;netns 文件夹中读取内容的。</p>
+<h3 id="CGROUPS"><a href="#CGROUPS" class="headerlink" title="CGROUPS"></a>CGROUPS</h3><p>Linux Cgroups 的全称是 Linux Control Group。<br>隔离资源的核心 ns，这块是值得单独开篇讲解的。<br>cgroups 最主要的作用，就是限制一个进程组能够使用的资源上限，包括 CPU、内存、磁盘、网络带宽等等。<br>docker run 启动容器时可以通过增加 –cpus 或者 –memory flag 来指定 cpu、内存限制。这个功能就是借助 cgroup 完成的。</p>
+<h3 id="能控制的资源"><a href="#能控制的资源" class="headerlink" title="能控制的资源"></a>能控制的资源</h3><p>linux 系统中 cgroups 提供给用户操作的接口，就是文件系统本身，以文件和目录形式组织到 &#x2F;sys&#x2F;fs&#x2F;cgroup 路径下<br>执行 mount -t cgroup 可以查看有哪些资源可以被 cgroup 限制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@master-876e2c3-1 ~]# mount -t cgroup</span><br><span class="line">cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)</span><br><span class="line">cgroup on /sys/fs/cgroup/tcp_throt type cgroup (rw,nosuid,nodev,noexec,relatime,tcp_throt)</span><br><span class="line">cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)</span><br><span class="line">cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)</span><br><span class="line">cgroup on /sys/fs/cgroup/net_cls type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls)</span><br><span class="line">cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)</span><br><span class="line">cgroup on /sys/fs/cgroup/tos_cgroup type cgroup (rw,nosuid,nodev,noexec,relatime,tos_cgroup)</span><br><span class="line">cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)</span><br><span class="line">cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)</span><br><span class="line">cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)</span><br><span class="line">cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)</span><br><span class="line">cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)</span><br><span class="line">cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)</span><br></pre></td></tr></table></figure>
+<p>这里&#x2F;sys&#x2F;fs&#x2F;cgroup下每个子目录都是一个类型，比如 blkio cpu memory 等<br>比如，对 CPU 子系统来说，我们就可以看到如下几个配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@master-876e2c3-1 ~]# ls /sys/fs/cgroup/cpu</span><br><span class="line">cgroup.clone_children  cpuacct.bt_usage         cpuacct.usage_all          cpuacct.usage_sys   cpu.cfs_period_us  cpu.rt_period_us   notify_on_release</span><br><span class="line">cgroup.procs           cpuacct.bt_usage_percpu  cpuacct.usage_percpu       cpuacct.usage_user  cpu.cfs_quota_us   cpu.rt_runtime_us  release_agent</span><br><span class="line">cgroup.sane_behavior   cpuacct.stat             cpuacct.usage_percpu_sys   cpu.bt_shares       cpu.ht_clean_tag   cpu.shares         tasks</span><br><span class="line">cpuacct.bt_stat        cpuacct.usage            cpuacct.usage_percpu_user  cpu.cfs_burst_us    cpu.offline        cpu.stat</span><br></pre></td></tr></table></figure>
+<p>通过改配置，可以限制某个进程对 CPU 的使用率</p>
+<h4 id="限制-CPU-举例"><a href="#限制-CPU-举例" class="headerlink" title="限制 CPU 举例"></a>限制 CPU 举例</h4><p>需要在对应的子系统下面创建一个目录，比如，我们现在进入 &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu 目录下创建名为 container 的目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker ~]# cd /sys/fs/cgroup/cpu</span><br><span class="line">[root@docker cpu]# mkdir container</span><br></pre></td></tr></table></figure>
+<p>这个目录就是一个“控制组”。操作系统会在新创建的 container 目录下，自动生成该子系统对应的资源限制文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# ls container</span><br><span class="line">cgroup.clone_children  cpuacct.stat   cpuacct.usage_all     cpuacct.usage_percpu_sys   cpuacct.usage_sys   cpu.cfs_period_us  cpu.rt_period_us   cpu.shares  notify_on_release</span><br><span class="line">cgroup.procs           cpuacct.usage  cpuacct.usage_percpu  cpuacct.usage_percpu_user  cpuacct.usage_user  cpu.cfs_quota_us   cpu.rt_runtime_us  cpu.stat    tasks</span><br></pre></td></tr></table></figure>
+<p>接下来我们就通过修改配置文件对 CPU 进行限制，这里就用前面创建的 container 这个“控制组”。<br>主要通过以下三个文件来实现</p>
+<ol>
+<li>cpu.cfs_quota_us：每个控制周期内，进程可以使用的 cpu 时间，默认为 -1，即不做限制。</li>
+<li>cpu.cfs_period_us：控制周期，默认为 100 ms</li>
+<li>tasks：记录被限制进程的 PID 列表</li>
+</ol>
+<p>cgroups 会限制所有在 tasks 中的进程，在 cpu.cfs_period_us 周期内，最多只能使用 cpu.cfs_quota_us 的 cpu 资源。<br>比如，100ms 能限制只能使用 20ms，即最多占用 0.2 核心<br>首先，我们在后台执行这样一条脚本:<br><code>[root@docker cpu]# while : ; do : ; done &amp;</code><br>[1] 3892<br>显然，它执行了一个死循环，可以把计算机的 CPU 吃到 100%。根据它的输出，我们可以看到这个脚本在后台运行的进程号（PID）是 3892。<br>执行 Top 查看一下 CPU 占用，可以看到这个 3892 进程占用了差不多 100% 的 CPU，把一个核心占满了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# top</span><br><span class="line">top - 16:07:06 up 286 days,  4:31,  3 users,  load average: 0.59, 0.50, 0.50</span><br><span class="line">Tasks:  97 total,   2 running,  48 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):100.0 us,  0.0 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem :  1006956 total,   166520 free,   190840 used,   649596 buff/cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used.   549216 avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                                                                                                                                                                                       </span><br><span class="line"> 3892 root      20   0  115684    532      0 R 92.0  0.1   0:48.64 bash</span><br></pre></td></tr></table></figure>
+<p>此时，我们就可以通过配置 cgroups 来实现对该进程的 CPU 使用情况进行限制。<br>默认情况下 container 控制组里的 CPU quota 还没有任何限制（即：-1），CPU period 则是默认的 100 ms（100000 us），因此上述进程可以占用整个 CPU</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# echo 20000 &gt; /sys/fs/cgroup/cpu/container/cpu.cfs_quota_us</span><br><span class="line">[root@docker cpu]# cat /sys/fs/cgroup/cpu/container/cpu.cfs_quota_us</span><br><span class="line">20000</span><br></pre></td></tr></table></figure>
+<p>最后则是将进程 PID 写入 tasks 文件里，是配置生效</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# echo 3892 &gt; /sys/fs/cgroup/cpu/container/tasks </span><br><span class="line">[root@docker cpu]# cat /sys/fs/cgroup/cpu/container/tasks</span><br><span class="line">3892</span><br></pre></td></tr></table></figure>
+<p>然后查看是否生效</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@docker cpu]# top</span><br><span class="line">top - 16:13:56 up 286 days,  4:38,  3 users,  load average: 0.20, 0.61, 0.59</span><br><span class="line">Tasks:  94 total,   2 running,  48 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s): 21.6 us,  0.0 sy,  0.0 ni, 78.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.3 st</span><br><span class="line">KiB Mem :  1006956 total,   166552 free,   190808 used,   649596 buff/cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used.   549248 avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                                                                                                                                                                                       </span><br><span class="line"> 3892 root      20   0  115684    532      0 R 19.9  0.1   5:56.94 bash</span><br></pre></td></tr></table></figure>
+<p>可以看到，果然 3892 CPU 被限制到了 20%</p>
+<h4 id="检查OS是否启用了-namespace"><a href="#检查OS是否启用了-namespace" class="headerlink" title="检查OS是否启用了 namespace"></a>检查OS是否启用了 namespace</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@master-876e2c3-1 ~]# uname -a</span><br><span class="line">Linux master-876e2c3-1 5.10.0-3.0.1.8 #6 SMP Wed Mar 27 18:59:12 CST 2024 x86_64 x86_64 x86_64 GNU/Linux</span><br><span class="line">[root@master-876e2c3-1 ~]# cat /boot/config-5.10.0-3.0.1.8 |grep _NS</span><br><span class="line">CONFIG_UTS_NS=y</span><br><span class="line">CONFIG_TIME_NS=y</span><br><span class="line">CONFIG_IPC_NS=y</span><br><span class="line">CONFIG_USER_NS=y</span><br><span class="line">CONFIG_PID_NS=y</span><br><span class="line">CONFIG_NET_NS=y</span><br></pre></td></tr></table></figure>
+<p>CONFIG_USER_NS&#x3D;y 代表 USER_NS 启用了，其他的 ns 也一样</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>cgroup 在文件系统上定义了一组限制资源的目录<br>所以对于 docker 这种容器来说，只需要在每个子系统下面添加 “控制组”的目录，在启动容器进程后将进程 pid 写到 控制组 tasks 文件中。docker run 的时候传入的参数，实际落地就是去修改这些cgroup 文件和内容</p>
+<h3 id="rootfs"><a href="#rootfs" class="headerlink" title="rootfs"></a>rootfs</h3><h4 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h4><p>将运行环境打包成镜像，避免环境问题导致应用无法运行。<br>先抛出下面三个问题</p>
+<ol>
+<li>为什么在容器中修改了文件宿主机不受影响？</li>
+<li>容器中的文件系统是哪儿来的？ </li>
+<li>docker 镜像又是怎么实现的？</li>
+</ol>
+<h4 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h4><p>经过 mount ns 隔离后，容器中的文件系统是独立的。在容器启动前，docker 通过 mount ns 将容器根目录挂载了，所以容器修改了文件宿主机不感知。<br>linux 中的 chroot 命令很方便完成这个工作，而 mount ns 正是基于 chroot 改良而来的，它也是第一个 ns<br>第一个问题的答案就是：mount ns 隔离的</p>
+<h4 id="rootfs-1"><a href="#rootfs-1" class="headerlink" title="rootfs"></a>rootfs</h4><p>是一个操作系统包含的文件、配置和目录，但不包含操作系统内核<br>在 linux OS 中，只有在开机启动时才会加载指定版本的内核镜像。所以 linux os 里内核和rootfs 是分开存放的<br><img src="/.io//03/25/docker/rootfs.png"></p>
+<blockquote>
+<p>这也是容器相比于虚拟机的主要缺陷之一：毕竟后者不仅有模拟出来的硬件机器充当沙盒，而且每个沙盒里还运行着一个完整的 Guest OS 给应用随便折腾。<br>但也是由于 rootfs 的存在，docker 才能一直宣传 ‘一致性” 的特性。<br>第二个问题：文件系统从哪儿来？<br>答案：构建镜像的时候打包进去的，然后容器启动时挂载到根目录下面了</p>
+</blockquote>
+<h3 id="镜像层"><a href="#镜像层" class="headerlink" title="镜像层"></a>镜像层</h3><p>Docker 在镜像的设计中，引入了层（layer）的概念。也就是说，用户制作镜像的每一步操作，都会生成一个层，也就是一个增量 rootfs。<br>这个本质上是复用了 rootfs，在docker 里这种能力称之为 union fs，他的功能是将多个不同位置的目录联合挂载到同一个目录下。</p>
+<p>例如将目录 A 和目录 B 挂载到目录 C 下面，这样目录 C 下就包含目录 A 和目录 B 的所有文件。<br>由于看不到目录 A 和 目标 B 的存在，因此就好像 C 目录就包含这么多文件一样<br>unionfs 有不同的实现，docker info 可以查看， ubuntu 使用 aufs，centos 使用 overlay2<br>union mount 在最上层，提供了统一的视图，用户看起来好像整个系统只有一层一样，实际上下面包含了很多层。<br><img src="/.io//03/25/docker/root-image.png"></p>
+<p>最后一个问题：docker 镜像又是怎么实现的？<br>通过引入 layer 概念进行分层，借助 联合文件系统（Union File System）进行叠加，最终构成了完整的镜像</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="镜像-Image"><a href="#镜像-Image" class="headerlink" title="镜像(Image)"></a>镜像(Image)</h3><p>相当于一个root文件系统</p>
+<h3 id="容器-container"><a href="#容器-container" class="headerlink" title="容器(container)"></a>容器(container)</h3><p>容器与镜像的关系，类似于面向对象里实例和类一样，容器是运行时的实体。容器可以被创建、启动、停止、删除、暂停等</p>
+<h3 id="仓库-repository"><a href="#仓库-repository" class="headerlink" title="仓库(repository)"></a>仓库(repository)</h3><p>类似github 这种代码控制中心，用于保存镜像</p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>docker 使用 C&#x2F;S 架构，使用远程 API 管理和创建 docker 容器<br><img src="/.io//03/25/docker/arch.png"><br>一些解释<br><img src="/.io//03/25/docker/arch-explain.png"></p>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p><img src="/.io//03/25/docker/usual-cmd.png"></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2025/03/25/docker/">https://dive2cloud-bmz.github.io/2025/03/25/docker/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/docker/">
+                                    <span class="chip bg-color">docker</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2025/03/28/optional-pattern/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="optional pattern">
+                        
+                        <span class="card-title">optional pattern</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-03-28
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Go/">
+                        <span class="chip bg-color">Go</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/03/25/page-cache/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="page cache">
+                        
+                        <span class="card-title">page cache</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-25
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/linux/">
+                        <span class="chip bg-color">linux</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2025</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">67k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

@@ -1,0 +1,1042 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="bigdata-learning-website, BMZ BLOG">
+    <meta name="description" content="ambarihttps://hijiazz.gitee.io/ambari-kerberos-descriptior/https://cwiki.apache.org/confluence/display/AMBARI/Automated+">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>bigdata-learning-website | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop-icon.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop-icon.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">bigdata-learning-website</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/learn/">
+                                <span class="chip bg-color">learn</span>
+                            </a>
+                        
+                            <a href="/tags/bigdata/">
+                                <span class="chip bg-color">bigdata</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-02-10
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-03-26
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    878
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    5 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="ambari"><a href="#ambari" class="headerlink" title="ambari"></a>ambari</h2><p><a target="_blank" rel="noopener" href="https://hijiazz.gitee.io/ambari-kerberos-descriptior/">https://hijiazz.gitee.io/ambari-kerberos-descriptior/</a><br><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/AMBARI/Automated+Kerberizaton">https://cwiki.apache.org/confluence/display/AMBARI/Automated+Kerberizaton</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZYC88888/article/details/116496591">https://blog.csdn.net/ZYC88888/article/details/116496591</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7b9f280b9d73">https://www.jianshu.com/p/7b9f280b9d73</a><br><a target="_blank" rel="noopener" href="https://community.cloudera.com/t5/Support-Questions/How-do-I-create-config-group-through-Ambari-Blueprint/td-p/136029">https://community.cloudera.com/t5/Support-Questions/How-do-I-create-config-group-through-Ambari-Blueprint/td-p/136029</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/mymelody/p/9435861.html">https://www.cnblogs.com/mymelody/p/9435861.html</a><br><a target="_blank" rel="noopener" href="https://github.com/fayson/cdhproject">https://github.com/fayson/cdhproject</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/a11en_03/article/details/118656653">https://blog.csdn.net/a11en_03/article/details/118656653</a><br><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/AMBARI/Blueprints#Blueprints-Step2:RegisterBlueprintwithAmbari">https://cwiki.apache.org/confluence/display/AMBARI/Blueprints#Blueprints-Step2:RegisterBlueprintwithAmbari</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/basenet855x/p/6782673.html">https://www.cnblogs.com/basenet855x/p/6782673.html</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2fc3325ab91d">https://www.jianshu.com/p/2fc3325ab91d</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/devalone/article/details/80781652">https://blog.csdn.net/devalone/article/details/80781652</a><br><a target="_blank" rel="noopener" href="https://www.shouxicto.com/article/1943.html">https://www.shouxicto.com/article/1943.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/yeruby/article/details/51167879">https://blog.csdn.net/yeruby/article/details/51167879</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37865420/article/details/107183986">https://blog.csdn.net/qq_37865420/article/details/107183986</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudera/cm_api">https://github.com/cloudera/cm_api</a></p>
+<h2 id="airflow"><a href="#airflow" class="headerlink" title="airflow"></a>airflow</h2><p><a target="_blank" rel="noopener" href="https://gitchat.cn/books/5db9939362adeb3006d193f9/index.html#airflow">https://gitchat.cn/books/5db9939362adeb3006d193f9/index.html#airflow</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/50365024/apache-airflow-sparksqloperator-keeps-printing-empty-logs">https://stackoverflow.com/questions/50365024/apache-airflow-sparksqloperator-keeps-printing-empty-logs</a><br><a target="_blank" rel="noopener" href="https://www.coder.work/article/6720186">https://www.coder.work/article/6720186</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chenboshi/p/13179169.html">https://www.cnblogs.com/chenboshi/p/13179169.html</a><br><a target="_blank" rel="noopener" href="https://github.com/apache/airflow/issues/23679">https://github.com/apache/airflow/issues/23679</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000041323240">https://segmentfault.com/a/1190000041323240</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/517364346">https://zhuanlan.zhihu.com/p/517364346</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/352989254">https://zhuanlan.zhihu.com/p/352989254</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0339928062b5">https://www.jianshu.com/p/0339928062b5</a></p>
+<h2 id="flink"><a href="#flink" class="headerlink" title="flink"></a>flink</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/117654469">https://zhuanlan.zhihu.com/p/117654469</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/89616731">https://zhuanlan.zhihu.com/p/89616731</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9dfd932af0af">https://www.jianshu.com/p/9dfd932af0af</a><br><a target="_blank" rel="noopener" href="https://github.com/zhisheng17/flink-learning">https://github.com/zhisheng17/flink-learning</a><br><a target="_blank" rel="noopener" href="http://www.54tianzhisheng.cn/2018/10/13/flink-introduction/">http://www.54tianzhisheng.cn/2018/10/13/flink-introduction/</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7041008470031597575">https://juejin.cn/post/7041008470031597575</a></p>
+<h2 id="atlas"><a href="#atlas" class="headerlink" title="atlas"></a>atlas</h2><p><a target="_blank" rel="noopener" href="http://www.360doc.com/content/20/0725/11/22849536_926642448.shtml">http://www.360doc.com/content/20/0725/11/22849536_926642448.shtml</a></p>
+<h2 id="hadoop"><a href="#hadoop" class="headerlink" title="hadoop"></a>hadoop</h2><p><a target="_blank" rel="noopener" href="https://hexiaoqiao.github.io/blog/2016/09/04/hdfs-centralized-cache-management/">https://hexiaoqiao.github.io/blog/2016/09/04/hdfs-centralized-cache-management/</a><br><a target="_blank" rel="noopener" href="https://hexiaoqiao.github.io/blog/2017/02/12/namenode-restart-optimization/">https://hexiaoqiao.github.io/blog/2017/02/12/namenode-restart-optimization/</a><br><a target="_blank" rel="noopener" href="https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.1.1/bk_installing_manually_book/content/rpm-chap1-11.html">https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.1.1/bk_installing_manually_book/content/rpm-chap1-11.html</a><br><a target="_blank" rel="noopener" href="https://jiamaoxiang.top/2019/12/03/CDH%E9%9B%86%E7%BE%A4%E4%B9%8BYARN%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/">https://jiamaoxiang.top/2019/12/03/CDH%E9%9B%86%E7%BE%A4%E4%B9%8BYARN%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012151684/article/details/107926103">https://blog.csdn.net/u012151684/article/details/107926103</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lixiaolun/p/6897706.html">https://www.cnblogs.com/lixiaolun/p/6897706.html</a><br><a target="_blank" rel="noopener" href="https://infra.apache.org/jira-guidelines.html#who">https://infra.apache.org/jira-guidelines.html#who</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/hncscwc/article/details/124358282">https://blog.csdn.net/hncscwc/article/details/124358282</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/617fa722e057">https://www.jianshu.com/p/617fa722e057</a><br><a target="_blank" rel="noopener" href="https://levy.at/blog/22">https://levy.at/blog/22</a></p>
+<h2 id="hbase"><a href="#hbase" class="headerlink" title="hbase"></a>hbase</h2><p><a target="_blank" rel="noopener" href="http://hbasefly.com/category/hbase/">http://hbasefly.com/category/hbase/</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhangwuji/p/9195806.html">https://www.cnblogs.com/zhangwuji/p/9195806.html</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70365703">https://zhuanlan.zhihu.com/p/70365703</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/mt0803/article/details/9372227">https://blog.csdn.net/mt0803/article/details/9372227</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/a772304419/article/details/118084764">https://blog.csdn.net/a772304419/article/details/118084764</a><br><a target="_blank" rel="noopener" href="https://tech.youzan.com/hbase-read-optimization-practice/">https://tech.youzan.com/hbase-read-optimization-practice/</a><br><a target="_blank" rel="noopener" href="http://openinx.github.io/2019/09/10/tuning-the-hbase-2-write-performance/">http://openinx.github.io/2019/09/10/tuning-the-hbase-2-write-performance/</a><br><a target="_blank" rel="noopener" href="https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/admin_hbase_blockcache_configure.html#concept_pqk_smz_dr">https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/admin_hbase_blockcache_configure.html#concept_pqk_smz_dr</a><br><a target="_blank" rel="noopener" href="http://hbasefly.com/2016/09/08/hbase-rit/?ogxgrs=oea8a1">http://hbasefly.com/2016/09/08/hbase-rit/?ogxgrs=oea8a1</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ios123/p/6410986.html">https://www.cnblogs.com/ios123/p/6410986.html</a></p>
+<h2 id="hive"><a href="#hive" class="headerlink" title="hive"></a>hive</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yjt1993/p/11050791.html">https://www.cnblogs.com/yjt1993/p/11050791.html</a></p>
+<h2 id="hudi"><a href="#hudi" class="headerlink" title="hudi"></a>hudi</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/131210053">https://zhuanlan.zhihu.com/p/131210053</a></p>
+<h2 id="hue"><a href="#hue" class="headerlink" title="hue"></a>hue</h2><p><a target="_blank" rel="noopener" href="https://github.com/cloudera/hue/issues">https://github.com/cloudera/hue/issues</a><br><a target="_blank" rel="noopener" href="https://docs.gethue.com/administrator/configuration/connectors/#apache-spark-sql">https://docs.gethue.com/administrator/configuration/connectors/#apache-spark-sql</a><br><a target="_blank" rel="noopener" href="https://gethue.com/blog/querying-spark-sql-with-spark-thrift-server-and-hue-editor/">https://gethue.com/blog/querying-spark-sql-with-spark-thrift-server-and-hue-editor/</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudera/hue/issues/2252">https://github.com/cloudera/hue/issues/2252</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudera/hue/issues/850">https://github.com/cloudera/hue/issues/850</a><br><a target="_blank" rel="noopener" href="https://github.com/gethue/PyHive">https://github.com/gethue/PyHive</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudera/hue/issues/1843">https://github.com/cloudera/hue/issues/1843</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudera/hue/blob/fd5cbb9edf88ace944d021ada8e0a6d3972686ca/apps/beeswax/src/beeswax/server/hive_server2_lib.py#L790">https://github.com/cloudera/hue/blob/fd5cbb9edf88ace944d021ada8e0a6d3972686ca/apps/beeswax/src/beeswax/server/hive_server2_lib.py#L790</a><br><a target="_blank" rel="noopener" href="https://gethue.com/blog/quick-task-sql-editor-for-apache-spark-sql-with-livy/">https://gethue.com/blog/quick-task-sql-editor-for-apache-spark-sql-with-livy/</a></p>
+<h2 id="impala"><a href="#impala" class="headerlink" title="impala"></a>impala</h2><p><a target="_blank" rel="noopener" href="http://dongxicheng.org/olap/impala-in-hulu/">http://dongxicheng.org/olap/impala-in-hulu/</a></p>
+<h2 id="knox"><a href="#knox" class="headerlink" title="knox"></a>knox</h2><p><a target="_blank" rel="noopener" href="https://github.com/wbwangk/wbwangk.github.io/wiki/knox%E6%B5%8B%E8%AF%95">https://github.com/wbwangk/wbwangk.github.io/wiki/knox%E6%B5%8B%E8%AF%95</a><br><a target="_blank" rel="noopener" href="https://knox.apache.org/books/knox-1-5-0/user-guide.html#Introduction">https://knox.apache.org/books/knox-1-5-0/user-guide.html#Introduction</a><br><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/KNOX/2017/08/14/Understanding+Rewrite+Rules+for+Apache+Knox#UnderstandingRewriteRulesforApacheKnox-Simpleservicerule">https://cwiki.apache.org/confluence/display/KNOX/2017/08/14/Understanding+Rewrite+Rules+for+Apache+Knox#UnderstandingRewriteRulesforApacheKnox-Simpleservicerule</a><br><a target="_blank" rel="noopener" href="https://knox.apache.org/">https://knox.apache.org/</a><br><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/KNOX/2017/08/14/Understanding+Rewrite+Rules+for+Apache+Knox">https://cwiki.apache.org/confluence/display/KNOX/2017/08/14/Understanding+Rewrite+Rules+for+Apache+Knox</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yinzhengjie/p/10096385.html">https://www.cnblogs.com/yinzhengjie/p/10096385.html</a><br><a target="_blank" rel="noopener" href="https://support.huaweicloud.com/prtg-hdp-kunpengbds/kunpengknoxhdp_02_0013.html">https://support.huaweicloud.com/prtg-hdp-kunpengbds/kunpengknoxhdp_02_0013.html</a></p>
+<h2 id="livy"><a href="#livy" class="headerlink" title="livy"></a>livy</h2><p><a target="_blank" rel="noopener" href="https://livy.incubator.apache.org/docs/latest/rest-api.html#session-kind">https://livy.incubator.apache.org/docs/latest/rest-api.html#session-kind</a><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1194694">https://cloud.tencent.com/developer/article/1194694</a></p>
+<h2 id="oozie"><a href="#oozie" class="headerlink" title="oozie"></a>oozie</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/rossiXYZ/p/13210197.html">https://www.cnblogs.com/rossiXYZ/p/13210197.html</a><br><a target="_blank" rel="noopener" href="https://oozie.apache.org/docs/5.1.0/AG_Install.html">https://oozie.apache.org/docs/5.1.0/AG_Install.html</a><br><a target="_blank" rel="noopener" href="https://issues.apache.org/jira/secure/attachment/12972188/OOZIE-3516-001.patch">https://issues.apache.org/jira/secure/attachment/12972188/OOZIE-3516-001.patch</a><br><a target="_blank" rel="noopener" href="https://docs.cloudera.com/cloudera-manager/7.4.2/configuration-properties/topics/cm_props_cdh720_oozie.html">https://docs.cloudera.com/cloudera-manager/7.4.2/configuration-properties/topics/cm_props_cdh720_oozie.html</a><br><a target="_blank" rel="noopener" href="https://ken-ljq.github.io/2019/use-the-sharelib-in-apache-oozie-cdh5/">https://ken-ljq.github.io/2019/use-the-sharelib-in-apache-oozie-cdh5/</a><br><a target="_blank" rel="noopener" href="http://www.manongjc.com/detail/50-upilvlrmlolqqqn.html">http://www.manongjc.com/detail/50-upilvlrmlolqqqn.html</a><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1693315">https://cloud.tencent.com/developer/article/1693315</a></p>
+<h2 id="spark"><a href="#spark" class="headerlink" title="spark"></a>spark</h2><p><a target="_blank" rel="noopener" href="https://www.nvidia.com/en-us/deep-learning-ai/solutions/data-science/apache-spark-3/ebook-sign-up/">https://www.nvidia.com/en-us/deep-learning-ai/solutions/data-science/apache-spark-3/ebook-sign-up/</a><br><a target="_blank" rel="noopener" href="https://github.com/databricks/Spark-The-Definitive-Guide">https://github.com/databricks/Spark-The-Definitive-Guide</a><br><a target="_blank" rel="noopener" href="http://faculty.neu.edu.cn/cc/zhangyf/book/spark.pdf">http://faculty.neu.edu.cn/cc/zhangyf/book/spark.pdf</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/itboys/p/10370304.html">https://www.cnblogs.com/itboys/p/10370304.html</a><br><a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/SPARK-32838">https://issues.apache.org/jira/browse/SPARK-32838</a></p>
+<h2 id="yarn"><a href="#yarn" class="headerlink" title="yarn"></a>yarn</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wsdc0521/article/details/108445041">https://blog.csdn.net/wsdc0521/article/details/108445041</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/hncscwc/article/details/128359113">https://blog.csdn.net/hncscwc/article/details/128359113</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhusirong/article/details/83624242">https://blog.csdn.net/zhusirong/article/details/83624242</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013384984/article/details/80296286?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-80296286-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-80296286-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&utm_relevant_index=4">https://blog.csdn.net/u013384984/article/details/80296286?spm=1001.2101.3001.6650.3&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-80296286-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-80296286-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&amp;utm_relevant_index=4</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhusirong/article/details/83621048?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-83621048-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-83621048-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&utm_relevant_index=5">https://blog.csdn.net/zhusirong/article/details/83621048?spm=1001.2101.3001.6650.4&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-83621048-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-83621048-blog-83624242.pc_relevant_3mothn_strategy_and_data_recovery&amp;utm_relevant_index=5</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhusirong/category_6949430.html">https://blog.csdn.net/zhusirong/category_6949430.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/love-yh/p/13894421.html">https://www.cnblogs.com/love-yh/p/13894421.html</a></p>
+<h2 id="zeppelin"><a href="#zeppelin" class="headerlink" title="zeppelin"></a>zeppelin</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zyzzxycj/article/details/80762472">https://blog.csdn.net/zyzzxycj/article/details/80762472</a></p>
+<h2 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h2><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1516691">https://cloud.tencent.com/developer/article/1516691</a><br><a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/ZOOKEEPER-706">https://issues.apache.org/jira/browse/ZOOKEEPER-706</a></p>
+<h2 id="dolphin-scheduler"><a href="#dolphin-scheduler" class="headerlink" title="dolphin scheduler"></a>dolphin scheduler</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/DolphinScheduler/article/details/118948803">https://blog.csdn.net/DolphinScheduler/article/details/118948803</a></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2025/02/10/bigdata-learning-website/">https://dive2cloud-bmz.github.io/2025/02/10/bigdata-learning-website/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/learn/">
+                                    <span class="chip bg-color">learn</span>
+                                </a>
+                            
+                                <a href="/tags/bigdata/">
+                                    <span class="chip bg-color">bigdata</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2025/02/11/other-learning-website/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="other-learning-website">
+                        
+                        <span class="card-title">other-learning-website</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-02-11
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/learn/">
+                        <span class="chip bg-color">learn</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/02/09/Go-learning-website/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="Go-learning-website">
+                        
+                        <span class="card-title">Go-learning-website</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-02-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Go/">
+                        <span class="chip bg-color">Go</span>
+                    </a>
+                    
+                    <a href="/tags/learn/">
+                        <span class="chip bg-color">learn</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2025</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">67k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

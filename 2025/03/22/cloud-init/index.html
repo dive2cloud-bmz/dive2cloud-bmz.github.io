@@ -1,0 +1,1070 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="cloud init, BMZ BLOG">
+    <meta name="description" content="前言我们不光是大数据开发者，更是云计算开发者。了解云计算的工具很有必要。
+概念Cloud-init 是虚拟机初始化的开源工具，在 AWS 中与之对应的是 EC2Config。cloud-init是一款用于初始化云服务器的工具，它拥有丰富的模">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>cloud init | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop-icon.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop-icon.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">cloud init</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/cloud/">
+                                <span class="chip bg-color">cloud</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2025-03-22
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2025-03-27
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    2.3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    9 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们不光是大数据开发者，更是云计算开发者。了解云计算的工具很有必要。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>Cloud-init 是虚拟机初始化的开源工具，在 AWS 中与之对应的是 EC2Config。<br>cloud-init是一款用于初始化云服务器的工具，它拥有丰富的模块，能够为云服务器提供的能力有：初始化密码、扩容根分区、设置主机名、注入公钥、执行自定义脚本等等，功能十分强大。<br>目前为止cloud-init是云服务器初始化工具中的事实标准，它几乎适用于所有主流的Linux发行版，也是各大云厂商正在使用的默认工具，社区活跃。基于Python语言使得它能够轻易跨平台、跨架构运行，良好的语法抽象使得它适配新模块、新发行版十分容易。<br>通过学习 cloud-init 的概念，我们可以知道一个虚机从开始创建到运行中，需要哪些信息，经历了哪些步骤，进而对虚机有更深入的理解。</p>
+<h3 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h3><p>是 cloud-init 用来处理并配置实例的数据集合。分为三类：</p>
+<ol>
+<li>metadata：主机名、密码、网络配置信息和SSH密钥</li>
+<li>userdata：命令、脚本、文件和自定义数据等</li>
+<li>vendordata：云基座传入的数据</li>
+</ol>
+<p>在 Openstack 中，metadata userdata 均在用户创建实例时通过参数传入，而 vendordata 通过 nova-api-metadata 服务启动时指定。<br>PS：<br>在 BCC 中，cloud-init 的配置文件目录是 &#x2F;etc&#x2F;cloud，在这里的 cloud.cfg 可以看到基本配置，templates 目录是一些 jinja2 的模板文件，应该会使用这些模板初始化一些配置文件。<br>metadata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;cloud-config.txt<br>userdata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;user-data.txt<br>vendordata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;vendor-data.txt<br>在经过上面这些配置文件初始化后，实例数据也有一个汇总了所有数据的文件，这个文件是存在 &#x2F;run&#x2F;cloud-init&#x2F;instance-data.json 下的，这个数据是我们可以利用的。<br>数据源<br>上面三类数据来源于许多地方，数据源代表实例数据的具体来源。<br>内置的数据源包括：Openstack、ConfigDrive、Amazon EC2(EC2Config)、Azure 等等，不同数据源也表明了不同实例数据的搜索方式。<br>cloud-init 在实例内部启动时并不知道从那里才能找到实例数据，它会根据预设的数据源列表一个一个查找实例数据，首个找到的源就成为这次启动的数据源。<br><img src="/.io//03/22/cloud-init/arch.png" alt="架构"></p>
+<p>使用 openstack 作为数据源，那么实例数据将通过 HTTP API 获取：</p>
+<ol>
+<li>metadata：<a target="_blank" rel="noopener" href="http://169.254.169.254/openstack/latest/meta_data.json">http://169.254.169.254/openstack/latest/meta_data.json</a></li>
+<li>userdata：<a target="_blank" rel="noopener" href="http://169.254.169.254/openstack/latest/user_data">http://169.254.169.254/openstack/latest/user_data</a></li>
+<li>vendordata：<a target="_blank" rel="noopener" href="http://169.254.169.254/openstack/latest/vendor_data.json%E3%80%81http://169.254.169.254/openstack/latest/network_data.json">http://169.254.169.254/openstack/latest/vendor_data.json、http://169.254.169.254/openstack/latest/network_data.json</a></li>
+</ol>
+<p>使用 configdrive 作为数据源，则会直接从文件中获取，cloud-init 会搜索标记有 CONFIG-2标签的分区，然后将该分区挂载到临时目录中，并读取这个目录中的文件：</p>
+<ol>
+<li>metadata：file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;meta_data.json</li>
+<li>userdata：file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;user_data</li>
+<li>vendordata：file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;vendor_data.json、file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;network_data.json</li>
+</ol>
+<h3 id="启动过程"><a href="#启动过程" class="headerlink" title="启动过程"></a>启动过程</h3><p>在整个系统启动的过程中，cloud-init的执行包括5个阶段，执行阶段从前到后分别为：Generator、Local、Network、Config、Final。<br><img src="/.io//03/22/cloud-init/process.png"></p>
+<h4 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system-generators&#x2F;cloud-init-generator<br>运行于：系统刚启动时<br>generator是最先运行的阶段，它的功能包括：</p>
+<ol>
+<li>判断是否需要禁止运行cloud-init。generator会根据如下条件判断：<br>&#x2F;etc&#x2F;cloud&#x2F;cloud-init.disabled文件是否存在。<br>内核参数中是否包括有cloud-init&#x3D;disabled配置项。</li>
+<li>筛选可用的数据源。generator为每个数据源都写了判断函数，运行判断函数后返回可用数据源的列表，存放于datasource_list配置项并写入&#x2F;run&#x2F;cloud-init&#x2F;cloud.cfg中。</li>
+</ol>
+<h4 id="Local"><a href="#Local" class="headerlink" title="Local"></a>Local</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-init-local.service<br>运行于：根目录挂载并可读写后<br>Local阶段的主要功能为：<br>搜索数据源。在datasource_list配置项中搜索第一个可用的数据源，作为本次启动的数据源。数据源搜索细节如下：<br>a. 尝试从缓存恢复。若存在obj.pkl缓存，为trust模式或ds.check_instance_id()返回true，则从缓存恢复。<br>b. 搜索数据源，遍历datasource_list配置项中的数据源，找出第一个可用的数据源，并返回。<br>应用网络配置（不拉起网络）。网络配置的来源如下：<br>a. 数据源，使用从数据源获取的网络配置，渲染并写入网络配置至磁盘中。<br>b. 回退，如果无数据源，则写入一个默认的dhcp网络配置。<br>c. 不应用，如果cloud-init配置文件中有如下配置项：network: {config: disabled}，或者存在&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;data&#x2F;upgraded-network文件，则不应用网络配置。<br>PS：BCC 中的 &#x2F;etc&#x2F;cloud&#x2F;cloud.cfg 中配置了 network: {config: disabled}</p>
+<h4 id="Network"><a href="#Network" class="headerlink" title="Network"></a>Network</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-init.service<br>运行于：网络服务启动之后<br>Network阶段的主要功能为：<br>self.datasource.setup()，在uesr-data和vendor-data处理之前调用，用于网络启动后再次更新数据源，网上看到azure cloud 利用这一步获取fabric数据并填充进fabric_data。<br>存储与渲染userdata和vendordata。<br>self.datasource.activate()，该方法在user-data和vendor-data渲染后，init_modules执行前调用。<br>运行cloud_init_modules中配置的模块。</p>
+<h4 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-config.service<br>运行于：Network阶段之后<br>Config阶段的主要功能是运行cloud_config_modules中配置的模块。</p>
+<h4 id="Final"><a href="#Final" class="headerlink" title="Final"></a>Final</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-final.service<br>运行于：Config阶段之后<br>Config阶段的主要功能是运行cloud_final_modules中配置的模块。<br>Cloud-config<br>cloud-config是cloud-init的配置文件，它用于控制cloud-init的行为，比如说该运行哪些功能，以及每个功能如何运行等等。和其他软件的配置文件相比，cloud-config具有高度定制化的特点，除了云服务器本身的cloud-config以外，cloud-init还能够从vendordata、userdata甚至内核参数中获取cloud-config，从而使得用户能够方便地利用cloud-init定制自己的云服务器。<br><img src="/.io//03/22/cloud-init/level.png"></p>
+<h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>cloud-init 实际运行的程序<br>以 set_hostname 模块为例，该模块的功能是设置主机名，当运行该模块时，它会读取cloud-config中的hostname参数，并将其中值设置为云实例的主机名。<br><img src="/.io//03/22/cloud-init/module.png"><br>每个模块都有名称、运行频率、配置参数这三大要素。<br>名称和配置很容易理解。<br>运行频率表示一个模块该在什么时候运行，通常有两种运行频率：</p>
+<ol>
+<li>once-per-instance，表示仅在实例首次启动时运行</li>
+<li>always，表示实例每次启动都运行<br>是否运行某个模块、何时运行模块、怎么运行模块，这些都可以在cloud-config中配置<br>我们看一个虚机的例子</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">disable_root: 0</span><br><span class="line">ssh_pwauth: 1</span><br><span class="line"></span><br><span class="line">locale_configfile: /etc/sysconfig/i18n</span><br><span class="line">mount_default_fields: [~, ~, &#x27;auto&#x27;, &#x27;defaults,nofail,x-systemd.requires=cloud-init.service&#x27;, &#x27;0&#x27;, &#x27;2&#x27;]</span><br><span class="line">resize_rootfs_tmp: /dev</span><br><span class="line">ssh_deletekeys:   0</span><br><span class="line">ssh_genkeytypes:  ~</span><br><span class="line">syslog_fix_perms: ~</span><br><span class="line">disable_vmware_customization: false</span><br><span class="line">datasource_list: [ Ec2, ConfigDrive ]</span><br><span class="line">datasource:</span><br><span class="line">  Ec2:</span><br><span class="line">    strict_id: false</span><br><span class="line"></span><br><span class="line">network: &#123;config: disabled&#125;</span><br><span class="line">## network 将运行的 modules</span><br><span class="line">cloud_init_modules: </span><br><span class="line"> - disk_setup</span><br><span class="line"> - migrator</span><br><span class="line"> - bootcmd</span><br><span class="line"> - write-files</span><br><span class="line"> - growpart</span><br><span class="line"> - resizefs</span><br><span class="line"> - set_hostname</span><br><span class="line"># - update_hostname</span><br><span class="line"> - update_etc_hosts</span><br><span class="line"> - rsyslog</span><br><span class="line"> - users-groups</span><br><span class="line"> - ssh</span><br><span class="line"> </span><br><span class="line">## config 阶段运行的 modules</span><br><span class="line">cloud_config_modules:</span><br><span class="line"> - mounts</span><br><span class="line"> - locale</span><br><span class="line"> - set-passwords</span><br><span class="line"> - rh_subscription</span><br><span class="line"> - yum-add-repo</span><br><span class="line"> - package-update-upgrade-install</span><br><span class="line"> - timezone</span><br><span class="line"> - puppet</span><br><span class="line"> - chef</span><br><span class="line"> - salt-minion</span><br><span class="line"> - mcollective</span><br><span class="line"> - disable-ec2-metadata</span><br><span class="line"> - runcmd</span><br><span class="line"></span><br><span class="line">## fianl 阶段运行的 modules</span><br><span class="line">cloud_final_modules:</span><br><span class="line"> - rightscale_userdata</span><br><span class="line"> - scripts-per-once</span><br><span class="line"> - scripts-per-boot</span><br><span class="line"> - scripts-per-instance</span><br><span class="line"> - scripts-user</span><br><span class="line"> - ssh-authkey-fingerprints</span><br><span class="line"> - keys-to-console</span><br><span class="line"> - phone-home</span><br><span class="line"> - final-message</span><br><span class="line"> ## 每个模块自己定义默认的频率，如果说想设置一个 bmz 模块在每次启动实例都运行，可以写成下面这样</span><br><span class="line"> ## - [bmz, always]</span><br><span class="line"></span><br><span class="line">system_info:</span><br><span class="line"> distro: centos</span><br><span class="line"> ssh_svcname: sshd</span><br><span class="line"></span><br><span class="line"># vim:syntax=yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="发行版"><a href="#发行版" class="headerlink" title="发行版"></a>发行版</h3><p>cloud-init 设计支持绝大多数 linux 发行版，比如 centos ubuntu arch fedora 等等。<br>对于每个发行版在使用上的差异，cloud-init 是有一套自己的抽象来适配的。所以也就有了一些只在某些发行版中存在的 module，比如 apt_configure 模块只在 ubuntu 和 debian 中使用，centos 等等是不用这个的。</p>
+<h2 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h2><p>我们在使用cloud-init时一般不会特别地去执行cloud-init相关的命令，在云实例的启动过程中操作系统会按正常流程去执行cloud-init，不过当需要开发&#x2F;调试cloud-init的时候，这些命令会带来很大的帮助。</p>
+<ol>
+<li>执行四个阶段</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># local阶段</span><br><span class="line">cloud-init init --local</span><br><span class="line"># network阶段</span><br><span class="line">cloud-init init</span><br><span class="line"># config阶段</span><br><span class="line">cloud-init modules --mode=config</span><br><span class="line"># final阶段</span><br><span class="line">cloud-init modules --mode=final</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>查询</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 查询cloud-id</span><br><span class="line">cloud-id</span><br><span class="line"># 查询cloud-init执行状态</span><br><span class="line">cloud-init status -l</span><br><span class="line"># 查询metadata</span><br><span class="line">cloud-init query &lt;variable&gt;</span><br><span class="line">cloud-init query -l</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>清缓存</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cloud-init clean</span><br><span class="line">## 磁盘上等于执行下面的命令</span><br><span class="line">rm -rf /var/run/cloud-init/</span><br><span class="line">rm -rf /var/lib/cloud/</span><br><span class="line">rm -rf /var/log/cloud-init.log</span><br><span class="line">rm -rf /etc/sysconfig/network-scripts/ifcfg-*</span><br></pre></td></tr></table></figure>
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2025/03/22/cloud-init/">https://dive2cloud-bmz.github.io/2025/03/22/cloud-init/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/cloud/">
+                                    <span class="chip bg-color">cloud</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2025/03/23/2PC/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="2PC">
+                        
+                        <span class="card-title">2PC</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2025-03-23
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
+                        <span class="chip bg-color">分布式</span>
+                    </a>
+                    
+                    <a href="/tags/2PC/">
+                        <span class="chip bg-color">2PC</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2025/03/22/aws-instance-controller/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="aws-instance-controller">
+                        
+                        <span class="card-title">aws-instance-controller</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-22
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/cloud/">
+                        <span class="chip bg-color">cloud</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2025</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">67k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
