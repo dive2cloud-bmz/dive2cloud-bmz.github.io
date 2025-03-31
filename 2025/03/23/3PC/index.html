@@ -393,7 +393,7 @@ coordinator 收到 timeout 或有 participant 返回 no，则下发终止">
 <li>同步阻塞</li>
 <li>协调者单点 </li>
 <li>脑裂 </li>
-<li>数据不一致<br><img src="/.io//03/23/3PC/image.png"></li>
+<li>数据不一致<br><img src="/2025/03/23/3PC/03/23/3PC/image.png"></li>
 </ol>
 <h2 id="第一阶段：预查询"><a href="#第一阶段：预查询" class="headerlink" title="第一阶段：预查询"></a>第一阶段：预查询</h2><p>目的：知道是否大家都同意去 commit</p>
 <ol>
@@ -411,7 +411,7 @@ coordinator 收到 timeout 或有 participant 返回 no，则下发终止">
 <li>参与者执行事务但不提交</li>
 <li>参与者将事务执行情况返回给协调者</li>
 </ol>
-<h3 id="有不可以或超时的情况"><a href="#有不可以或超时的情况" class="headerlink" title="有不可以或超时的情况"></a>有不可以或超时的情况</h3><p><img src="/.io//03/23/3PC/image2.png"><br>participant timeout：认为 coordinator 宕，给其他 participant 发送 abort</p>
+<h3 id="有不可以或超时的情况"><a href="#有不可以或超时的情况" class="headerlink" title="有不可以或超时的情况"></a>有不可以或超时的情况</h3><p><img src="/2025/03/23/3PC/03/23/3PC/image2.png"><br>participant timeout：认为 coordinator 宕，给其他 participant 发送 abort</p>
 <h2 id="第三阶段：正式提交"><a href="#第三阶段：正式提交" class="headerlink" title="第三阶段：正式提交"></a>第三阶段：正式提交</h2><p>在第二阶段中假如未中断，则协调者会根据全部参与者返回的操作结果来决定提交还是回滚<br>分为这三种情况</p>
 <ol>
 <li>所有参与者在第二阶段结束时都返回成功 </li>
@@ -439,7 +439,7 @@ coordinator 收到 timeout 或有 participant 返回 no，则下发终止">
 <li>第二阶段宕机<br>a. 已经广播 pre-commit 后宕，新选的协调者已经知道发送过 pre-commit 了<br>b. 未广播 pre-commit，新选协调者处于 can-commit 完成阶段，广播 pre-commit</li>
 <li>第三阶段宕机（结论：新协调者无脑发 do-commit）<br>a. 已经广播 do-commit 后宕，假设新选协调者已经接受过 do-commit 了，那么他直接广播一样的 do-commit<br>b. 还没广播 do-commit 后就宕，新协调者还停留在 pre-commit 完成的阶段，从新发起 do-commit</li>
 </ol>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>3PC 引入超时机制，阻塞发生概率变小了<br>3PC 把 2PC 的投票阶段一分为二，多了一个缓冲阶段，保证最后提交阶段前，各个参与节点的状态是一致的<br>避免了单点问题<br><img src="/.io//03/23/3PC/image3.png"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>3PC 引入超时机制，阻塞发生概率变小了<br>3PC 把 2PC 的投票阶段一分为二，多了一个缓冲阶段，保证最后提交阶段前，各个参与节点的状态是一致的<br>避免了单点问题<br><img src="/2025/03/23/3PC/03/23/3PC/image3.png"></p>
 
                 
             </div>

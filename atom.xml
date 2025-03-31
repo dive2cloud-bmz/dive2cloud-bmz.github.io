@@ -97,9 +97,7 @@
       
         
         
-    <summary type="html">&lt;h2 id=&quot;读取&quot;&gt;&lt;a href=&quot;#读取&quot; class=&quot;headerlink&quot; title=&quot;读取&quot;&gt;&lt;/a&gt;读取&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/.io//03/25/page-cache/read.png&quot;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;app 调用系统</summary>
+    <summary type="html">&lt;h2 id=&quot;读取&quot;&gt;&lt;a href=&quot;#读取&quot; class=&quot;headerlink&quot; title=&quot;读取&quot;&gt;&lt;/a&gt;读取&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
         
       
     
@@ -295,8 +293,7 @@
       
         
         
-    <summary type="html">&lt;p&gt;反编译过 aws-emr 在虚机内的控制进程 instance-controller&lt;br&gt;&lt;img src=&quot;/.io//03/22/aws-instance-controller/image1.png&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;构造方法&quot;&gt;&lt;a</summary>
+    <summary type="html">&lt;p&gt;反编译过 aws-emr 在虚机内的控制进程 instance-controller&lt;br&gt;&lt;img</summary>
         
       
     
@@ -319,8 +316,7 @@
       
         
         
-    <summary type="html">&lt;h2 id=&quot;架构&quot;&gt;&lt;a href=&quot;#架构&quot; class=&quot;headerlink&quot; title=&quot;架构&quot;&gt;&lt;/a&gt;架构&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/.io//03/22/apache-hbase/arch1.png&quot; alt=&quot;架构图&quot;&gt;&lt;/p&gt;
-&lt;h3</summary>
+    <summary type="html">&lt;h2 id=&quot;架构&quot;&gt;&lt;a href=&quot;#架构&quot; class=&quot;headerlink&quot; title=&quot;架构&quot;&gt;&lt;/a&gt;架构&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/03/22/apache-hbase/03/22/apache-hbase/arch1.png&quot;</summary>
         
       
     
@@ -389,7 +385,7 @@
       
         
         
-    <summary type="html">&lt;h2 id=&quot;SQOOP1&quot;&gt;&lt;a href=&quot;#SQOOP1&quot; class=&quot;headerlink&quot; title=&quot;SQOOP1&quot;&gt;&lt;/a&gt;SQOOP1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/.io//03/20/apache-sqoop2/1arch.png&quot;</summary>
+    <summary type="html">&lt;h2 id=&quot;SQOOP1&quot;&gt;&lt;a href=&quot;#SQOOP1&quot; class=&quot;headerlink&quot; title=&quot;SQOOP1&quot;&gt;&lt;/a&gt;SQOOP1&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
         
       
     
@@ -458,8 +454,8 @@
       
         
         
-    <summary type="html">&lt;p&gt;旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆&lt;br&gt;&lt;img src=&quot;/.io//03/18/apache-storm/arch.png&quot; alt=&quot;架构&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;组件&quot;&gt;&lt;a href=&quot;#组件&quot;</summary>
+    <summary type="html">&lt;p&gt;旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆&lt;br&gt;&lt;img src=&quot;/2025/03/18/apache-storm/03/18/apache-storm/arch.png&quot; alt=&quot;架构&quot;&gt;&lt;/p&gt;
+&lt;h2</summary>
         
       
     

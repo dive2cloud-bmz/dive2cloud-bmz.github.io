@@ -399,8 +399,8 @@ Go VendorGo 1.5 推出">
 <p>major:发布不兼容的接口更改,或某些包被删除,必须递增 major 版本<br>minor:发布兼容的接口更改,或者新增了函数<br>patch:不修改任何接口声明,只是 bugfix 或 improvement<br>值得一提,补丁版本后可以跟着一个标识符,比如 -pre -beta -alpha 这种,表示是一个测试版.有这种后缀的版本代表是不稳定的版本.</p>
 <h3 id="伪版本"><a href="#伪版本" class="headerlink" title="伪版本"></a>伪版本</h3><p>我们经常看到形如<br><code>v0.0.0-20230627132053-2c327efd41e2</code><br>的版本号,这其实就是为版本,是一种特殊格式的 “预发布版本”.<br>伪版本分成三个组成部分:</p>
 <p>基础版本 vX.0.0 或者 vX.Y.Z-0,这个版本是从 git 里的 tag 派生的,假如没有 tag,则版本是 vX.0.0.<br>时间戳,commit 的 utc 时间<br>commit 标识: commit 哈希的前12位</p>
-<h3 id="主版本后缀的重要意义"><a href="#主版本后缀的重要意义" class="headerlink" title="主版本后缀的重要意义"></a>主版本后缀的重要意义</h3><p>还是拿老例子<br><img src="/.io//02/27/Go-mod/dependency-hell-in-go.png"><br>为了让 App 可以解决依赖冲突,<br>在 P1 的 go.mod 定义 require P3 v1.5<br>在 P2 的 go.mod 定义 require P3&#x2F;v2 v2.0<br>就可以了,因为 P3 和 P3&#x2F;v2 被 go.mod 视作 2 个不同的 module,他们可以同时被一个项目引用.</p>
-<h3 id="后缀-incompatible"><a href="#后缀-incompatible" class="headerlink" title="后缀+incompatible"></a>后缀+incompatible</h3><p>经常看到 go.mod 里有这样的依赖版本,这是什么意思呢?<br><code>github.com/desertbit/columnize v2.1.0+incompatible</code><br>去这个项目的 github 一看,其实只发布了 v2.1.0 这个版本<br><img src="/.io//02/27/Go-mod/desertbit-web.png"></p>
+<h3 id="主版本后缀的重要意义"><a href="#主版本后缀的重要意义" class="headerlink" title="主版本后缀的重要意义"></a>主版本后缀的重要意义</h3><p>还是拿老例子<br><img src="/2025/02/27/Go-mod/02/27/Go-mod/dependency-hell-in-go.png"><br>为了让 App 可以解决依赖冲突,<br>在 P1 的 go.mod 定义 require P3 v1.5<br>在 P2 的 go.mod 定义 require P3&#x2F;v2 v2.0<br>就可以了,因为 P3 和 P3&#x2F;v2 被 go.mod 视作 2 个不同的 module,他们可以同时被一个项目引用.</p>
+<h3 id="后缀-incompatible"><a href="#后缀-incompatible" class="headerlink" title="后缀+incompatible"></a>后缀+incompatible</h3><p>经常看到 go.mod 里有这样的依赖版本,这是什么意思呢?<br><code>github.com/desertbit/columnize v2.1.0+incompatible</code><br>去这个项目的 github 一看,其实只发布了 v2.1.0 这个版本<br><img src="/2025/02/27/Go-mod/02/27/Go-mod/desertbit-web.png"></p>
 <p>说明这个 incompatible 是 go mod 自己加的,用来标记这个 module 不符合规范,是可能不兼容的.<br>造成这个的原因是:</p>
 <ol>
 <li>这个库有 v2 或以上的 tag 版本了,但 module 里并没有写 &#x2F;v2 这种主版本后缀用于区分不同主版本的模块.<br>比如我自己的一个项目发布了 v2.0.1 的 tag,但 go.mod 里写的是</li>

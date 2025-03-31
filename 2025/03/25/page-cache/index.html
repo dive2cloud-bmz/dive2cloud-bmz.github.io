@@ -379,7 +379,7 @@ page cache 不存在,则产">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2><p><img src="/.io//03/25/page-cache/read.png"></p>
+                <h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2><p><img src="/2025/03/25/page-cache/03/25/page-cache/read.png"></p>
 <ol>
 <li>app 调用系统 read() 用户态切换到内核态 </li>
 <li>fs 通过目录项,页缓存树看 page cahce 是否存在,有的话直接从page cache 读数据,避免物理磁盘 I&#x2F;O 操作 </li>
@@ -387,7 +387,7 @@ page cache 不存在,则产">
 <li>DMA 向 CPU 发出数据读完的信号,由CPU 负责将数据从内核缓冲区拷贝到用户缓冲区</li>
 <li>用户进程从内核态回到用户态,获得到文件数据</li>
 </ol>
-<h2 id="写入"><a href="#写入" class="headerlink" title="写入"></a>写入</h2><p><img src="/.io//03/25/page-cache/write.png"></p>
+<h2 id="写入"><a href="#写入" class="headerlink" title="写入"></a>写入</h2><p><img src="/2025/03/25/page-cache/03/25/page-cache/write.png"></p>
 <ol>
 <li>app 调用系统 write(),用户态进到内核态 </li>
 <li>FS 通过目录项和 pc 树查看 page cache 是否存在,没有就要创建 </li>

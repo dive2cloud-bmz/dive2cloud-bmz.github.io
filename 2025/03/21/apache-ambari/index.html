@@ -390,8 +390,8 @@
 <li>Service -&gt; yarn&#x2F;hdfs&#x2F;hive&#x2F;custom</li>
 <li>Component -&gt; nm&#x2F;rm&#x2F;nn&#x2F;hivemetastore&#x2F;custom-serviceA customB</li>
 </ol>
-<h2 id="基本组件"><a href="#基本组件" class="headerlink" title="基本组件"></a>基本组件</h2><p>Ambari-server: 巨石管控,管控各种状态<br>Ambari-web: 嵌入在 ambari-server 里的 httpserver,基于 web socket;<br>Ambari-agent: slave 节点,无状态<br>Ambari-metrics-collector: 监控采集,上报<br>Ambari-metrics-monitor: 监控汇总聚合<br><img src="/.io//03/21/apache-ambari/arch1.png" alt="架构"></p>
-<h2 id="ambari-server"><a href="#ambari-server" class="headerlink" title="ambari-server"></a>ambari-server</h2><p><img src="/.io//03/21/apache-ambari/as-arch.png" alt="as-arch"></p>
+<h2 id="基本组件"><a href="#基本组件" class="headerlink" title="基本组件"></a>基本组件</h2><p>Ambari-server: 巨石管控,管控各种状态<br>Ambari-web: 嵌入在 ambari-server 里的 httpserver,基于 web socket;<br>Ambari-agent: slave 节点,无状态<br>Ambari-metrics-collector: 监控采集,上报<br>Ambari-metrics-monitor: 监控汇总聚合<br><img src="/2025/03/21/apache-ambari/03/21/apache-ambari/arch1.png" alt="架构"></p>
+<h2 id="ambari-server"><a href="#ambari-server" class="headerlink" title="ambari-server"></a>ambari-server</h2><p><img src="/2025/03/21/apache-ambari/03/21/apache-ambari/as-arch.png" alt="as-arch"></p>
 <h3 id="HeartBeatHandler"><a href="#HeartBeatHandler" class="headerlink" title="HeartBeatHandler"></a>HeartBeatHandler</h3><p>处理 Agent 的 Heartbeat 请求（节点状态信息和Agent的操作结果）</p>
 <h3 id="Coordinator"><a href="#Coordinator" class="headerlink" title="Coordinator"></a>Coordinator</h3><p>主要在接收用户操作请求后，检查是否符合要求，通过stageplanner分解成一组操作，最后提供给ActionManager去完成执行操作。</p>
 <h3 id="FSM"><a href="#FSM" class="headerlink" title="FSM"></a>FSM</h3><p>维护组件状态的有限状态机。</p>
@@ -400,7 +400,7 @@
 <li>Desired State：用户希望该节点所处状态，还没有在节点生效</li>
 <li>Action State：操作状态</li>
 </ol>
-<h2 id="ambari-agent"><a href="#ambari-agent" class="headerlink" title="ambari-agent"></a>ambari-agent</h2><p>采集所在节点的信息并且汇总发送心跳发送汇报给ambari-server。<br>处理ambari-server的执行请求。<br><img src="/.io//03/21/apache-ambari/aa-arch.png" alt="aa-arch"></p>
+<h2 id="ambari-agent"><a href="#ambari-agent" class="headerlink" title="ambari-agent"></a>ambari-agent</h2><p>采集所在节点的信息并且汇总发送心跳发送汇报给ambari-server。<br>处理ambari-server的执行请求。<br><img src="/2025/03/21/apache-ambari/03/21/apache-ambari/aa-arch.png" alt="aa-arch"></p>
 <h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>messageQueue<br>包括节点状态信息（包括注册信息）和执行结果信息，并且汇总后通过心跳发送给ambari-server</p>
 <h3 id="ActionQueue"><a href="#ActionQueue" class="headerlink" title="ActionQueue"></a>ActionQueue</h3><p>用于接收ambari-server发送过来的状态操作，然后交给执行器调用puppet或Python脚本等模块执行任务</p>
 <h2 id="ambari-metrics"><a href="#ambari-metrics" class="headerlink" title="ambari-metrics"></a>ambari-metrics</h2><p>又称AMS（Ambari-Metrics-System），是Ambari中负责监控集群状态的功能组件。内含ambari-xxx-sink(java)、ambari-metrics-collector(java)、ambari-metrics-monitor(java)等；<br>AMS 也是一个 Master-Slave 结构的框架。Master 模块便是 Metrics Collector，Slave 则是 Metrics Monitor 和 Hadoop Sinks。Salve 模块负责收集信息，并发送给 Collector。<br>Ambari收集两类信息放到Collector上</p>
@@ -408,7 +408,7 @@
 <li>各节点“系统级”的指标<br>通过安装在每个节点上的Metrics Monitor来收集的；</li>
 <li>Hadoop各组件的指标<br>通过面向特定Hadoop组件的Sink来收集的。</li>
 </ol>
-<h2 id="服务交互"><a href="#服务交互" class="headerlink" title="服务交互"></a>服务交互</h2><p><img src="/.io//03/21/apache-ambari/interact.png"></p>
+<h2 id="服务交互"><a href="#服务交互" class="headerlink" title="服务交互"></a>服务交互</h2><p><img src="/2025/03/21/apache-ambari/03/21/apache-ambari/interact.png"></p>
 
                 
             </div>

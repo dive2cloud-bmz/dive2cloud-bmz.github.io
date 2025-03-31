@@ -385,7 +385,7 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>我本科正好是软件工程专业的,知道传统软件研发是有生命周期的,大抵是指 可行性分析-全局设计-详细设计-coding-各种测试-灰度部署-正式部署-运维.<br>学生时期其实已经在接触虚拟机,在虚拟机上部署自己开发的小破程序,学生时代不以为然,无非是课程实验的要求罢了.<br>可是在大数据领域研发从业5年,同时在云计算领域也从业4年后,发现课本里的设计编码测试有各种改进,本质没变;但运维部署环节早就被颠覆了.<br>当然这个颠覆是因为 devops 兴起了, CI&#x2F;CD 各种概念成熟了.K8S 正好是简化 CI&#x2F;CD 的一个标志性技术.<br>于此之外,各种云厂商也在推 k8s 去部署自己的应用,利用 k8s 自动化运维,我对这个被各种大 V 鼓吹的项目更感兴趣了.<br>让我下定决心去了解K8S,还是因为我在百度的产品本身提供的服务被各种用户挑战了, serverless 的概念已经成为各种 paas 产品的下一个方向, 基于虚机提供 paas 虽有市场,但似乎对于新的业务, 基于容器的 serverless 形态才是更优的选择.<br>知其然,也要知其所以然,学习 K8S 已经是后端 RD 学习地图里的必然路径之一了.</p>
-<h2 id="What-is-K8s"><a href="#What-is-K8s" class="headerlink" title="What is K8s"></a>What is K8s</h2><p>一句话:k8s 是<strong>开源容器编排平台</strong>,可以用声明式 API 来自动化部署,管理和扩展容器化应用.<br>k8s 本身分为两个大的部分:<strong>控制平面(master 节点)</strong> 和 <strong>计算设备(计算节点)</strong>, 我称之为 <strong>组件</strong><br>k8s 对外提供的一些灵活扩展性接口,我称之为 插件<br>围绕 k8s 还有一些生态,这些软件本身和 k8s 无关,但是和 k8s 配合起来有不错的效果,我称之为 <strong>附件</strong><br><img src="/.io//02/06/kubernetes-learning-summary/kubernetes-cluster-architecture.svg" alt="k8s 架构图"><br>k8s 的指导思想是 google borg,或者说是 google omega.这个指导思想体现在控制平面上</p>
+<h2 id="What-is-K8s"><a href="#What-is-K8s" class="headerlink" title="What is K8s"></a>What is K8s</h2><p>一句话:k8s 是<strong>开源容器编排平台</strong>,可以用声明式 API 来自动化部署,管理和扩展容器化应用.<br>k8s 本身分为两个大的部分:<strong>控制平面(master 节点)</strong> 和 <strong>计算设备(计算节点)</strong>, 我称之为 <strong>组件</strong><br>k8s 对外提供的一些灵活扩展性接口,我称之为 插件<br>围绕 k8s 还有一些生态,这些软件本身和 k8s 无关,但是和 k8s 配合起来有不错的效果,我称之为 <strong>附件</strong><br><img src="/2025/02/06/kubernetes-learning-summary/02/06/kubernetes-learning-summary/kubernetes-cluster-architecture.svg" alt="k8s 架构图"><br>k8s 的指导思想是 google borg,或者说是 google omega.这个指导思想体现在控制平面上</p>
 <h2 id="控制平面"><a href="#控制平面" class="headerlink" title="控制平面"></a>控制平面</h2><ol>
 <li>kube-apiserver<br>HTTP 服务器,用来管理全部的 API 对象</li>
 <li>kube-scheduler<br>查找尚未绑定到节点的 pod, 以及将 pod 分配给合适的节点</li>
@@ -413,7 +413,7 @@
 </blockquote>
 </li>
 </ol>
-<p><img src="/.io//02/06/kubernetes-learning-summary/Container_Evolution.svg" alt="容器演进过程"></p>
+<p><img src="/2025/02/06/kubernetes-learning-summary/02/06/kubernetes-learning-summary/Container_Evolution.svg" alt="容器演进过程"></p>
 <h2 id="Why-k8s"><a href="#Why-k8s" class="headerlink" title="Why k8s"></a>Why k8s</h2><p>一句话:容器是打包和运行应用的标准来,而 K8S 提供一个弹性运行分布式系统的框架,来满足多个容器之前的各种复杂关系,比如扩展需求,故障迁移,自我修复等<br>那为什么用 k8s, 不能有其他东西替代吗? 有,但是不如 k8s 好<br>与 k8s 定位类似的项目有2个, docker swarm 和 mesos(同样也是 yarn 的一个竞对)</p>
 <ol>
 <li>docker swarm 是围绕 docker 而存在的,比较轻量级,功能上和 K8s 比欠缺,比较有名的云厂商已经抛弃基于他提供服务了</li>

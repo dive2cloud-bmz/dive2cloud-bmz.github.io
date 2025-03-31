@@ -375,7 +375,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="go-的服务启动时做了什么"><a href="#go-的服务启动时做了什么" class="headerlink" title="go 的服务启动时做了什么"></a>go 的服务启动时做了什么</h2><p><img src="/.io//02/08/what-does-Go-do-when-starting-app/goapp-start-process.png" alt="go-的服务启动时流程简图"><br>真正的开始: 其实是 runtime.rt0_go(SB) 这样的汇编代码<br>runtime.check 代表去检查当前 OS 的信息,确定一些类型的基本<br>runtime.schedinit 是初始化调度器,也就是 P<br>newproc 是启动一个准备运行 main 的协程<br>runtime.mstart 是启动一个 m 去运行上一步的 newproc</p>
+                <h2 id="go-的服务启动时做了什么"><a href="#go-的服务启动时做了什么" class="headerlink" title="go 的服务启动时做了什么"></a>go 的服务启动时做了什么</h2><p><img src="/2025/02/08/what-does-Go-do-when-starting-app/02/08/what-does-Go-do-when-starting-app/goapp-start-process.png" alt="go-的服务启动时流程简图"><br>真正的开始: 其实是 runtime.rt0_go(SB) 这样的汇编代码<br>runtime.check 代表去检查当前 OS 的信息,确定一些类型的基本<br>runtime.schedinit 是初始化调度器,也就是 P<br>newproc 是启动一个准备运行 main 的协程<br>runtime.mstart 是启动一个 m 去运行上一步的 newproc</p>
 
                 
             </div>

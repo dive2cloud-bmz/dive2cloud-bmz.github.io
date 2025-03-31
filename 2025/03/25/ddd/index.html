@@ -378,7 +378,7 @@ MVC 和 DDD 的概念区别MVC 是基于贫血模型的,将数据和业务逻辑
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p>这篇文章写的不错<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7298160530292703244">https://juejin.cn/post/7298160530292703244</a></p>
-<h2 id="我对-MVC-和-DDD-的理解"><a href="#我对-MVC-和-DDD-的理解" class="headerlink" title="我对 MVC 和 DDD 的理解"></a>我对 MVC 和 DDD 的理解</h2><p><img src="/.io//03/25/ddd/image.png"></p>
+<h2 id="我对-MVC-和-DDD-的理解"><a href="#我对-MVC-和-DDD-的理解" class="headerlink" title="我对 MVC 和 DDD 的理解"></a>我对 MVC 和 DDD 的理解</h2><p><img src="/2025/03/25/ddd/03/25/ddd/image.png"></p>
 <h3 id="MVC-和-DDD-的概念区别"><a href="#MVC-和-DDD-的概念区别" class="headerlink" title="MVC 和 DDD 的概念区别"></a>MVC 和 DDD 的概念区别</h3><p>MVC 是基于贫血模型的,将数据和业务逻辑分到两层,重 Service 层,轻 BO,破坏了面向对象,是面向过程的思路<br>DDD 是充血模型的,数据和业务逻辑被封装到同一个 “类” 之中,轻 Service ,重 Domain,是符合面向对象的.</p>
 <h3 id="DDD-优势"><a href="#DDD-优势" class="headerlink" title="DDD 优势"></a>DDD 优势</h3><p>反应真实业务而不是只有 RD 能看懂:重点放到业务领域,让开发人员更好与业务专家沟通,反应真实世界的业务逻辑<br>模块化:每个 domain 负责自己的事<br>可重用:各个应用层可以任意组合各个 domain<br>解决复杂性和变化:复杂业务问题分解为领域对象和领域服务,通过界限上下文和聚合根处理业务规则和一致性.对外部依赖也低</p>
 <h3 id="DDD-劣势"><a href="#DDD-劣势" class="headerlink" title="DDD 劣势"></a>DDD 劣势</h3><p>先有方法论,落地还需实践<br>性能:DDD 基于聚合来组织代码,高性能场景加载聚合中大量无用字段会影响性能<br>事务:被限定到了界限上下文内,处理跨多个界限上下文时,开发人员需要面对分布式事务,难度大<br>需要领域专家:开发者要求高,必须会合理抽象这些领域对象</p>

@@ -385,7 +385,7 @@ region server
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="/.io//03/22/apache-hbase/arch1.png" alt="架构图"></p>
+                <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="/2025/03/22/apache-hbase/03/22/apache-hbase/arch1.png" alt="架构图"></p>
 <h3 id="hmaster"><a href="#hmaster" class="headerlink" title="hmaster"></a>hmaster</h3><ol>
 <li>处理dml ddl 请求</li>
 <li>region 分配和迁移 </li>
@@ -417,7 +417,7 @@ region server
 <h3 id="hdfs"><a href="#hdfs" class="headerlink" title="hdfs"></a>hdfs</h3><p>各种 hbase 文件的存储服务.<br>hfile hlog tmp数据 损坏的数据 和 archive 数据</p>
 <h2 id="数据结构-LSM"><a href="#数据结构-LSM" class="headerlink" title="数据结构 LSM"></a>数据结构 LSM</h2><p>由内存的跳表+磁盘上的有序文件组成,额外还有布隆过滤器来判断 key 是否存储在某个块上</p>
 <h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><p>跳表<br>特点就是 分层 有序 无穷首尾 上层链表是下层链表的子集<br>查询复杂度是 O(logn)<br>非常直接的空间换时间的检索方式</p>
-<h3 id="kv-存储格式"><a href="#kv-存储格式" class="headerlink" title="kv 存储格式"></a>kv 存储格式</h3><p><img src="/.io//03/22/apache-hbase/kv.png"><br>因为key 是有序的,<br>排序的优先级为: 1.rowkey 2.cf 3.column 4.timestamp<br>越大约靠前</p>
+<h3 id="kv-存储格式"><a href="#kv-存储格式" class="headerlink" title="kv 存储格式"></a>kv 存储格式</h3><p><img src="/2025/03/22/apache-hbase/03/22/apache-hbase/kv.png"><br>因为key 是有序的,<br>排序的优先级为: 1.rowkey 2.cf 3.column 4.timestamp<br>越大约靠前</p>
 <h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>从 LSM 的结构和特点上,引出三个问题</p>
 <ol>
 <li>效率怎样?<br>写性能好,读性能差<br>写入是基于 MVCC 的,所以写 LSM 时都是 append 操作,在之前的时代磁盘顺序写就是比随机写快很多的</li>
@@ -426,7 +426,7 @@ region server
 </ol>
 <h3 id="Why-HDFS"><a href="#Why-HDFS" class="headerlink" title="Why HDFS"></a>Why HDFS</h3><p>LSM 所有操作都是顺序写 -&gt; 和 hdfs 完全契合<br>文件最终是由 compact 各个小的 hfile 到一个大的 hfile -&gt; hdfs 适合存储大文件</p>
 <h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>hbase get 时利用 bloom 过滤大量无效的块,节省磁盘 io</p>
-<h2 id="写过程"><a href="#写过程" class="headerlink" title="写过程"></a>写过程</h2><p><img src="/.io//03/22/apache-hbase/write.png"></p>
+<h2 id="写过程"><a href="#写过程" class="headerlink" title="写过程"></a>写过程</h2><p><img src="/2025/03/22/apache-hbase/03/22/apache-hbase/write.png"></p>
 <ol>
 <li>客户端</li>
 </ol>
@@ -479,11 +479,11 @@ region server
 <li>条件过滤,淘汰不满足条件的scanner,每个有效的scanner seek到startKey </li>
 <li>合并构建最小堆.按照scanner排序规则kv由小到大排序,不断pop这个优先级队列来获取kv有序集合.</li>
 </ul>
-<p><img src="/.io//03/22/apache-hbase/read.png"></p>
+<p><img src="/2025/03/22/apache-hbase/03/22/apache-hbase/read.png"></p>
 <blockquote>
 <p>前两种 scanner多是调度作用,实际的查找还是通过 storefilescanner 和 memstorescanner<br>过滤策略有几种,先前介绍的布隆过滤器是其中一种<br>前面介绍的lsm数据存储结构存储的 key 是有序的</p>
 </blockquote>
-<h2 id="Region-和-RIT"><a href="#Region-和-RIT" class="headerlink" title="Region 和 RIT"></a>Region 和 RIT</h2><p>hbase 1.2 中 region 有如下13种类型<br><img src="/.io//03/22/apache-hbase/region-state.png"></p>
+<h2 id="Region-和-RIT"><a href="#Region-和-RIT" class="headerlink" title="Region 和 RIT"></a>Region 和 RIT</h2><p>hbase 1.2 中 region 有如下13种类型<br><img src="/2025/03/22/apache-hbase/03/22/apache-hbase/region-state.png"></p>
 <h3 id="unassign-命令"><a href="#unassign-命令" class="headerlink" title="unassign 命令"></a>unassign 命令</h3><p>unassign 会让某个(些) region 下线.</p>
 <p>Hbase 1.X 流程</p>
 <ol>

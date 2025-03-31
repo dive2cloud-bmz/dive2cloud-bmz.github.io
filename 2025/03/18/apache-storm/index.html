@@ -377,12 +377,12 @@ Zookeeper维护着St">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆<br><img src="/.io//03/18/apache-storm/arch.png" alt="架构"></p>
+                <p>旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆<br><img src="/2025/03/18/apache-storm/03/18/apache-storm/arch.png" alt="架构"></p>
 <h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><h3 id="nimbus"><a href="#nimbus" class="headerlink" title="nimbus"></a>nimbus</h3><p>通过与Zookeeper的交互，管理Storm集群中的所有组件，包括Supervisor和Worker。</p>
 <h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><p>维护着Storm集群的状态和元数据，包括Topology的元数据、Worker的状态、Supervisor的信息等。</p>
 <h3 id="Supervisor"><a href="#Supervisor" class="headerlink" title="Supervisor"></a>Supervisor</h3><p>负责管理Worker进程，监控和维护Worker的状态和资源使用情况。</p>
-<h3 id="Worker"><a href="#Worker" class="headerlink" title="Worker"></a>Worker</h3><p>运行在Supervisor中，处理Tuple并将处理后的数据发送给下游的Bolt或者输出到外部存储系统。<br><img src="/.io//03/18/apache-storm/comp-relation.png" alt="调用关系"></p>
-<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><p><img src="/.io//03/18/apache-storm/flow.png" alt="数据处理流程"></p>
+<h3 id="Worker"><a href="#Worker" class="headerlink" title="Worker"></a>Worker</h3><p>运行在Supervisor中，处理Tuple并将处理后的数据发送给下游的Bolt或者输出到外部存储系统。<br><img src="/2025/03/18/apache-storm/03/18/apache-storm/comp-relation.png" alt="调用关系"></p>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><p><img src="/2025/03/18/apache-storm/03/18/apache-storm/flow.png" alt="数据处理流程"></p>
 <h3 id="topology"><a href="#topology" class="headerlink" title="topology"></a>topology</h3><p>表示一个实时数据处理流程，由 spout 和 bolt 组词，可以看做是一个 DAG，一个 topology 可以类比一个 yarn 上的 mr、spark 任务</p>
 <h3 id="spout"><a href="#spout" class="headerlink" title="spout"></a>spout</h3><p>从数据源中读取实时数据流，同时将数据流发送给下游的 bolt 节点；<br>数据源可以是文件，数据库，mq，网络等不同的源</p>
 <h3 id="bolt"><a href="#bolt" class="headerlink" title="bolt"></a>bolt</h3><p>逻辑处理单元，spout 将数据传递给 bolt 并产生新的输出流。<br>可以执行过滤、聚合、连接、与数据库或数据源交互等操作，Bolt 的输出是</p>
@@ -393,8 +393,8 @@ Zookeeper维护着St">
 <h3 id="stream"><a href="#stream" class="headerlink" title="stream"></a>stream</h3><p>是一个抽象概念，表示一组有序的数据记录。stream 包含多个字段，每个字段可以是不同的数据类型。stream 是topo 中 spout 和bolt 之间的通信载体，传递数据流和元数据信息</p>
 <h3 id="tuple"><a href="#tuple" class="headerlink" title="tuple"></a>tuple</h3><p>基本数据单元，每个 tuple 都可以看做是 stream 中的一个数据元素，每个 tuple 由多个字段组词，字段可以是不同的数据类型，也是 storm 中数据处理和传递的基本单位</p>
 <h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>bolt 或者 spout 在集群中的实例，负责具体的数据处理和传递工作。topology 中每个 Bolt 或者 spout 都会被分配成若干个 task，每个 task 处理一部分的数据流</p>
-<h3 id="worker"><a href="#worker" class="headerlink" title="worker"></a>worker</h3><p>进程，负责启动和运行 task，分布在各个机器上<br><img src="/.io//03/18/apache-storm/flow-example.png" alt="flow 示例"></p>
-<h2 id="工作流程的时序"><a href="#工作流程的时序" class="headerlink" title="工作流程的时序"></a>工作流程的时序</h2><p><img src="/.io//03/18/apache-storm/sequence.png" alt="时序图"></p>
+<h3 id="worker"><a href="#worker" class="headerlink" title="worker"></a>worker</h3><p>进程，负责启动和运行 task，分布在各个机器上<br><img src="/2025/03/18/apache-storm/03/18/apache-storm/flow-example.png" alt="flow 示例"></p>
+<h2 id="工作流程的时序"><a href="#工作流程的时序" class="headerlink" title="工作流程的时序"></a>工作流程的时序</h2><p><img src="/2025/03/18/apache-storm/03/18/apache-storm/sequence.png" alt="时序图"></p>
 <h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>编译,产出省略,解压到指定目录后,比如 &#x2F;opt&#x2F;storm 修改权限</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/storm</span><br><span class="line">## 解压到这个目录</span><br><span class="line">mkdir /etc/storm/conf</span><br><span class="line">ln -s /etc/storm/conf /opt/storm/conf</span><br><span class="line">useradd storm -G hadoop</span><br><span class="line">chown storm:hadoop -R /opt/storm</span><br><span class="line">chown storm:hadoop -R /etc/storm</span><br></pre></td></tr></table></figure>
 
@@ -405,7 +405,7 @@ Zookeeper维护着St">
 
 <h2 id="启动进程"><a href="#启动进程" class="headerlink" title="启动进程"></a>启动进程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">su - storm</span><br><span class="line">cd /opt/storm</span><br><span class="line">## nimbus</span><br><span class="line">bin/storm nimbus &amp;</span><br><span class="line">## supervisor</span><br><span class="line">bin/storm supervisor &amp;</span><br><span class="line">## ui</span><br><span class="line">bin/storm ui &amp;</span><br><span class="line"></span><br><span class="line">## 停服只需要执行 bin/storm-stop xxx</span><br><span class="line">## example: bin/storm-stop nimbus</span><br></pre></td></tr></table></figure>
 <p>启动后可以看访问 web server,比如 master-3:8070,可以看到 ui 界面</p>
-<h2 id="启动-wordcount-example"><a href="#启动-wordcount-example" class="headerlink" title="启动 wordcount example"></a>启动 wordcount example</h2><p>我这里用的1.1.2版本,注意 jar 包路径<br>storm jar &#x2F;opt&#x2F;storm&#x2F;examples&#x2F;storm-starter&#x2F;storm-starter-1.1.2.jar org.apache.storm.starter.WordCountTopology wordcount<br>之后再界面可以看到任务已启动<br><img src="/.io//03/18/apache-storm/wordcount.png"></p>
+<h2 id="启动-wordcount-example"><a href="#启动-wordcount-example" class="headerlink" title="启动 wordcount example"></a>启动 wordcount example</h2><p>我这里用的1.1.2版本,注意 jar 包路径<br>storm jar &#x2F;opt&#x2F;storm&#x2F;examples&#x2F;storm-starter&#x2F;storm-starter-1.1.2.jar org.apache.storm.starter.WordCountTopology wordcount<br>之后再界面可以看到任务已启动<br><img src="/2025/03/18/apache-storm/03/18/apache-storm/wordcount.png"></p>
 
                 
             </div>
