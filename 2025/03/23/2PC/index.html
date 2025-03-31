@@ -320,12 +320,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/2PC/">
-                                <span class="chip bg-color">2PC</span>
-                            </a>
-                        
                             <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
                                 <span class="chip bg-color">分布式</span>
+                            </a>
+                        
+                            <a href="/tags/2PC/">
+                                <span class="chip bg-color">2PC</span>
                             </a>
                         
                     </div>
@@ -347,7 +347,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-27
+                    2025-03-31
                 </div>
                 
 
@@ -383,7 +383,7 @@
             <div id="articleContent">
                 <h2 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h2><p>一个协调者<br>N 个执行者</p>
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>参与者将操作成功&amp;失败 告诉协调者，协调者根据各个参与者反馈的情报决定是提交还是终止</p>
-<h2 id="时序"><a href="#时序" class="headerlink" title="时序"></a>时序</h2><p>协调者节点从所有参与者节点获得的响应消息都为”同意”<br><img src="/2025/03/23/2PC/03/23/2PC/image.png"><br>任一参与者节点在第一阶段返回的响应消息为”中止”，或者协调者在第一阶段询问超时前无法获得所有参与者节点的响应。<br><img src="/2025/03/23/2PC/03/23/2PC/image2.png"></p>
+<h2 id="时序"><a href="#时序" class="headerlink" title="时序"></a>时序</h2><p>协调者节点从所有参与者节点获得的响应消息都为”同意”<br><img src="/2025/03/23/2PC/image.png"><br>任一参与者节点在第一阶段返回的响应消息为”中止”，或者协调者在第一阶段询问超时前无法获得所有参与者节点的响应。<br><img src="/2025/03/23/2PC/image2.png"></p>
 <h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="第一阶段：投票"><a href="#第一阶段：投票" class="headerlink" title="第一阶段：投票"></a>第一阶段：投票</h3><p>协调者向全部参与者发送事务执行请求，等待结果<br>参与者收到事务后执行事务，但是不提交，记录事务日志<br>参与者将执行情况反馈给协调者，阻塞等待协调者下一步命令</p>
 <h3 id="第二阶段：提交"><a href="#第二阶段：提交" class="headerlink" title="第二阶段：提交"></a>第二阶段：提交</h3><p>存在 3 个可能性</p>
 <ul>
@@ -457,12 +457,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/2PC/">
-                                    <span class="chip bg-color">2PC</span>
-                                </a>
-                            
                                 <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
                                     <span class="chip bg-color">分布式</span>
+                                </a>
+                            
+                                <a href="/tags/2PC/">
+                                    <span class="chip bg-color">2PC</span>
                                 </a>
                             
                         </div>

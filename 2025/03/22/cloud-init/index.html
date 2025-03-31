@@ -342,7 +342,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-27
+                    2025-03-31
                 </div>
                 
 
@@ -384,7 +384,7 @@
 <li>userdata：命令、脚本、文件和自定义数据等</li>
 <li>vendordata：云基座传入的数据</li>
 </ol>
-<p>在 Openstack 中，metadata userdata 均在用户创建实例时通过参数传入，而 vendordata 通过 nova-api-metadata 服务启动时指定。<br>PS：<br>在 BCC 中，cloud-init 的配置文件目录是 &#x2F;etc&#x2F;cloud，在这里的 cloud.cfg 可以看到基本配置，templates 目录是一些 jinja2 的模板文件，应该会使用这些模板初始化一些配置文件。<br>metadata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;cloud-config.txt<br>userdata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;user-data.txt<br>vendordata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;vendor-data.txt<br>在经过上面这些配置文件初始化后，实例数据也有一个汇总了所有数据的文件，这个文件是存在 &#x2F;run&#x2F;cloud-init&#x2F;instance-data.json 下的，这个数据是我们可以利用的。<br>数据源<br>上面三类数据来源于许多地方，数据源代表实例数据的具体来源。<br>内置的数据源包括：Openstack、ConfigDrive、Amazon EC2(EC2Config)、Azure 等等，不同数据源也表明了不同实例数据的搜索方式。<br>cloud-init 在实例内部启动时并不知道从那里才能找到实例数据，它会根据预设的数据源列表一个一个查找实例数据，首个找到的源就成为这次启动的数据源。<br><img src="/2025/03/22/cloud-init/03/22/cloud-init/arch.png" alt="架构"></p>
+<p>在 Openstack 中，metadata userdata 均在用户创建实例时通过参数传入，而 vendordata 通过 nova-api-metadata 服务启动时指定。<br>PS：<br>在 BCC 中，cloud-init 的配置文件目录是 &#x2F;etc&#x2F;cloud，在这里的 cloud.cfg 可以看到基本配置，templates 目录是一些 jinja2 的模板文件，应该会使用这些模板初始化一些配置文件。<br>metadata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;cloud-config.txt<br>userdata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;user-data.txt<br>vendordata 配置文件在：&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;instance&#x2F;vendor-data.txt<br>在经过上面这些配置文件初始化后，实例数据也有一个汇总了所有数据的文件，这个文件是存在 &#x2F;run&#x2F;cloud-init&#x2F;instance-data.json 下的，这个数据是我们可以利用的。<br>数据源<br>上面三类数据来源于许多地方，数据源代表实例数据的具体来源。<br>内置的数据源包括：Openstack、ConfigDrive、Amazon EC2(EC2Config)、Azure 等等，不同数据源也表明了不同实例数据的搜索方式。<br>cloud-init 在实例内部启动时并不知道从那里才能找到实例数据，它会根据预设的数据源列表一个一个查找实例数据，首个找到的源就成为这次启动的数据源。<br><img src="/2025/03/22/cloud-init/arch.png" alt="架构"></p>
 <p>使用 openstack 作为数据源，那么实例数据将通过 HTTP API 获取：</p>
 <ol>
 <li>metadata：<a target="_blank" rel="noopener" href="http://169.254.169.254/openstack/latest/meta_data.json">http://169.254.169.254/openstack/latest/meta_data.json</a></li>
@@ -397,7 +397,7 @@
 <li>userdata：file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;user_data</li>
 <li>vendordata：file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;vendor_data.json、file:&#x2F;&#x2F;TMPDIR&#x2F;openstack&#x2F;latest&#x2F;network_data.json</li>
 </ol>
-<h3 id="启动过程"><a href="#启动过程" class="headerlink" title="启动过程"></a>启动过程</h3><p>在整个系统启动的过程中，cloud-init的执行包括5个阶段，执行阶段从前到后分别为：Generator、Local、Network、Config、Final。<br><img src="/2025/03/22/cloud-init/03/22/cloud-init/process.png"></p>
+<h3 id="启动过程"><a href="#启动过程" class="headerlink" title="启动过程"></a>启动过程</h3><p>在整个系统启动的过程中，cloud-init的执行包括5个阶段，执行阶段从前到后分别为：Generator、Local、Network、Config、Final。<br><img src="/2025/03/22/cloud-init/process.png"></p>
 <h4 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system-generators&#x2F;cloud-init-generator<br>运行于：系统刚启动时<br>generator是最先运行的阶段，它的功能包括：</p>
 <ol>
 <li>判断是否需要禁止运行cloud-init。generator会根据如下条件判断：<br>&#x2F;etc&#x2F;cloud&#x2F;cloud-init.disabled文件是否存在。<br>内核参数中是否包括有cloud-init&#x3D;disabled配置项。</li>
@@ -406,8 +406,8 @@
 <h4 id="Local"><a href="#Local" class="headerlink" title="Local"></a>Local</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-init-local.service<br>运行于：根目录挂载并可读写后<br>Local阶段的主要功能为：<br>搜索数据源。在datasource_list配置项中搜索第一个可用的数据源，作为本次启动的数据源。数据源搜索细节如下：<br>a. 尝试从缓存恢复。若存在obj.pkl缓存，为trust模式或ds.check_instance_id()返回true，则从缓存恢复。<br>b. 搜索数据源，遍历datasource_list配置项中的数据源，找出第一个可用的数据源，并返回。<br>应用网络配置（不拉起网络）。网络配置的来源如下：<br>a. 数据源，使用从数据源获取的网络配置，渲染并写入网络配置至磁盘中。<br>b. 回退，如果无数据源，则写入一个默认的dhcp网络配置。<br>c. 不应用，如果cloud-init配置文件中有如下配置项：network: {config: disabled}，或者存在&#x2F;var&#x2F;lib&#x2F;cloud&#x2F;data&#x2F;upgraded-network文件，则不应用网络配置。<br>PS：BCC 中的 &#x2F;etc&#x2F;cloud&#x2F;cloud.cfg 中配置了 network: {config: disabled}</p>
 <h4 id="Network"><a href="#Network" class="headerlink" title="Network"></a>Network</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-init.service<br>运行于：网络服务启动之后<br>Network阶段的主要功能为：<br>self.datasource.setup()，在uesr-data和vendor-data处理之前调用，用于网络启动后再次更新数据源，网上看到azure cloud 利用这一步获取fabric数据并填充进fabric_data。<br>存储与渲染userdata和vendordata。<br>self.datasource.activate()，该方法在user-data和vendor-data渲染后，init_modules执行前调用。<br>运行cloud_init_modules中配置的模块。</p>
 <h4 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-config.service<br>运行于：Network阶段之后<br>Config阶段的主要功能是运行cloud_config_modules中配置的模块。</p>
-<h4 id="Final"><a href="#Final" class="headerlink" title="Final"></a>Final</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-final.service<br>运行于：Config阶段之后<br>Config阶段的主要功能是运行cloud_final_modules中配置的模块。<br>Cloud-config<br>cloud-config是cloud-init的配置文件，它用于控制cloud-init的行为，比如说该运行哪些功能，以及每个功能如何运行等等。和其他软件的配置文件相比，cloud-config具有高度定制化的特点，除了云服务器本身的cloud-config以外，cloud-init还能够从vendordata、userdata甚至内核参数中获取cloud-config，从而使得用户能够方便地利用cloud-init定制自己的云服务器。<br><img src="/2025/03/22/cloud-init/03/22/cloud-init/level.png"></p>
-<h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>cloud-init 实际运行的程序<br>以 set_hostname 模块为例，该模块的功能是设置主机名，当运行该模块时，它会读取cloud-config中的hostname参数，并将其中值设置为云实例的主机名。<br><img src="/2025/03/22/cloud-init/03/22/cloud-init/module.png"><br>每个模块都有名称、运行频率、配置参数这三大要素。<br>名称和配置很容易理解。<br>运行频率表示一个模块该在什么时候运行，通常有两种运行频率：</p>
+<h4 id="Final"><a href="#Final" class="headerlink" title="Final"></a>Final</h4><p>systemd服务：&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;cloud-final.service<br>运行于：Config阶段之后<br>Config阶段的主要功能是运行cloud_final_modules中配置的模块。<br>Cloud-config<br>cloud-config是cloud-init的配置文件，它用于控制cloud-init的行为，比如说该运行哪些功能，以及每个功能如何运行等等。和其他软件的配置文件相比，cloud-config具有高度定制化的特点，除了云服务器本身的cloud-config以外，cloud-init还能够从vendordata、userdata甚至内核参数中获取cloud-config，从而使得用户能够方便地利用cloud-init定制自己的云服务器。<br><img src="/2025/03/22/cloud-init/level.png"></p>
+<h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>cloud-init 实际运行的程序<br>以 set_hostname 模块为例，该模块的功能是设置主机名，当运行该模块时，它会读取cloud-config中的hostname参数，并将其中值设置为云实例的主机名。<br><img src="/2025/03/22/cloud-init/module.png"><br>每个模块都有名称、运行频率、配置参数这三大要素。<br>名称和配置很容易理解。<br>运行频率表示一个模块该在什么时候运行，通常有两种运行频率：</p>
 <ol>
 <li>once-per-instance，表示仅在实例首次启动时运行</li>
 <li>always，表示实例每次启动都运行<br>是否运行某个模块、何时运行模块、怎么运行模块，这些都可以在cloud-config中配置<br>我们看一个虚机的例子</li>
@@ -571,12 +571,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/2PC/">
-                        <span class="chip bg-color">2PC</span>
-                    </a>
-                    
                     <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
                         <span class="chip bg-color">分布式</span>
+                    </a>
+                    
+                    <a href="/tags/2PC/">
+                        <span class="chip bg-color">2PC</span>
                     </a>
                     
                 </div>

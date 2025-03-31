@@ -342,7 +342,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
@@ -376,7 +376,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="底层实现"><a href="#底层实现" class="headerlink" title="底层实现"></a>底层实现</h2><p>hchan struct 记录了 chan 的底层结构,里面每个成员含义如下<br><img src="/2025/03/13/Go-channel/03/13/Go-channel/image.png"></p>
+                <h2 id="底层实现"><a href="#底层实现" class="headerlink" title="底层实现"></a>底层实现</h2><p>hchan struct 记录了 chan 的底层结构,里面每个成员含义如下<br><img src="/2025/03/13/Go-channel/image.png"></p>
 <h2 id="本身特性"><a href="#本身特性" class="headerlink" title="本身特性"></a>本身特性</h2><p>针对根据 channel 是否为空和是否关闭，可以分成以下三类来讨论：<br>空 channel (nil channel)<br>非空已关闭 channel<br>非空未关闭 channel</p>
 <h3 id="close"><a href="#close" class="headerlink" title="close"></a>close</h3><p>nil channel: panic<br>已经关闭 channel: panic<br>没关闭的 chennel: 成功</p>
 <h3 id="写"><a href="#写" class="headerlink" title="写"></a>写</h3><p>nil channel: 永久阻塞<br>已经关闭 chennel: panic<br>没关闭的 chennel: 正常写入或阻塞</p>

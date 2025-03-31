@@ -344,7 +344,7 @@ SQOOP2架构使用 sqoop-server ">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
@@ -378,11 +378,11 @@ SQOOP2架构使用 sqoop-server ">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="SQOOP1"><a href="#SQOOP1" class="headerlink" title="SQOOP1"></a>SQOOP1</h2><p><img src="/2025/03/20/apache-sqoop2/03/20/apache-sqoop2/1arch.png" alt="sqoop1 架构"></p>
+                <h2 id="SQOOP1"><a href="#SQOOP1" class="headerlink" title="SQOOP1"></a>SQOOP1</h2><p><img src="/2025/03/20/apache-sqoop2/1arch.png" alt="sqoop1 架构"></p>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>使用纯客户端,每次运行就是一个 YARN 上的 APP.</p>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>命令行，对于 hive 这种亲身体会过字段过多时很吐血，而且没法覆盖全部数据类型，需要自己二开才能满足很多需求</p>
 <h2 id="SQOOP2"><a href="#SQOOP2" class="headerlink" title="SQOOP2"></a>SQOOP2</h2><h3 id="架构-1"><a href="#架构-1" class="headerlink" title="架构"></a>架构</h3><p>使用 sqoop-server 集中管理 connector，web ui, restapi，并有安全机制</p>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><p>命令行，webUI，rest api， connector 集中管理，所有安全链接安装在 sqoop server；<br>权限比较完善，connector 规范，只负责数据读写<br><img src="/2025/03/20/apache-sqoop2/03/20/apache-sqoop2/2arch.png" alt="sqoop2 架构"></p>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><p>命令行，webUI，rest api， connector 集中管理，所有安全链接安装在 sqoop server；<br>权限比较完善，connector 规范，只负责数据读写<br><img src="/2025/03/20/apache-sqoop2/2arch.png" alt="sqoop2 架构"></p>
 <h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>安装目录使用 &#x2F;opt&#x2F;sqoop2, 配置软链 &#x2F;etc&#x2F;sqoop2&#x2F;conf, 日志目录 &#x2F;opt&#x2F;sqoop2&#x2F;logs</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /opt/sqoop2</span><br><span class="line">mkdir -p /etc/sqoop2/conf</span><br><span class="line">mkdir -p /var/run/sqoop2</span><br><span class="line">cd /opt/sqoop2 </span><br><span class="line">tar zxf sqoop-1.99.7-bin-hadoop200.tar.gz </span><br><span class="line">mv sqoop-1.99.7-bin-hadoop200/* .</span><br><span class="line">rm -rf sqoop-1.99.7-bin-hadoop200</span><br><span class="line">rm sqoop-1.99.7-bin-hadoop200.tar.gz</span><br><span class="line">mkdir /opt/sqoop2/logs</span><br><span class="line"></span><br><span class="line">## 增加用户、目录赋权</span><br><span class="line">useradd sqoop2 -G hadoop</span><br><span class="line">chown sqoop2:hadoop -R /opt/sqoop2</span><br><span class="line">chown sqoop2:hadoop -R /etc/sqoop2</span><br><span class="line"></span><br><span class="line">## 设置环境变量</span><br><span class="line">echo &quot;export SQOOP2_HOME=/opt/sqoop2&quot; &gt;&gt; /etc/profile</span><br><span class="line">echo &quot;export CATALINA_BASE=\$SQOOP2_HOME/server&quot; &gt;&gt; /etc/profile</span><br><span class="line">## 这一行是为了 mysql 到 hdfs demo 准备而添加了 mysql 的驱动，实际使用时按用户需要添加数据源的驱动包</span><br><span class="line">echo &quot;export SQOOP_SERVER_EXTRA_LIB=/opt/hive/lib/mysql-connector-java.jar:\$SQOOP2_HOME/server/lib&quot; &gt;&gt; /etc/profile</span><br><span class="line">## 拷贝 mysql 驱动到 sqoop2 环境变量中</span><br><span class="line">cp /opt/hive/lib/mysql-connector-java.jar ./server/lib/</span><br><span class="line">cp /opt/hive/lib/mysql-connector-java.jar ./shell/lib/</span><br><span class="line">echo &quot;export PATH=\$PATH:\$SQOOP2_HOME/bin&quot; &gt;&gt; /etc/profile</span><br></pre></td></tr></table></figure>
 

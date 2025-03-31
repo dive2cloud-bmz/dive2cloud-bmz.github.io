@@ -343,7 +343,7 @@ Zookeeper维护着St">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
@@ -405,7 +405,7 @@ Zookeeper维护着St">
 
 <h2 id="启动进程"><a href="#启动进程" class="headerlink" title="启动进程"></a>启动进程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">su - storm</span><br><span class="line">cd /opt/storm</span><br><span class="line">## nimbus</span><br><span class="line">bin/storm nimbus &amp;</span><br><span class="line">## supervisor</span><br><span class="line">bin/storm supervisor &amp;</span><br><span class="line">## ui</span><br><span class="line">bin/storm ui &amp;</span><br><span class="line"></span><br><span class="line">## 停服只需要执行 bin/storm-stop xxx</span><br><span class="line">## example: bin/storm-stop nimbus</span><br></pre></td></tr></table></figure>
 <p>启动后可以看访问 web server,比如 master-3:8070,可以看到 ui 界面</p>
-<h2 id="启动-wordcount-example"><a href="#启动-wordcount-example" class="headerlink" title="启动 wordcount example"></a>启动 wordcount example</h2><p>我这里用的1.1.2版本,注意 jar 包路径<br>storm jar &#x2F;opt&#x2F;storm&#x2F;examples&#x2F;storm-starter&#x2F;storm-starter-1.1.2.jar org.apache.storm.starter.WordCountTopology wordcount<br>之后再界面可以看到任务已启动<br><img src="/2025/03/18/apache-storm/03/18/apache-storm/wordcount.png"></p>
+<h2 id="启动-wordcount-example"><a href="#启动-wordcount-example" class="headerlink" title="启动 wordcount example"></a>启动 wordcount example</h2><p>我这里用的1.1.2版本,注意 jar 包路径<br>storm jar &#x2F;opt&#x2F;storm&#x2F;examples&#x2F;storm-starter&#x2F;storm-starter-1.1.2.jar org.apache.storm.starter.WordCountTopology wordcount<br>之后再界面可以看到任务已启动<br><img src="/2025/03/18/apache-storm/wordcount.png"></p>
 
                 
             </div>

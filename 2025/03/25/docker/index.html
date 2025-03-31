@@ -450,18 +450,18 @@
 <li>docker 镜像又是怎么实现的？</li>
 </ol>
 <h4 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h4><p>经过 mount ns 隔离后，容器中的文件系统是独立的。在容器启动前，docker 通过 mount ns 将容器根目录挂载了，所以容器修改了文件宿主机不感知。<br>linux 中的 chroot 命令很方便完成这个工作，而 mount ns 正是基于 chroot 改良而来的，它也是第一个 ns<br>第一个问题的答案就是：mount ns 隔离的</p>
-<h4 id="rootfs-1"><a href="#rootfs-1" class="headerlink" title="rootfs"></a>rootfs</h4><p>是一个操作系统包含的文件、配置和目录，但不包含操作系统内核<br>在 linux OS 中，只有在开机启动时才会加载指定版本的内核镜像。所以 linux os 里内核和rootfs 是分开存放的<br><img src="/2025/03/25/docker/03/25/docker/rootfs.png"></p>
+<h4 id="rootfs-1"><a href="#rootfs-1" class="headerlink" title="rootfs"></a>rootfs</h4><p>是一个操作系统包含的文件、配置和目录，但不包含操作系统内核<br>在 linux OS 中，只有在开机启动时才会加载指定版本的内核镜像。所以 linux os 里内核和rootfs 是分开存放的<br><img src="/2025/03/25/docker/rootfs.png"></p>
 <blockquote>
 <p>这也是容器相比于虚拟机的主要缺陷之一：毕竟后者不仅有模拟出来的硬件机器充当沙盒，而且每个沙盒里还运行着一个完整的 Guest OS 给应用随便折腾。<br>但也是由于 rootfs 的存在，docker 才能一直宣传 ‘一致性” 的特性。<br>第二个问题：文件系统从哪儿来？<br>答案：构建镜像的时候打包进去的，然后容器启动时挂载到根目录下面了</p>
 </blockquote>
 <h3 id="镜像层"><a href="#镜像层" class="headerlink" title="镜像层"></a>镜像层</h3><p>Docker 在镜像的设计中，引入了层（layer）的概念。也就是说，用户制作镜像的每一步操作，都会生成一个层，也就是一个增量 rootfs。<br>这个本质上是复用了 rootfs，在docker 里这种能力称之为 union fs，他的功能是将多个不同位置的目录联合挂载到同一个目录下。</p>
-<p>例如将目录 A 和目录 B 挂载到目录 C 下面，这样目录 C 下就包含目录 A 和目录 B 的所有文件。<br>由于看不到目录 A 和 目标 B 的存在，因此就好像 C 目录就包含这么多文件一样<br>unionfs 有不同的实现，docker info 可以查看， ubuntu 使用 aufs，centos 使用 overlay2<br>union mount 在最上层，提供了统一的视图，用户看起来好像整个系统只有一层一样，实际上下面包含了很多层。<br><img src="/2025/03/25/docker/03/25/docker/root-image.png"></p>
+<p>例如将目录 A 和目录 B 挂载到目录 C 下面，这样目录 C 下就包含目录 A 和目录 B 的所有文件。<br>由于看不到目录 A 和 目标 B 的存在，因此就好像 C 目录就包含这么多文件一样<br>unionfs 有不同的实现，docker info 可以查看， ubuntu 使用 aufs，centos 使用 overlay2<br>union mount 在最上层，提供了统一的视图，用户看起来好像整个系统只有一层一样，实际上下面包含了很多层。<br><img src="/2025/03/25/docker/root-image.png"></p>
 <p>最后一个问题：docker 镜像又是怎么实现的？<br>通过引入 layer 概念进行分层，借助 联合文件系统（Union File System）进行叠加，最终构成了完整的镜像</p>
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="镜像-Image"><a href="#镜像-Image" class="headerlink" title="镜像(Image)"></a>镜像(Image)</h3><p>相当于一个root文件系统</p>
 <h3 id="容器-container"><a href="#容器-container" class="headerlink" title="容器(container)"></a>容器(container)</h3><p>容器与镜像的关系，类似于面向对象里实例和类一样，容器是运行时的实体。容器可以被创建、启动、停止、删除、暂停等</p>
 <h3 id="仓库-repository"><a href="#仓库-repository" class="headerlink" title="仓库(repository)"></a>仓库(repository)</h3><p>类似github 这种代码控制中心，用于保存镜像</p>
-<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>docker 使用 C&#x2F;S 架构，使用远程 API 管理和创建 docker 容器<br><img src="/2025/03/25/docker/03/25/docker/arch.png"><br>一些解释<br><img src="/2025/03/25/docker/03/25/docker/arch-explain.png"></p>
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p><img src="/2025/03/25/docker/03/25/docker/usual-cmd.png"></p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>docker 使用 C&#x2F;S 架构，使用远程 API 管理和创建 docker 容器<br><img src="/2025/03/25/docker/arch.png"><br>一些解释<br><img src="/2025/03/25/docker/arch-explain.png"></p>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p><img src="/2025/03/25/docker/usual-cmd.png"></p>
 
                 
             </div>

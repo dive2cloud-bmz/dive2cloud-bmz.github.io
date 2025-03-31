@@ -341,7 +341,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
@@ -377,7 +377,7 @@
             <div id="articleContent">
                 <h2 id="Go-编译过程"><a href="#Go-编译过程" class="headerlink" title="Go 编译过程"></a>Go 编译过程</h2><p>静态型语言都是通过 compile + link 两个阶段组成。<br>非 main 包编译后会形成 .a 文件，这是 go 包的目标文件，这个文件是通过 pack 工具对.o 文件打包形成的。默认情况下，.a 文件生成在临时目录下，除非用 go install 安装到$GOPATH&#x2F;pkg 下，否则看不见.a 文件。如果是可执行程序，.a 文件会在构建可执行程序的link 阶段起作用。</p>
 <h2 id="编译器会重新编译依赖包的源文件还是直接链接包的-a-文件"><a href="#编译器会重新编译依赖包的源文件还是直接链接包的-a-文件" class="headerlink" title="编译器会重新编译依赖包的源文件还是直接链接包的.a 文件"></a>编译器会重新编译依赖包的源文件还是直接链接包的.a 文件</h2><p>在使用第三方包的时候，在第三方包源码存在且对应.a 已经安装的情况下，编译器链接的仍然是根据第三方包最新源码编译出的.a 文件，而不是之前安装的目标文件。</p>
-<h3 id="构建的过程"><a href="#构建的过程" class="headerlink" title="构建的过程"></a>构建的过程</h3><p>假设一个项目（github.com&#x2F;bmz&#x2F;demo）目录如下，main.go 中 import 了 github 地址中的 pkg1包作为依赖：<br><img src="/2025/02/26/Go-compile/02/26/Go-compile/pkg1.png" alt="demo-dir"></p>
+<h3 id="构建的过程"><a href="#构建的过程" class="headerlink" title="构建的过程"></a>构建的过程</h3><p>假设一个项目（github.com&#x2F;bmz&#x2F;demo）目录如下，main.go 中 import 了 github 地址中的 pkg1包作为依赖：<br><img src="/2025/02/26/Go-compile/pkg1.png" alt="demo-dir"></p>
 <ol>
 <li>建立临时工作目录，命名为 WORK，以后编译、链接均用 $WORK 为当前目录</li>
 <li>编译 app1 的依赖包 pkg1，将目标文件打包后放入 $WORK&#x2F;github.com&#x2F;bmz&#x2F;demo&#x2F;pkg&#x2F;pkg1.a</li>
@@ -391,8 +391,8 @@
 <h3 id="包导入路径"><a href="#包导入路径" class="headerlink" title="包导入路径"></a>包导入路径</h3><p>就是位于包源码头部的 import 中写的路径</p>
 <h3 id="结论-1"><a href="#结论-1" class="headerlink" title="结论"></a>结论</h3><p>源文件头部的包导入语句 import 的是文件夹路径,并不是包名。但是 GO 的惯用用法是把最后一个目录名与包名一致。<br>而在代码中使用的，比如 fmt.xxxx() ，这个 fmt 是实实在在的包名;<br>当包名与包导入路径中的最后一个目录名不同时，显示重命名 import 包目录为实际包名<br>比如路径是:<br>import &#x2F;a&#x2F;b&#x2F;c&#x2F;bmz1-path，<br>实际包名 bmz1,那么就写成:<br>import bmz1 “a&#x2F;b&#x2F;c&#x2F;bmz1-path”</p>
 <h2 id="Go-mod"><a href="#Go-mod" class="headerlink" title="Go mod"></a>Go mod</h2><p>详细看 <a href="https://dive2cloud-bmz.github.io/2025/02/27/Go-mod/">https://dive2cloud-bmz.github.io/2025/02/27/Go-mod/</a></p>
-<h2 id="包冲突"><a href="#包冲突" class="headerlink" title="包冲突"></a>包冲突</h2><p>之前在设计哲学的 blog 里简单提过,Go mod 怎么解决依赖冲突,这里用例子详细说一下<br><img src="/2025/02/26/Go-compile/02/26/Go-compile/dependency-hell-in-go.png" alt="引用白老师照片"><br>上图的问题是当我构建 app 时,P3 用什么版本呢?<br>Go 的答案是这样的:<br><img src="/2025/02/26/Go-compile/02/26/Go-compile/dependency-hell-in-go-3.png" alt="继续引用白老师照片"><br>Go 打破 app 只允许包含一个包(P3)的一个版本.<br>但是不是随便打破,而是有个前提:<br>P1 和 P2 依赖 P3 是不同的 major 版本.这就是语义导入版本,一个代码库里 major 号不同的项目是不同的 module.<br><img src="/2025/02/26/Go-compile/02/26/Go-compile/go-yyhppt-01.png"><br>这个设计产生了一个深刻的规范:当一个项目的某个版本对之前的代码是不兼容时,发布这个项目的新版本必须升 major 版本.</p>
-<h3 id="假如我引用的项目都是相同-major-版本-用谁的呢"><a href="#假如我引用的项目都是相同-major-版本-用谁的呢" class="headerlink" title="假如我引用的项目都是相同 major 版本,用谁的呢?"></a>假如我引用的项目都是相同 major 版本,用谁的呢?</h3><p><img src="/2025/02/26/Go-compile/02/26/Go-compile/dependency-hell-in-go.png"><br>默认情况下,还用上面的例子,app 会用相同 P3 major 版本里较高的,也就是 V1.2.<br>此时全局的 go.mod 下 P3 的版本会被改成 V1.2</p>
+<h2 id="包冲突"><a href="#包冲突" class="headerlink" title="包冲突"></a>包冲突</h2><p>之前在设计哲学的 blog 里简单提过,Go mod 怎么解决依赖冲突,这里用例子详细说一下<br><img src="/2025/02/26/Go-compile/dependency-hell-in-go.png" alt="引用白老师照片"><br>上图的问题是当我构建 app 时,P3 用什么版本呢?<br>Go 的答案是这样的:<br><img src="/2025/02/26/Go-compile/dependency-hell-in-go-3.png" alt="继续引用白老师照片"><br>Go 打破 app 只允许包含一个包(P3)的一个版本.<br>但是不是随便打破,而是有个前提:<br>P1 和 P2 依赖 P3 是不同的 major 版本.这就是语义导入版本,一个代码库里 major 号不同的项目是不同的 module.<br><img src="/2025/02/26/Go-compile/go-yyhppt-01.png"><br>这个设计产生了一个深刻的规范:当一个项目的某个版本对之前的代码是不兼容时,发布这个项目的新版本必须升 major 版本.</p>
+<h3 id="假如我引用的项目都是相同-major-版本-用谁的呢"><a href="#假如我引用的项目都是相同-major-版本-用谁的呢" class="headerlink" title="假如我引用的项目都是相同 major 版本,用谁的呢?"></a>假如我引用的项目都是相同 major 版本,用谁的呢?</h3><p><img src="/2025/02/26/Go-compile/dependency-hell-in-go.png"><br>默认情况下,还用上面的例子,app 会用相同 P3 major 版本里较高的,也就是 V1.2.<br>此时全局的 go.mod 下 P3 的版本会被改成 V1.2</p>
 <h3 id="假如-P3-开发者就是不遵循规范-用相同-major-版本发布了不兼容的代码-V1-1-和-V1-2-天差地别"><a href="#假如-P3-开发者就是不遵循规范-用相同-major-版本发布了不兼容的代码-V1-1-和-V1-2-天差地别" class="headerlink" title="假如 P3 开发者就是不遵循规范,用相同 major 版本发布了不兼容的代码(V1.1 和 V1.2 天差地别)"></a>假如 P3 开发者就是不遵循规范,用相同 major 版本发布了不兼容的代码(V1.1 和 V1.2 天差地别)</h3><p>默认情况下会用高版本的 v1.2<br>假如我就想用 v1.1,那么要去 go.mod 里增加 replace</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">replace (</span><br><span class="line">    xxx/P3 =&gt; xxx/P3 v1.1</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
                 

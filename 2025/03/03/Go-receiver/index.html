@@ -341,7 +341,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
@@ -375,7 +375,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>对于golang的函数如:<br><code>func (s *struct1)func1(a int,b ...string)(int)&#123; return 1&#125;</code><br>这里(s *struct1)的意义是func1代表struct1这个结构体的一个方法,可以调用s.func1来执行,类似于java中的类方法.<br>在网上找了一个不错的解答:<br><img src="/2025/03/03/Go-receiver/03/03/Go-receiver/image.png"><br>在我开发了一段时间后回顾,我有了自己的总结.</p>
+                <p>对于golang的函数如:<br><code>func (s *struct1)func1(a int,b ...string)(int)&#123; return 1&#125;</code><br>这里(s *struct1)的意义是func1代表struct1这个结构体的一个方法,可以调用s.func1来执行,类似于java中的类方法.<br>在网上找了一个不错的解答:<br><img src="/2025/03/03/Go-receiver/image.png"><br>在我开发了一段时间后回顾,我有了自己的总结.</p>
 <h2 id="Go-方法的特点"><a href="#Go-方法的特点" class="headerlink" title="Go 方法的特点"></a>Go 方法的特点</h2><ol>
 <li>首字母决定是不是导出方法</li>
 <li>方法定义要与类型定义放在同一个包内。引申：不能为原生类型(int float64 map 等)添加方法，只能是自定义的类型；不能横跨 Go 包为其他包内的自定义类型定义方法</li>
