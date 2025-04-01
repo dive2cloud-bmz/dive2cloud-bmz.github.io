@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-03-31T06:39:19.327Z</updated>
+  <updated>2025-03-31T08:30:41.162Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>kubectl</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/03/31/kubectl/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/03/31/kubectl/</id>
+    <published>2025-03-31T06:54:00.000Z</published>
+    <updated>2025-03-31T08:30:41.162Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;官网 &lt;a href=&quot;https://kubernetes.io/zh-cn/docs/reference/kubectl/&quot;&gt;https://kubernetes.io/zh-cn/docs/reference/kubectl/&lt;/a&gt;&lt;/p&gt;
+&lt;h2</summary>
+        
+      
+    
+    
+    
+    
+    <category term="k8s" scheme="https://dive2cloud-bmz.github.io/tags/k8s/"/>
+    
+  </entry>
   
   <entry>
     <title>software design principle</title>
@@ -139,7 +163,7 @@
     <link href="https://dive2cloud-bmz.github.io/2025/03/24/raft/"/>
     <id>https://dive2cloud-bmz.github.io/2025/03/24/raft/</id>
     <published>2025-03-24T13:08:24.000Z</published>
-    <updated>2025-03-31T06:39:19.340Z</updated>
+    <updated>2025-03-31T08:24:40.458Z</updated>
     
     
       
@@ -467,29 +491,6 @@
     
     
     <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Go project module arch principle</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/17/Go-project-module-arch-principle/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/17/Go-project-module-arch-principle/</id>
-    <published>2025-03-17T12:45:39.000Z</published>
-    <updated>2025-03-31T06:39:19.369Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;模块拆分&quot;&gt;&lt;a href=&quot;#模块拆分&quot; class=&quot;headerlink&quot; title=&quot;模块拆分&quot;&gt;&lt;/a&gt;模块拆分&lt;/h2&gt;&lt;p&gt;Go语言的顶层设计特性，使得它在模块划分上与其他编程语言存在显著差异，很多其他语言的 Web 框架都采用 MVC</summary>
-        
-      
-    
-    
-    
-    
-    <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
     
   </entry>
   

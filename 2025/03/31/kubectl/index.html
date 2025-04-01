@@ -4,9 +4,11 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Go using slice concurrent gracefully, BMZ BLOG">
-    <meta name="description" content="go 1.9 引入了 sync.Map ，标准库里支持了并发安全的 map，但是没有并发安全的 slice，需要我们自己实现。
-笨笨方案：加锁12345678910111213141516171819func main() &amp;#123;	s">
+    <meta name="keywords" content="kubectl, BMZ BLOG">
+    <meta name="description" content="官网 https://kubernetes.io/zh-cn/docs/reference/kubectl/
+命令格式kubectl [command] [TYPE] [NAME] [flags]
+
+command: 指定要对一个或多个资源">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +20,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Go using slice concurrent gracefully | BMZ BLOG</title>
+    <title>kubectl | BMZ BLOG</title>
     <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
     
 
@@ -290,12 +292,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Go using slice concurrent gracefully</h1>
+                    <h1 class="description center-align post-title">kubectl</h1>
                 </div>
             </div>
         </div>
@@ -319,8 +321,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Go/">
-                                <span class="chip bg-color">Go</span>
+                            <a href="/tags/k8s/">
+                                <span class="chip bg-color">k8s</span>
                             </a>
                         
                     </div>
@@ -335,28 +337,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2025-03-09
+                    2025-03-31
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-03-31
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    352
+                    822
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    3 分
                 </div>
                 
 
@@ -376,11 +378,52 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>go 1.9 引入了 sync.Map ，标准库里支持了并发安全的 map，但是没有并发安全的 slice，需要我们自己实现。</p>
-<h2 id="笨笨方案：加锁"><a href="#笨笨方案：加锁" class="headerlink" title="笨笨方案：加锁"></a>笨笨方案：加锁</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	slc := make([]int, 0, 1000)</span><br><span class="line">	var wg sync.WaitGroup</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line"></span><br><span class="line">	for i := 0; i &lt; 1000; i++ &#123;</span><br><span class="line">		wg.Add(1)</span><br><span class="line">		go func(a int) &#123;</span><br><span class="line">			defer wg.Done()</span><br><span class="line">      // 加锁</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			slc = append(slc, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">   wg.Wait()</span><br><span class="line">	fmt.Println(len(slc))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>适合：性能要求不高的场景，谁都能想到的方法</p>
-<h2 id="优雅方案：channel-串行化操作"><a href="#优雅方案：channel-串行化操作" class="headerlink" title="优雅方案：channel 串行化操作"></a>优雅方案：channel 串行化操作</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">type ServiceData struct &#123;</span><br><span class="line">	ch   chan int // 用来 同步的channel</span><br><span class="line">	data []int    // 存储数据的slice</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *ServiceData) Schedule() &#123;</span><br><span class="line">	// 从 channel 接收数据</span><br><span class="line">	for i := range s.ch &#123;</span><br><span class="line">		s.data = append(s.data, i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *ServiceData) Close() &#123;</span><br><span class="line">	// 最后关闭 channel</span><br><span class="line">	close(s.ch)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *ServiceData) AddData(v int) &#123;</span><br><span class="line">	s.ch &lt;- v // 发送数据到 channel</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewScheduleJob(size int, done func()) *ServiceData &#123;</span><br><span class="line">	s := &amp;ServiceData&#123;</span><br><span class="line">		ch:   make(chan int, size),</span><br><span class="line">		data: make([]int, 0),</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	go func() &#123;</span><br><span class="line">		// 并发地 append 数据到 slice</span><br><span class="line">		s.Schedule()</span><br><span class="line">		done()</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	return s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var (</span><br><span class="line">		wg sync.WaitGroup</span><br><span class="line">		n  = 1000</span><br><span class="line">	)</span><br><span class="line">	c := make(chan struct&#123;&#125;)</span><br><span class="line"></span><br><span class="line">	// new 了这个 job 后，该 job 就开始准备从 channel 接收数据了</span><br><span class="line">	s := NewScheduleJob(n, func() &#123; c &lt;- struct&#123;&#125;&#123;&#125; &#125;)</span><br><span class="line"></span><br><span class="line">	wg.Add(n)</span><br><span class="line">	for i := 0; i &lt; n; i++ &#123;</span><br><span class="line">		go func(v int) &#123;</span><br><span class="line">			defer wg.Done()</span><br><span class="line">			s.AddData(v)</span><br><span class="line"></span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	s.Close()</span><br><span class="line">	&lt;-c</span><br><span class="line"></span><br><span class="line">	fmt.Println(len(s.data))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>适合：性能要求高一些的场景，利用了 channel 优势</p>
+                <p>官网 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/kubectl/">https://kubernetes.io/zh-cn/docs/reference/kubectl/</a></p>
+<h2 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h2><p><code>kubectl [command] [TYPE] [NAME] [flags]</code></p>
+<ol>
+<li>command: 指定要对一个或多个资源执行的操作，例如 create、get、describe、delete。</li>
+<li>TYPE：指定资源类型。资源类型不区分大小写， 可以指定单数、复数或缩写形式。例如：kubectl get pods pod1</li>
+<li>NAME：指定资源的名称。名称区分大小写。 如果省略名称，则显示所有资源的详细信息。例如：kubectl get pods</li>
+<li>flags： 指定可选的参数。例如，可以使用 -s 或 –server 参数指定 Kubernetes API 服务器的地址和端口。</li>
+</ol>
+<p>在对多个资源执行操作时，你可以按类型和名称指定每个资源，或指定一个或多个文件</p>
+<ol>
+<li><p>要按类型和名称指定资源：<br>要对所有类型相同的资源进行分组，请执行以下操作：TYPE1 name1 name2 name&lt;#&gt;。<br>例子：kubectl get pod example-pod1 example-pod2</p>
+</li>
+<li><p>分别指定多个资源类型：TYPE1&#x2F;name1 TYPE1&#x2F;name2 TYPE2&#x2F;name3 TYPE&lt;#&gt;&#x2F;name&lt;#&gt;。<br>例子：kubectl get pod&#x2F;example-pod1 replicationcontroller&#x2F;example-rc1</p>
+</li>
+<li><p>用一个或多个文件指定资源：-f file1 -f file2 -f file&lt;#&gt;</p>
+</li>
+<li><p>使用 YAML 而不是 JSON， 因为 YAML 对用户更友好, 特别是对于配置文件。<br>例子：kubectl get -f .&#x2F;pod.yaml</p>
+</li>
+</ol>
+<h2 id="集群内身份验证和命名空间覆盖"><a href="#集群内身份验证和命名空间覆盖" class="headerlink" title="集群内身份验证和命名空间覆盖"></a>集群内身份验证和命名空间覆盖</h2><h3 id="身份认证"><a href="#身份认证" class="headerlink" title="身份认证"></a>身份认证</h3><p>不是部署了 kubectl 就能用了，首先要判断是否在一个 k8s 集群里</p>
+<ol>
+<li>首先检查 KUBERNETES_SERVICE_HOST 环境变量</li>
+<li>其次检查 KUBERNETES_SERVICE_PORT 环境变量</li>
+<li>最后检查 &#x2F;var&#x2F;run&#x2F;secrets&#x2F;kubernetes.io&#x2F;serviceaccount&#x2F;token 中是否存在服务帐户令牌文件。</li>
+</ol>
+<p>如果三个条件都被满足，则假定在集群内进行身份验证。</p>
+<blockquote>
+<p>如果设置了 POD_NAMESPACE 环境变量，对命名空间资源的 CLI 操作对象将使用该变量值作为默认值</p>
+</blockquote>
+<h3 id="kubectl-如何处理-ServiceAccount-令牌"><a href="#kubectl-如何处理-ServiceAccount-令牌" class="headerlink" title="kubectl 如何处理 ServiceAccount 令牌"></a>kubectl 如何处理 ServiceAccount 令牌</h3><p>假设：</p>
+<ol>
+<li>有 Kubernetes 服务帐户令牌文件挂载在 &#x2F;var&#x2F;run&#x2F;secrets&#x2F;kubernetes.io&#x2F;serviceaccount&#x2F;token 上，并且 </li>
+<li>设置了 KUBERNETES_SERVICE_HOST 环境变量，并且 </li>
+<li>设置了 KUBERNETES_SERVICE_PORT 环境变量，并且 </li>
+<li>你没有在 kubectl 命令行上明确指定命名空间。</li>
+</ol>
+<p>然后 kubectl 假定它正在你的集群中运行。<br>kubectl 工具查找该 ServiceAccount 的命名空间 （该命名空间与 Pod 的命名空间相同）并针对该命名空间进行操作。 这与集群外运行的情况不同；<br>当 kubectl 在集群外运行并且你没有指定命名空间时， kubectl 命令会针对你在客户端配置中为当前上下文设置的命名空间进行操作。<br>要为你的 kubectl 更改默认的命名空间，你可以使用以下命令：<br><code>kubectl config set-context --current --namespace=&lt;namespace-name&gt;</code></p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><ol>
+<li>获取 ns 下的 pods 列表<br>k -n $nsName get pods</li>
+<li>单独看一个 pod<br>k -n $nsName describe pod $podName</li>
+<li>查看标准输出的日志<br>k -n $nsName logs $podName</li>
+<li>交互式的进入到容器内<br>k -n $nsName exec -it $podName – &#x2F;bin&#x2F;bash<br>假如一个 pod 有多个容器，则使用 -c 指定容器名，容器名可以通过 describe 的命令获取到<br>k -n $nsName exec -it $podName -c $containerName – &#x2F;bin&#x2F;bash<blockquote>
+<p>其余的慢慢摸索吧，目前 RDS op 时用这三个就足够了</p>
+</blockquote>
+</li>
+</ol>
 
                 
             </div>
@@ -407,7 +450,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://dive2cloud-bmz.github.io/2025/03/09/Go-using-slice-concurrent-gracefully/">https://dive2cloud-bmz.github.io/2025/03/09/Go-using-slice-concurrent-gracefully/</a>
+                    <a href="https://dive2cloud-bmz.github.io/2025/03/31/kubectl/">https://dive2cloud-bmz.github.io/2025/03/31/kubectl/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -445,8 +488,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/Go/">
-                                    <span class="chip bg-color">Go</span>
+                                <a href="/tags/k8s/">
+                                    <span class="chip bg-color">k8s</span>
                                 </a>
                             
                         </div>
@@ -489,17 +532,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2025/03/10/python-learning/">
+                <a href="/2025/03/31/kubectl/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="python-learning">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="kubectl">
                         
-                        <span class="card-title">python-learning</span>
+                        <span class="card-title">kubectl</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -509,26 +553,23 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2025-03-10
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-31
+                            </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/python/" class="post-category">
-                                    python
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/python/">
-                        <span class="chip bg-color">python</span>
+                    <a href="/tags/k8s/">
+                        <span class="chip bg-color">k8s</span>
                     </a>
                     
                 </div>
@@ -542,13 +583,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2025/03/08/Go-map-usage/">
+                <a href="/2025/03/28/software-design-principle/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Go map usage">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="software design principle">
                         
-                        <span class="card-title">Go map usage</span>
+                        <span class="card-title">software design principle</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -559,7 +600,7 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-08
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-03-28
                             </span>
                         <span class="publish-author">
                             
@@ -572,8 +613,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Go/">
-                        <span class="chip bg-color">Go</span>
+                    <a href="/tags/dev/">
+                        <span class="chip bg-color">dev</span>
                     </a>
                     
                 </div>
