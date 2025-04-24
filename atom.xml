@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-03-31T08:30:41.162Z</updated>
+  <updated>2025-04-24T09:35:18.527Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>pgsql settings(1)</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/04/11/pgsql-settings-1/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/04/11/pgsql-settings-1/</id>
+    <published>2025-04-11T03:30:30.000Z</published>
+    <updated>2025-04-24T09:35:18.527Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;常用的配置项&quot;&gt;&lt;a href=&quot;#常用的配置项&quot; class=&quot;headerlink&quot; title=&quot;常用的配置项&quot;&gt;&lt;/a&gt;常用的配置项&lt;/h2&gt;&lt;h3 id=&quot;wal-level&quot;&gt;&lt;a href=&quot;#wal-level&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
+    
+  </entry>
   
   <entry>
     <title>kubectl</title>
@@ -467,30 +490,6 @@
     
     
     <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>apache storm</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/18/apache-storm/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/18/apache-storm/</id>
-    <published>2025-03-18T11:53:08.000Z</published>
-    <updated>2025-03-31T06:41:27.976Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;旧时代的流式计算框架，独立于 hadoop， 组件上依赖 zk，现在被 flink 完爆&lt;br&gt;&lt;img src=&quot;/2025/03/18/apache-storm/arch.png&quot; alt=&quot;架构&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;组件&quot;&gt;&lt;a href=&quot;#组件&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
     
   </entry>
   
