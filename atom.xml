@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-04-24T09:35:18.527Z</updated>
+  <updated>2025-04-25T05:45:56.862Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>duckDB</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/04/24/duckDB/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/04/24/duckDB/</id>
+    <published>2025-04-24T09:36:00.000Z</published>
+    <updated>2025-04-25T05:45:56.862Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;我作为一个 former bigdata rd，对 OLAP 还是有所了解的。&lt;br&gt;但是我接触的都是分布式的 OLAP</summary>
+        
+      
+    
+    
+    
+    
+    <category term="duckDB" scheme="https://dive2cloud-bmz.github.io/tags/duckDB/"/>
+    
+  </entry>
   
   <entry>
     <title>pgsql settings(1)</title>
@@ -467,29 +490,6 @@
     
     
     <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Go analyze call chain</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/18/Go-analyze-call-chain/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/18/Go-analyze-call-chain/</id>
-    <published>2025-03-18T12:51:42.000Z</published>
-    <updated>2025-03-26T09:52:59.761Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;使用 go-callvis 对 go 项目分析调用关系，可以看到每个包下每个函数（以及 receiver 方法）调用了哪些其他包，或者被哪些包调用&lt;br&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
     
   </entry>
   
