@@ -341,14 +341,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-04-25
+                    2025-04-27
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2k
+                    2.1k
                 </div>
                 
 
@@ -377,13 +377,13 @@
             <div id="articleContent">
                 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我作为一个 former bigdata rd，对 OLAP 还是有所了解的。<br>但是我接触的都是分布式的 OLAP 系统，比如刚毕业时负责的 hive presto,<br>以及后面了解过 sparkSQL flinkSQL<br>还有一些没那么多机会接触但知道的，比如 impala+kudu 的组合, clickhouse 的单机性能派, kylin 的预计算派, 甚至说 ES 也可以支持很多 OLAP<br>无论 spark 的 DAG Batch 模式，还是 MPP 的模式，但他们都有统一的特性：<strong>分布式</strong><br>没有一个系统是单机的（可能这就是大数据），那么现在有一个系统，他能支持较小数据量的快速分析，又不需要分布式的资源(微型 clickhouse?)<br>这就是传说中的 duckDB<br>想了解一个新系统，我们先从他的官网入手，我今天先来自己用中文翻译一下，当做入门第一砖<br><a target="_blank" rel="noopener" href="https://duckdb.org/why_duckdb">https://duckdb.org/why_duckdb</a></p>
 <h2 id="原文翻译"><a href="#原文翻译" class="headerlink" title="原文翻译"></a>原文翻译</h2><h3 id="为什么用-duckDB"><a href="#为什么用-duckDB" class="headerlink" title="为什么用 duckDB"></a>为什么用 duckDB</h3><p>世面上有很多的 DBMS，但是没有一款数据库能承接全部规模的数据。<br>各个数据库都使用不同的策略来优化特定的场景。<br>duckDB 也一样。<br>我们现在就来聊聊 duckDB 有什么样的目标。为了达到这个目标，duckDB 用了哪些技术手段。<br>一句话描述 duckDB：一个支持 SQL 的关系型数据库管理系统</p>
-<h3 id="主要特性"><a href="#主要特性" class="headerlink" title="主要特性"></a>主要特性</h3><h4 id="简单"><a href="#简单" class="headerlink" title="简单"></a>简单</h4><p>sqlite 是世界上应用最广的 DBMS。安装简单，可以嵌入到进场内部使用是他成功的关键。<br>duckDB 也采用了简单和嵌入的思想。<br>无论编译还是运行时，duckDB 没有任何外部依赖。对于 duckDB 的发布版本，整个源码树被编译成两个文件，一个头文件和一个 “实现文件”, 也被称作是 amalgamation</p>
+<h3 id="主要特性"><a href="#主要特性" class="headerlink" title="主要特性"></a>主要特性</h3><h4 id="简单"><a href="#简单" class="headerlink" title="简单"></a>简单</h4><p>sqlite 是世界上应用最广的 DBMS。安装简单，可以嵌入到进程内部使用是他成功的关键。<br>duckDB 也采用了简单和嵌入的思想。<br>无论编译还是运行时，duckDB 没有任何外部依赖。对于 duckDB 的发布版本，整个源码树被编译成两个文件，一个头文件和一个 “实现文件”, 也被称作是 amalgamation</p>
 <blockquote>
 <p>在软件开发中，尤其是编译器或大型代码库中，amalgamation 可能指将多个源代码文件合并成一个单一的文件。<br>这通常用于简化构建过程和优化编译性能。<br>SQLite 数据库广泛使用 amalgamation 来将所有源代码文件合并成一个单一的文件，以简化分发和使用。</p>
 </blockquote>
 <p>这极大的简化了部署和在其他应用中集成的难度。对于构建来说，duckDB 只需要一个 C++ 11 的编译器。</p>
-<p>对 duckDB 来说，不需要安装、升级、维护一个 DBMS 服务器。<br>因为 duckDB 不作为单独的进程运行，而是完全嵌入到<strong>宿主进程</strong>中。<br>因为 duckDB 主要用例都是分析相关的，所以这样设计有实现数据库高速数据传输的额外好处。<br>在一些情况下，duckDB可以在不复制的情况下处理外部数据。<br>比如： duckDB python 库可以直接在 pandas 进行数据查询，这期间不需要导入或拷贝任何数据</p>
-<h4 id="便携性"><a href="#便携性" class="headerlink" title="便携性"></a>便携性</h4><p>由于没有外部依赖，duckDB 天生就是便携式的。可以在所有主流操作系统和 CPU 架构上跑。<br>可以在小型且资源有限的边缘设备部署，也可以在100核 TB 内存的超大服务器部署。<br>使用 duckDB-Wasm(<a target="_blank" rel="noopener" href="https://duckdb.org/docs/stable/clients/wasm/overview.html">https://duckdb.org/docs/stable/clients/wasm/overview.html</a>) 可以让 duckDB 跑在浏览器设置手机上<br>DuckDB 提供 java c c++ <strong>go</strong> node.js 和其他语言的 api<br>详细请看：<a target="_blank" rel="noopener" href="https://duckdb.org/docs/stable/clients/overview.html">https://duckdb.org/docs/stable/clients/overview.html</a></p>
+<p>对 duckDB 来说，不需要安装、升级、维护一个 DBMS 服务器。<br>因为 duckDB 不作为单独的进程运行，而是完全嵌入到<strong>宿主进程</strong>中。<br>因为 duckDB 主要用例都是分析相关的，所以这样设计有实现数据库高速数据传输的额外好处。<br>在一些情况下，duckDB 不用复制(或者说不用导入)任何数据就能处理外部数据。<br>比如： duckDB python 库可以直接在 pandas 进行数据查询，这期间不需要导入或拷贝任何数据</p>
+<h4 id="便携性"><a href="#便携性" class="headerlink" title="便携性"></a>便携性</h4><p>由于没有外部依赖，duckDB 天生就是便携式的。可以在所有主流操作系统和 CPU 架构上跑。<br>可以在小型且资源有限的边缘设备部署，也可以在 100核+TB内存 的超大服务器部署。<br>使用 duckDB-Wasm(<a target="_blank" rel="noopener" href="https://duckdb.org/docs/stable/clients/wasm/overview.html">https://duckdb.org/docs/stable/clients/wasm/overview.html</a>) 可以让 duckDB 跑在浏览器，甚至跑在手机上<br>DuckDB 提供 java c c++ <strong>go</strong> node.js 和其他语言的 api<br>详细请看：<a target="_blank" rel="noopener" href="https://duckdb.org/docs/stable/clients/overview.html">https://duckdb.org/docs/stable/clients/overview.html</a></p>
 <h4 id="功能丰富"><a href="#功能丰富" class="headerlink" title="功能丰富"></a>功能丰富</h4><p>duckDB 提供了很强大的数据管理功能。<br>有大型库函数、窗口函数等特性来支持处理复杂 SQL 查询。<br>通过自定义的、批量优化的 MVCC 来提供事务保证(ACID)。<br>数据也可以持久化在单文件的数据库文件中。<br>支持二级索引来加速查找单表记录<br>duckDB 在 python 和 R 深度集成，交互数据分析很高效方便</p>
 <h4 id="快"><a href="#快" class="headerlink" title="快"></a>快</h4><p>设计的目标就是支持分析查询的工作负载(OLAP)。<br>workloads(工作负载) 的特点是：处理数据集大部分的复杂、耗时长的查询。</p>
 <blockquote>
@@ -392,11 +392,11 @@
 <p>比如：整个表的聚合；在多个大表间的级联查询；<br>数据的变更也和 OLTP 不同，更多是面向大规模、同时多行追加，或者同时修改一张表的一大堆数据</p>
 <p>为了更高效的支持这样的工作负载，很关键的一步是降低每个独立值扩展(expended)时 cpu 的消耗周期。<br>做到这步的最新数据管理技术，要么是用向量化执行，要么是用即席查询引擎<br>duckDB 使用<strong>列存向量查询引擎</strong>，查询仍然会被解释，但是大量的值（一种”向量”）会在同一个操作里处理</p>
 <blockquote>
-<p>类似 SIMD 在 os 内核里一下处理一大批，这个注释是我自己加的 ^_^</p>
+<p>类似 SIMD 在 os 内核里一下处理一大批</p>
 </blockquote>
 <p>相比 pg mysql 或 sqlite 这种逐行顺序处理，这最大程度的减少了系统开销。<br>向量化查询给 OLAP 引领了一条更好的性能路径</p>
 <blockquote>
-<p>我一度以为这是 CH 创新的技术</p>
+<p>我一度以为向量化是 CH 首次创新的技术，实际上他也是个推广者</p>
 </blockquote>
 <h4 id="扩展性"><a href="#扩展性" class="headerlink" title="扩展性"></a>扩展性</h4><p>duckDB 提供了灵活的扩展机制。<br>允许自定义新的数据类型，函数，文件格式和 SQL 预发<br>实际上很多 duckDB 的关键特性，比如支持 parquet json timezone，支持 s3 http(s) 都是利用的扩展接口实现的。<br>扩展也可以在 duckDB-wasm 中使用，我们可以自己贡献更多的社区扩展(<a target="_blank" rel="noopener" href="https://duckdb.org/community_extensions/">https://duckdb.org/community_extensions/</a>)</p>
 <blockquote>
@@ -404,6 +404,9 @@
 </blockquote>
 <h4 id="免费"><a href="#免费" class="headerlink" title="免费"></a>免费</h4><p>省流：<br>开发团队在荷兰<br>开源协议：MIT<br>知识产权由 duckDB 基金会所有</p>
 <h4 id="测试充分"><a href="#测试充分" class="headerlink" title="测试充分"></a>测试充分</h4><p>虽然 duckDB 是从一个研究小组孵化的，但这不是原型或者什么玩具，而是要成为成熟稳定的数据库系统。<br>为了促进这种稳定性，duckDB 使用了 CI 的密集测试。<br>测试套件包含了数百万条查询，包括兼容 sqlite pgsql monetDB 的适配。<br>在多个平台和编译器上重复测试后，每个 pr 都必须经过全部测试通过才能合入<br>除了测试套件外，也有很多是高负载的压力测试，TPC-H 和 TPC-DS 都测了。</p>
+<blockquote>
+<p>拿这种事当特性属实有点没活硬整</p>
+</blockquote>
 <h2 id="同行-review-过的论文和理论"><a href="#同行-review-过的论文和理论" class="headerlink" title="同行 review 过的论文和理论"></a>同行 review 过的论文和理论</h2><p>Runtime-Extensible Parsers (CIDR 2025)<br>Robust External Hash Aggregation in the Solid State Age (ICDE 2024)<br>These Rows Are Made for Sorting and That’s Just What We’ll Do (ICDE 2023)<br>Join Order Optimization with (Almost) No Statistics (Master thesis, 2022)<br>DuckDB-Wasm: Fast Analytical Processing for the Web (VLDB 2022 Demo)<br>Data Management for Data Science - Towards Embedded Analytics (CIDR 2020)<br>DuckDB: an Embeddable Analytical Database (SIGMOD 2019 Demo)</p>
 <h2 id="如何构建"><a href="#如何构建" class="headerlink" title="如何构建"></a>如何构建</h2><p><a target="_blank" rel="noopener" href="https://github.com/davidgasquez/awesome-duckdb">https://github.com/davidgasquez/awesome-duckdb</a></p>
 <h2 id="站在巨人的肩膀"><a href="#站在巨人的肩膀" class="headerlink" title="站在巨人的肩膀"></a>站在巨人的肩膀</h2><blockquote>
@@ -823,7 +826,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">69.8k</span>
+                        class="white-color">69.9k</span>
             
             
             
