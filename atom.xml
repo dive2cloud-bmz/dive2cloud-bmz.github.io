@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-04-27T11:30:38.891Z</updated>
+  <updated>2025-04-28T06:00:54.932Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>postgreSql arch summary</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/</id>
+    <published>2025-04-28T03:39:30.000Z</published>
+    <updated>2025-04-28T06:00:54.932Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;逻辑架构&quot;&gt;&lt;a href=&quot;#逻辑架构&quot; class=&quot;headerlink&quot; title=&quot;逻辑架构&quot;&gt;&lt;/a&gt;逻辑架构&lt;/h2&gt;&lt;p&gt;有什么模块，每个模块干什么用&lt;br&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    
+    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
+    
+  </entry>
   
   <entry>
     <title>duckDB</title>
@@ -460,29 +483,6 @@
         
         
     <summary type="html">&lt;h2 id=&quot;SQOOP1&quot;&gt;&lt;a href=&quot;#SQOOP1&quot; class=&quot;headerlink&quot; title=&quot;SQOOP1&quot;&gt;&lt;/a&gt;SQOOP1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/03/20/apache-sqoop2/1arch.png&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>apache flume</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/19/apache-flume/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/19/apache-flume/</id>
-    <published>2025-03-19T13:58:05.000Z</published>
-    <updated>2025-03-31T05:35:48.021Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot;</summary>
         
       
     

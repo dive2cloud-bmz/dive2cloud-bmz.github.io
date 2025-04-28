@@ -4,8 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Go-philosophy, BMZ BLOG">
-    <meta name="description" content="Go 的设计哲学杂谈这篇博客是 “Go 设计哲学” 中第一篇博客,启动这个系列是为了总结一下这几年写 Go 过程中,我的一些心得和体会.我学生时期是完全写 java 的,包括在第一份工作里也是99%用 java,主要是开发 web 项目和开">
+    <meta name="keywords" content="postgreSql arch summary, BMZ BLOG">
+    <meta name="description" content="逻辑架构有什么模块，每个模块干什么用
+
+连接管理系统管理客户端连接，透传请求，C&amp;#x2F;S软件架构
+编译执行系统查询模块，负责 sqlParser，生成执行计划，优化等
+存储管理系统支持多种索引，btree hahs gist…使用 s">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +21,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Go-philosophy | BMZ BLOG</title>
+    <title>postgreSql arch summary | BMZ BLOG</title>
     <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
     
 
@@ -289,12 +293,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Go-philosophy</h1>
+                    <h1 class="description center-align post-title">postgreSql arch summary</h1>
                 </div>
             </div>
         </div>
@@ -318,8 +322,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Go/">
-                                <span class="chip bg-color">Go</span>
+                            <a href="/tags/pgsql/">
+                                <span class="chip bg-color">pgsql</span>
                             </a>
                         
                     </div>
@@ -334,21 +338,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2025-02-08
+                    2025-04-28
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-26
+                    2025-04-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.3k
+                    1.2k
                 </div>
                 
 
@@ -375,22 +379,80 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Go-的设计哲学杂谈"><a href="#Go-的设计哲学杂谈" class="headerlink" title="Go 的设计哲学杂谈"></a>Go 的设计哲学杂谈</h2><p>这篇博客是 “Go 设计哲学” 中第一篇博客,启动这个系列是为了总结一下这几年写 Go 过程中,我的一些心得和体会.<br>我学生时期是完全写 java 的,包括在第一份工作里也是99%用 java,主要是开发 web 项目和开源的大数据组件(hadoop hive sqoop 等)<br>来到度厂之后呢,开始逐渐转向写 Go.<br>在我的意识里,语言从来只是工具,无论用 Go java C++ 还是什么其他的后端语言,都有路径完成需求.<br>但当我真正转到 Go 后,我发现语言之间不只是 谁因为某些特性更擅长某个领域,又因为这些特性在某个领域拉胯 在业务领域实现上的彼消我长,<br>还有在开发者角度的易用性,开发效率,debug 流程等等.<br>毕竟,编程语言也可以看成一个产品,而这个产品的用户就是开发者.<br>Go 的设计初衷其实是 google 大佬们为了解决 C++ 的一些问题,比如:</p>
-<p>在多 CPU,复杂网络情况下,网络编程模型遇到的问题只能各种规避,而不是彻底解决<br>软件复杂(比如代码行数很多,feature多,多人协作)带来的问题<br>编译太慢<br>我自己翻译过来,Go 的设计目标有:<br>简化在现代 OS 和网络环境下的并发编程 -&gt; GMP<br>好的依赖管理 -&gt; go module<br>光速编译,同时能交叉编译 -&gt; go build<br>Go 的设计哲学可以看煎鱼的教学里的开篇 <a target="_blank" rel="noopener" href="https://golang3.eddycjy.com/posts/started-go/">https://golang3.eddycjy.com/posts/started-go/</a></p>
-<h2 id="依赖管理"><a href="#依赖管理" class="headerlink" title="依赖管理"></a>依赖管理</h2><p>老牌的语言都有自己的依赖管理工具,比如:<br>java 的 ant maven gradle<br>python 的 pipenv conda 等<br>Go 用了一个很 trick 但是很聪明的方式: github + Go mod + Go package</p>
-<h2 id="github"><a href="#github" class="headerlink" title="github"></a>github</h2><p>github 是指项目代码库,私有的 gitlab, 公司内部 icode 等等都一样,当自己的项目引用其他项目的某个版本的时候,直接从仓库里获取指定的源码.<br>这样就不用专门开发类似 maven repo 的概念来维护各种版本了,然后把 repo 里各个版本的生命周期也交给 github 来维护.<br>你会说假如有一天 github 挂了,那不是没法编译了吗?<br>是的,但真有这一天吗?就算有,只要你编译过了,本地也有 gomod 缓存,至多是一些新的依赖下不了,不会造成太过毁灭的结果.</p>
-<h2 id="go-mod"><a href="#go-mod" class="headerlink" title="go mod"></a>go mod</h2><p>Go mod 本身是为了解决 GOPATH 构建时代 “依赖地狱” 问题的.<br>详细的可以看这篇博客:<a href="https://dive2cloud-bmz.github.io/2025/02/10/Go-%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B/#%E5%8C%85%E5%86%B2%E7%AA%81">https://dive2cloud-bmz.github.io/2025/02/10/Go-程序的构建过程/#包冲突</a></p>
-<h2 id="Go-package"><a href="#Go-package" class="headerlink" title="Go package"></a>Go package</h2><p>在讲 Go package 之前,我们先来看看 java 的包名.<br>比如 Hello.java 的文件第一行, com.bmz.demo<br>Hello.java 的文件路径正好是 src&#x2F;main&#x2F;java&#x2F;com&#x2F;bmz&#x2F;demo&#x2F;Hello.java<br>也就是说 java 的包名和路径是完全一致的.<br>但 java 引用的基本单位是 class, 而不是 package, 也就是我们经常看到<br><code>import java.util.List;</code><br>这样的代码,其实是引用 java.util 包下的 List class</p>
-<p>回到 Go package, Go 的引用最小粒度是包,所以我们写不出引用某某包下的 xxx struct 或者 xxx interface 这种写法</p>
-<p>比较下来,java 的包更多是确定一个 class 的位置, class 才是核心;<br>而 Go 的包是引用的最小单位,一个包下面各种变量都应该围绕这个包的功能来确定;<br>所以一个好的 gopher,应该避免类似 utils, xxx-common 这种没有意义的包,而是用实际的意义来命名包.<br>因为 java 里写 import java.util.List 可以在import 的地方看出这是一个 List 对象;<br>但在 Go 里写 import util 并不知道这个包是干嘛的.<br>现在回过头来思考一下,本身把 struct 比作 class 就是错误的比方.</p>
-<blockquote>
-<p>后续有空写一下我总结的编程命名规范</p>
+                <h2 id="逻辑架构"><a href="#逻辑架构" class="headerlink" title="逻辑架构"></a>逻辑架构</h2><p>有什么模块，每个模块干什么用<br><img src="/2025/04/28/postgreSql-arch-summary/arch.png"></p>
+<ul>
+<li>连接管理系统<br>管理客户端连接，透传请求，C&#x2F;S软件架构</li>
+<li>编译执行系统<br>查询模块，负责 sqlParser，生成执行计划，优化等</li>
+<li>存储管理系统<br>支持多种索引，btree hahs gist…<br>使用 slotted page 作为页结构，有一个自己的 buffer 机制加速存储访问</li>
+<li>事务管理系统<br>MVCC：数据库的基石</li>
+<li>系统表<br>元数据中心，各个模块相互协作的最重要的表。<br>系统表是被经常访问的，所以是长期放到 cache 里，并通过 hash 映射能够做到最低延迟的访问<blockquote>
+<p>但实际上这也只是一张普通的表，可以 CRUD 的，恐怖</p>
 </blockquote>
-<p>上面是从开发者角度来解释的,其实 Go package 还有个重要功能是加速编译.<br>因为每个源文件开头就显示指出了一个.go 引用了哪些包,编译器无需读取全部文件就知道一个文件的依赖列表了.<br>Go 有一个要求,不允许包存在循环依赖,这样通过总结各个.go 的依赖列表,就能形成一个 DAG 了.<br>已经编译的包对应的目标文件(xxx.a xxx.o) 不仅记录了导出符号,还记录了依赖包的导出符合.因此编译器在编译一个包 P 的时候,针对 P 依赖的每个包导入,只需要读取一个.a 或者 .o 文件就够了.</p>
+</li>
+</ul>
+<h2 id="物理架构"><a href="#物理架构" class="headerlink" title="物理架构"></a>物理架构</h2><p>具体有哪些进程，每个进程是做什么的</p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>jdbc odbc libpq 等等,任何客户端和 pg 进程都是一对一的关系(process-per-connection)<br>一个后端进程同一时间只能处理一条请求，所以 pg 的并发是进程级的</p>
 <blockquote>
-<p>后续写一下 Go 是编译构建的过程</p>
+<p>看似弱鸡，实际上是有利有弊</p>
 </blockquote>
-<h2 id="对我影响最大的一些项目和人"><a href="#对我影响最大的一些项目和人" class="headerlink" title="对我影响最大的一些项目和人"></a>对我影响最大的一些项目和人</h2><p>百度晁老师, 看他的博客学习了很多<br>我在百度的第一任组长淼哥,带我进入 Go 的世界<br>hashicorp terraform, 对我很多工作具有指导意义的项目<br>cobra 脚手架, 我用它写很多命令行工具,后来发现还有 grumble</p>
+<h3 id="postmaster-和-postgres"><a href="#postmaster-和-postgres" class="headerlink" title="postmaster 和 postgres"></a>postmaster 和 postgres</h3><p>多进程架构下，需要一个中央协调者，这就是 postmaster，负责系统的初始化，分配共享内存，启动后台进程 backend，关闭 server，授权等等<br>管理客户端连接时，每一个新链接，postmaster 都会分配一个 postgres 进程来提供服务。<br>每个用户建立连接之后，postmaster 就会启动一次 sysLogger, pgStat, autoVacuum, WAL, bgWriter 等进程来提供服务。<br>postmaster 就是分配这些进程给新的连接，同时监听和调度这些进程。</p>
+<h3 id="介绍一下-postmaster-启动的这些进程"><a href="#介绍一下-postmaster-启动的这些进程" class="headerlink" title="介绍一下 postmaster 启动的这些进程"></a>介绍一下 postmaster 启动的这些进程</h3><ol>
+<li><p>共享内存和信号库<br>使用共享内存让各个进程互相通信，保证并发数据一致性</p>
+</li>
+<li><p>sysLogger<br>生成系统日志</p>
+</li>
+<li><p>bgWriter<br>周期性把 buffer 脏页写到永久存储，LRU策略，支持 checkpoint</p>
+<blockquote>
+<p>pg 不依赖这个进程把所有脏页落盘，其他进程也会写</p>
+</blockquote>
+</li>
+<li><p>静态收集器<br>收集静态信息，比如表的访问信息，表的行数</p>
+</li>
+<li><p>WAL 写进程<br>周期性将 WAL flush 到永久内存，在多用户环境里，多个事务可以打包成一次 fsync。<br>pg 用单独的进程写 WAL 日志，避免其他事务提交的时候才落盘 WAL</p>
+</li>
+<li><p>pgArch WAL 归档进程<br>pg 有一个对 WAL 在磁盘上的存储形式：Xlog，专门用来归档备份。<br>核心目的还是怕 wal 无限增长(也就类似 fsImage + editLog,或者常规的 wal + snapshot 的方案)<br>因为 pg 单独有个写 WAL 的进程，所以也需要一个单独进程去归档</p>
+</li>
+<li><p>autoVacuum<br>pg 的清理策略是标记删除，所以需要额外清理的进程。<br>自主清理包括一个 launcher 监控进程 和 一个 worker 进程</p>
+</li>
+<li><p>pgStat<br>收集数据库系统运行时统计数据，可以开关来控制 cpu 负载</p>
+</li>
+<li><p>checkpoint<br>加速恢复<br><img src="/2025/04/28/postgreSql-arch-summary/img.png" alt="物理逻辑架构图"></p>
+</li>
+</ol>
+<h2 id="从-SQL-到结果"><a href="#从-SQL-到结果" class="headerlink" title="从 SQL 到结果"></a>从 SQL 到结果</h2><p>从时间顺序我们看一下从SQL提交到返回结果的过程</p>
+<ol>
+<li>客户端请求<br>比如执行下面的 SQL<br><code>SELECT name FROM users WHERE age &gt; 30 ORDER BY age DESC LIMIT 10;</code></li>
+</ol>
+<ul>
+<li>建立连接：无论你是什么客户端，都有一个建立连接的过程</li>
+<li>发送请求：发送 SQL 语句到 postmaster</li>
+<li>等待 postmaster 分配 backend 进程给这次连接</li>
+</ul>
+<ol start="2">
+<li><p>连接管理<br>postmaster 监听客户端请求，创建新的 backend 进程处理请求</p>
+</li>
+<li><p>SQL Parser<br>词法分析+语法分析，最后生成解析树，没什么好说的，全部 SQL 执行器都有的步骤</p>
+</li>
+<li><p>查询重写<br>如果查询涉及 view rule，就会重写查询计划</p>
+<blockquote>
+<p>约等于是一个执行计划的优化吧，没什么好说的</p>
+</blockquote>
+</li>
+<li><p>查询优化<br>基本就是 explain 之后的计划，常规的像：</p>
+</li>
+</ol>
+<ul>
+<li>基于 CBO</li>
+<li>索引优化：比如 age 有索引，那么使用 index scan 而不是 seq scan(全表扫)</li>
+<li>排序优化：ORDER BY age DESC 这个语法会让优化器决定是否使用 index sort 还是 external sort(比如磁盘排序)</li>
+<li>LIMIT 优化：可以提前停止查询，而不是全查出来再 LIMIT</li>
+</ul>
+<ol start="6">
+<li>执行计划<br>seq scan 或 index scan 读取数据，根据 explain 的计划执行算子</li>
+<li>存储 buffer + wal<br>查询数据先在 shared buffers 里查找，找不到再走磁盘IO<br>如果 SQL 是 UPDATE&#x2F;INSERT&#x2F;DELETE，先写 WAL</li>
+<li>返回结果<br>backend 会将结果封装为 JSON 或者 binary 返回给客户端，返回之后会清理临时资源（比如排序缓冲区）</li>
+<li>客户端收到结果</li>
+</ol>
 
                 
             </div>
@@ -417,7 +479,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://dive2cloud-bmz.github.io/2025/02/08/Go-philosophy/">https://dive2cloud-bmz.github.io/2025/02/08/Go-philosophy/</a>
+                    <a href="https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/">https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -455,8 +517,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/Go/">
-                                    <span class="chip bg-color">Go</span>
+                                <a href="/tags/pgsql/">
+                                    <span class="chip bg-color">pgsql</span>
                                 </a>
                             
                         </div>
@@ -499,17 +561,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2025/02/08/what-does-Go-do-when-starting-app/">
+                <a href="/2025/04/28/postgreSql-arch-summary/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="what-does-Go-do-when-starting-app">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="postgreSql arch summary">
                         
-                        <span class="card-title">what-does-Go-do-when-starting-app</span>
+                        <span class="card-title">postgreSql arch summary</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -519,9 +582,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2025-02-08
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-04-28
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -530,11 +593,12 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Go/">
-                        <span class="chip bg-color">Go</span>
+                    <a href="/tags/pgsql/">
+                        <span class="chip bg-color">pgsql</span>
                     </a>
                     
                 </div>
@@ -548,13 +612,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2025/02/06/kubernetes-learning-summary/">
+                <a href="/2025/04/24/duckDB/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="kubernetes-learning-summary">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="duckDB">
                         
-                        <span class="card-title">kubernetes-learning-summary</span>
+                        <span class="card-title">duckDB</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -565,16 +629,12 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2025-02-06
+                                <i class="far fa-clock fa-fw icon-date"></i>2025-04-24
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Go/" class="post-category">
-                                    Go
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Sam Bie
                             
                         </span>
                     </div>
@@ -582,8 +642,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/k8s/">
-                        <span class="chip bg-color">k8s</span>
+                    <a href="/tags/duckDB/">
+                        <span class="chip bg-color">duckDB</span>
                     </a>
                     
                 </div>

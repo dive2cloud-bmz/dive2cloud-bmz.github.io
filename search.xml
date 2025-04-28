@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>postgreSql arch summary</title>
+      <link href="/2025/04/28/postgreSql-arch-summary/"/>
+      <url>/2025/04/28/postgreSql-arch-summary/</url>
+      
+        <content type="html"><![CDATA[<h2 id="逻辑架构"><a href="#逻辑架构" class="headerlink" title="逻辑架构"></a>逻辑架构</h2><p>有什么模块，每个模块干什么用<br><img src="/2025/04/28/postgreSql-arch-summary/arch.png"></p><ul><li>连接管理系统<br>管理客户端连接，透传请求，C&#x2F;S软件架构</li><li>编译执行系统<br>查询模块，负责 sqlParser，生成执行计划，优化等</li><li>存储管理系统<br>支持多种索引，btree hahs gist…<br>使用 slotted page 作为页结构，有一个自己的 buffer 机制加速存储访问</li><li>事务管理系统<br>MVCC：数据库的基石</li><li>系统表<br>元数据中心，各个模块相互协作的最重要的表。<br>系统表是被经常访问的，所以是长期放到 cache 里，并通过 hash 映射能够做到最低延迟的访问<blockquote><p>但实际上这也只是一张普通的表，可以 CRUD 的，恐怖</p></blockquote></li></ul><h2 id="物理架构"><a href="#物理架构" class="headerlink" title="物理架构"></a>物理架构</h2><p>具体有哪些进程，每个进程是做什么的</p><h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>jdbc odbc libpq 等等,任何客户端和 pg 进程都是一对一的关系(process-per-connection)<br>一个后端进程同一时间只能处理一条请求，所以 pg 的并发是进程级的</p><blockquote><p>看似弱鸡，实际上是有利有弊</p></blockquote><h3 id="postmaster-和-postgres"><a href="#postmaster-和-postgres" class="headerlink" title="postmaster 和 postgres"></a>postmaster 和 postgres</h3><p>多进程架构下，需要一个中央协调者，这就是 postmaster，负责系统的初始化，分配共享内存，启动后台进程 backend，关闭 server，授权等等<br>管理客户端连接时，每一个新链接，postmaster 都会分配一个 postgres 进程来提供服务。<br>每个用户建立连接之后，postmaster 就会启动一次 sysLogger, pgStat, autoVacuum, WAL, bgWriter 等进程来提供服务。<br>postmaster 就是分配这些进程给新的连接，同时监听和调度这些进程。</p><h3 id="介绍一下-postmaster-启动的这些进程"><a href="#介绍一下-postmaster-启动的这些进程" class="headerlink" title="介绍一下 postmaster 启动的这些进程"></a>介绍一下 postmaster 启动的这些进程</h3><ol><li><p>共享内存和信号库<br>使用共享内存让各个进程互相通信，保证并发数据一致性</p></li><li><p>sysLogger<br>生成系统日志</p></li><li><p>bgWriter<br>周期性把 buffer 脏页写到永久存储，LRU策略，支持 checkpoint</p><blockquote><p>pg 不依赖这个进程把所有脏页落盘，其他进程也会写</p></blockquote></li><li><p>静态收集器<br>收集静态信息，比如表的访问信息，表的行数</p></li><li><p>WAL 写进程<br>周期性将 WAL flush 到永久内存，在多用户环境里，多个事务可以打包成一次 fsync。<br>pg 用单独的进程写 WAL 日志，避免其他事务提交的时候才落盘 WAL</p></li><li><p>pgArch WAL 归档进程<br>pg 有一个对 WAL 在磁盘上的存储形式：Xlog，专门用来归档备份。<br>核心目的还是怕 wal 无限增长(也就类似 fsImage + editLog,或者常规的 wal + snapshot 的方案)<br>因为 pg 单独有个写 WAL 的进程，所以也需要一个单独进程去归档</p></li><li><p>autoVacuum<br>pg 的清理策略是标记删除，所以需要额外清理的进程。<br>自主清理包括一个 launcher 监控进程 和 一个 worker 进程</p></li><li><p>pgStat<br>收集数据库系统运行时统计数据，可以开关来控制 cpu 负载</p></li><li><p>checkpoint<br>加速恢复<br><img src="/2025/04/28/postgreSql-arch-summary/img.png" alt="物理逻辑架构图"></p></li></ol><h2 id="从-SQL-到结果"><a href="#从-SQL-到结果" class="headerlink" title="从 SQL 到结果"></a>从 SQL 到结果</h2><p>从时间顺序我们看一下从SQL提交到返回结果的过程</p><ol><li>客户端请求<br>比如执行下面的 SQL<br><code>SELECT name FROM users WHERE age &gt; 30 ORDER BY age DESC LIMIT 10;</code></li></ol><ul><li>建立连接：无论你是什么客户端，都有一个建立连接的过程</li><li>发送请求：发送 SQL 语句到 postmaster</li><li>等待 postmaster 分配 backend 进程给这次连接</li></ul><ol start="2"><li><p>连接管理<br>postmaster 监听客户端请求，创建新的 backend 进程处理请求</p></li><li><p>SQL Parser<br>词法分析+语法分析，最后生成解析树，没什么好说的，全部 SQL 执行器都有的步骤</p></li><li><p>查询重写<br>如果查询涉及 view rule，就会重写查询计划</p><blockquote><p>约等于是一个执行计划的优化吧，没什么好说的</p></blockquote></li><li><p>查询优化<br>基本就是 explain 之后的计划，常规的像：</p></li></ol><ul><li>基于 CBO</li><li>索引优化：比如 age 有索引，那么使用 index scan 而不是 seq scan(全表扫)</li><li>排序优化：ORDER BY age DESC 这个语法会让优化器决定是否使用 index sort 还是 external sort(比如磁盘排序)</li><li>LIMIT 优化：可以提前停止查询，而不是全查出来再 LIMIT</li></ul><ol start="6"><li>执行计划<br>seq scan 或 index scan 读取数据，根据 explain 的计划执行算子</li><li>存储 buffer + wal<br>查询数据先在 shared buffers 里查找，找不到再走磁盘IO<br>如果 SQL 是 UPDATE&#x2F;INSERT&#x2F;DELETE，先写 WAL</li><li>返回结果<br>backend 会将结果封装为 JSON 或者 binary 返回给客户端，返回之后会清理临时资源（比如排序缓冲区）</li><li>客户端收到结果</li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> pgsql </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>duckDB</title>
       <link href="/2025/04/24/duckDB/"/>
       <url>/2025/04/24/duckDB/</url>
