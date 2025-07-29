@@ -42,25 +42,6 @@
     
     
     <entry>
-      <title>pgsql settings(1)</title>
-      <link href="/2025/04/11/pgsql-settings-1/"/>
-      <url>/2025/04/11/pgsql-settings-1/</url>
-      
-        <content type="html"><![CDATA[<h2 id="常用的配置项"><a href="#常用的配置项" class="headerlink" title="常用的配置项"></a>常用的配置项</h2><h3 id="wal-level"><a href="#wal-level" class="headerlink" title="wal_level"></a>wal_level</h3><p>replica 和 logical</p><p>来活了，TO BE CONTINUE … </p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> pgsql </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>kubectl</title>
       <link href="/2025/03/31/kubectl/"/>
       <url>/2025/03/31/kubectl/</url>

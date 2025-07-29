@@ -63,29 +63,6 @@
   </entry>
   
   <entry>
-    <title>pgsql settings(1)</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/04/11/pgsql-settings-1/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/04/11/pgsql-settings-1/</id>
-    <published>2025-04-11T03:30:30.000Z</published>
-    <updated>2025-04-24T09:35:18.527Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;常用的配置项&quot;&gt;&lt;a href=&quot;#常用的配置项&quot; class=&quot;headerlink&quot; title=&quot;常用的配置项&quot;&gt;&lt;/a&gt;常用的配置项&lt;/h2&gt;&lt;h3 id=&quot;wal-level&quot;&gt;&lt;a href=&quot;#wal-level&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
-    
-  </entry>
-  
-  <entry>
     <title>kubectl</title>
     <link href="https://dive2cloud-bmz.github.io/2025/03/31/kubectl/"/>
     <id>https://dive2cloud-bmz.github.io/2025/03/31/kubectl/</id>
@@ -483,6 +460,29 @@
         
         
     <summary type="html">&lt;h2 id=&quot;SQOOP1&quot;&gt;&lt;a href=&quot;#SQOOP1&quot; class=&quot;headerlink&quot; title=&quot;SQOOP1&quot;&gt;&lt;/a&gt;SQOOP1&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/03/20/apache-sqoop2/1arch.png&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache flume</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/03/19/apache-flume/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/03/19/apache-flume/</id>
+    <published>2025-03-19T13:58:05.000Z</published>
+    <updated>2025-03-31T05:35:48.021Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot;</summary>
         
       
     
