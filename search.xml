@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>postgreSql pg_basebackup</title>
+      <link href="/2025/08/15/postgreSql-pg-basebackup/"/>
+      <url>/2025/08/15/postgreSql-pg-basebackup/</url>
+      
+        <content type="html"><![CDATA[<h2 id="what"><a href="#what" class="headerlink" title="what"></a>what</h2><p>基础备份工具，可以直接备份运行中 PG 全部的数据，备份的数据我们可以称之为 “物理快照”<br>备份之后的数据就可以 PITR(point-in-time recovery) 啦，比较基础的用法</p><h2 id="why"><a href="#why" class="headerlink" title="why"></a>why</h2><p>几种可能用 basebackup 的场景</p><ol><li>恢复数据：比如误 delete 某些数据&#x2F; drop table，恢复到上一次物理快照</li><li>回滚到某个时间点：因为物理快照一般是基于时间点的，过一阵就打一个</li><li>构建只读副本 备份完了拿这份静态数据去做 standby</li></ol><h2 id="how"><a href="#how" class="headerlink" title="how"></a>how</h2><blockquote><p><a href="https://liuzhilong.blog.csdn.net/article/details/119533506">https://liuzhilong.blog.csdn.net/article/details/119533506</a> 这篇已经基本说了基本参数怎么用了，但有一些写错的</p></blockquote><p>介绍一个我用的场景吧<br><img src="/2025/08/15/postgreSql-pg-basebackup/usage.jpg" alt="postgreSql-pg-basebackup"><br>一个简单的命令</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pg_basebackup -h 127.0.0.1 -p 5432 -U xxxx -D /tmp/bmz_back -Ft -z -P</span><br></pre></td></tr></table></figure><p>这个命令会在 &#x2F;tmp&#x2F;bmz_back 目录下创建如下的文件<br>-rw-r—– 1 root root    365597 Aug 15 20:31 backup_manifest<br>-rw-r—– 1 root root 136810328 Aug 15 20:31 base.tar.gz<br>-rw-r—– 1 root root     20633 Aug 15 20:31 pg_wal.tar.gz</p><p>解释一下其中的参数吧</p><ul><li>-F 指定 format，可以是 plain 或者 tar，-Ft 就是用 tar 包存储</li><li>-z 打 tarball 的方式，-z 代表 gzip 的方式</li><li>-P 代表显示备份进度，可以看到备份到百分之多少<blockquote><p>我看的文档里这个写错了</p></blockquote></li></ul><h2 id="如何用备份恢复"><a href="#如何用备份恢复" class="headerlink" title="如何用备份恢复"></a>如何用备份恢复</h2><p>利用 base 和 pg_wal 俩文件，可以很简单的恢复。</p><ol><li>我们上面是 tarball ，先解压他俩，最好先解压 base.tar.gz，这个会恢复出完整的 数据目录（但没有 wal)</li><li>然后把 pg_wal.tar.gz cp 到新数据目录下的 pg_wal，tar -zxf pg_wal.tar.gz</li><li>创建 recovery.signal 文件，让新的 pg 知道是恢复模式  touch .&#x2F;recovery.signal<br>这样文件系统层面静态的东西就搞定了</li><li>启动新 pg(注意改下 postgresql.conf 里的 port 之类的，不要和当前环境的其他 pg 重复了)<br>pg_ctl -D &#x2F;tmp&#x2F;bmz_back start<blockquote><p>注意一些启动的基本权限，比如数据目录 &#x2F;tmp&#x2F;bmz_back 要 0700，不能用 root 启动<br>还有一些基础的参数，比如 restore_command recovery_target&#x3D;’immediate’ 这些，具体在其他blog介绍吧<br>总之起不来看看日志就好， FATAL 级别的日志都提示的很好</p></blockquote></li></ol><p>启动完后出现 server started 就代表启动咯</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/u01/pgsql/bin/pg_ctl  -D /tmp/bmz_back start</span><br><span class="line">waiting for server to start....</span><br><span class="line">26705                           2025-08-15 13:00:38 UTC 00000                                           LOG:  redirecting log output to logging collector process</span><br><span class="line">26705                           2025-08-15 13:00:38 UTC 00000                                           HINT:  Future log output will appear in directory &quot;log&quot;.</span><br><span class="line">done</span><br><span class="line">server started</span><br></pre></td></tr></table></figure><p><img src="/2025/08/15/postgreSql-pg-basebackup/result.png"><br>可以正常登录到这个新库，我专门在 postgresql.conf 里设置了 5433 作为新端口</p><p>以上就是如何基础备份和恢复了，学习之路还有很长呀，从简单学起，我好像一个大一新生，哈哈</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> pgsql </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>alibaba cloud sls query language learning</title>
       <link href="/2025/08/12/alibaba-cloud-sls-query-language-learning/"/>
       <url>/2025/08/12/alibaba-cloud-sls-query-language-learning/</url>
