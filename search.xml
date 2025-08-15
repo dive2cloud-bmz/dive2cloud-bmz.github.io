@@ -4,6 +4,38 @@
   
     
     <entry>
+      <title>alibaba cloud sls query language learning</title>
+      <link href="/2025/08/12/alibaba-cloud-sls-query-language-learning/"/>
+      <url>/2025/08/12/alibaba-cloud-sls-query-language-learning/</url>
+      
+        <content type="html"><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在阿里云的这段日子，各种日志都是交给 sls 管理的，量很大，但是查询检索以及采集都很平滑（不愧为轩哥嘴里的明星项目）。<br>不会查询语法只会无脑写点单词去检索日志，感觉笨笨的，简单参照官网学习一下</p><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>格式：查询语句|分析语句<br>查询语句可以单独用，但分析语句必须和查询语句结合</p><h3 id="查询语句"><a href="#查询语句" class="headerlink" title="查询语句"></a>查询语句</h3><p>可以是关键字，数值，数值范围，空格，星号(*)等，如果是空格和星号，则表示无过滤条件</p><h3 id="分析语句"><a href="#分析语句" class="headerlink" title="分析语句"></a>分析语句</h3><p>暂时不看，有需要自己看官网吧</p><blockquote><p><a href="https://help.aliyun.com/zh/sls/query-syntax/?spm=5176.2020520112.console-base_help.dexternal.34483efd7f7dDh">https://help.aliyun.com/zh/sls/query-syntax/?spm=5176.2020520112.console-base_help.dexternal.34483efd7f7dDh</a></p></blockquote><h3 id="一个示例"><a href="#一个示例" class="headerlink" title="一个示例"></a>一个示例</h3><ul><li>| SELECT status, count(*) AS PV GROUP BY status</li></ul><h2 id="怎么写查询语句"><a href="#怎么写查询语句" class="headerlink" title="怎么写查询语句"></a>怎么写查询语句</h2><p><img src="/2025/08/12/alibaba-cloud-sls-query-language-learning/think.svg" alt="思维图"></p><h3 id="确定查询方式"><a href="#确定查询方式" class="headerlink" title="确定查询方式"></a>确定查询方式</h3><p>先要确定 logstore 索引类型是什么，分为全文索引和字段索引</p><ul><li>如果只创建了全文，则只能使用全文查询</li><li>如果创建过字段索引，可以用一些字段查询语法</li></ul><h4 id="全文查询语法"><a href="#全文查询语法" class="headerlink" title="全文查询语法"></a>全文查询语法</h4><p>格式： keywords1 [and | or | not] keywords2 …<br>示例：假如我要查询的关键字是 GET 和 POST</p><blockquote><p>GET or POST</p></blockquote><p>假如我要查询 Jo 开头的日志</p><blockquote><p>Jo?</p></blockquote><h4 id="字段查询语法"><a href="#字段查询语法" class="headerlink" title="字段查询语法"></a>字段查询语法</h4><p>可以类型化运算（数值比较、正则），需要字段建立过索引</p><blockquote><p>假如 indexname1 是要查询的字段名，当字段名、表名等名词中有特殊字符（空格、中文）、关键字（or and等），需要用 <strong>双引号</strong> 包裹住。<br>字段索引涉及 long double 类型，可以用 &gt; &gt;&#x3D; &lt; &lt;&#x3D; &#x3D; in 来比较</p></blockquote><p>格式：indexname1 [ : | &gt; | &gt;&#x3D; | &lt; | &lt;&#x3D; | &#x3D; | in ] keyword1 [[ and | or | not ] indexname2 …]<br>示例：假如我要查询 request_time_msec 大于 50 的日志，且 request_time_msec 已经建立过 double 类型的字段索引</p><blockquote><p>request_time_mse&gt;50</p></blockquote><p>示例2：查询 request_method 为 GET 且request_time_msec 大于 50 相关的日志</p><blockquote><p>request_method: GET and request_time_msec&gt;50</p></blockquote><h3 id="确定字段类型"><a href="#确定字段类型" class="headerlink" title="确定字段类型"></a>确定字段类型</h3><ol><li><p>text<br>字符串类型， sls 默认将整条日志（除了 <strong>time</strong> 之外的字段）都设置成 text 类型<br>可用运算符： and or not () : “” \ * ?</p></li><li><p>long double<br>设置索引时要指定字段，可以用 &gt; &lt; 哪些<br>值得注意的是，假如有一个字段 owner_id 类型不是 double long，我还执行查询语句 owner_id&gt;100 ，则会同时返回包含 owner_id &gt; 100 这三个词的日志<br>如果是一个字段是 text 改成的 double&#x2F;long，则只支持等号查询，想要支持大于小于，必须重建索引</p><blockquote><p>in 必须小写</p></blockquote></li><li><p>JSON<br>TODO</p></li></ol><h4 id="运算优先级由高到低"><a href="#运算优先级由高到低" class="headerlink" title="运算优先级由高到低"></a>运算优先级由高到低</h4><p>: &gt; “” &gt; () &gt; and,not &gt; or</p><h4 id="运算符示例"><a href="#运算符示例" class="headerlink" title="运算符示例"></a>运算符示例</h4><ul><li><p>冒号：request_method:GET</p></li><li><p>and: request_method:GET and status:200</p></li><li><p>or: request_method:GET or status:200</p></li><li><p>not: request_method:GET not status:200</p></li><li><p>“”（双引号）: “<strong>tag</strong>:<strong>client_ip</strong>“:192.0.2.1</p><blockquote><p>因为 <strong>tag</strong> 是保留字，类似的保留字还有 sort, asc, desc, group by, avg, sum, min, max, limit</p></blockquote></li><li><p>(转义，比如转义双引号 &quot;&quot;): instance_id:nginx&quot;01&quot;</p></li><li><p>星号(*): 匹配0，1，多个字符</p></li><li><p>?: 匹配1个字符</p></li><li><p>in: 专门查数值 request_time in [100 200] 或 request_time in (100 200]，大括号是开区间，中括号是闭区间</p></li></ul><h3 id="确定匹配模式"><a href="#确定匹配模式" class="headerlink" title="确定匹配模式"></a>确定匹配模式</h3><h4 id="精确查询"><a href="#精确查询" class="headerlink" title="精确查询"></a>精确查询</h4><ol><li><p>查找带 PUT 和 cn-shanghai 的日志<br>PUT and cn-shanghai</p></li><li><p>查找短语<br>我要查 “abc cde”，这是一个短语，不能简单用 and or 来<br>此时使用全文查询的语法是：</p></li></ol><p>#”abc def”</p><h4 id="模糊查询"><a href="#模糊查询" class="headerlink" title="模糊查询"></a>模糊查询</h4><p>&#x2F;&#x2F; TODO</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> sls </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>hexo how to set git token</title>
+      <link href="/2025/07/29/hexo-how-to-set-git-token/"/>
+      <url>/2025/07/29/hexo-how-to-set-git-token/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>postgreSql arch summary</title>
       <link href="/2025/04/28/postgreSql-arch-summary/"/>
       <url>/2025/04/28/postgreSql-arch-summary/</url>
