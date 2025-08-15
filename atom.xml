@@ -63,19 +63,6 @@
   </entry>
   
   <entry>
-    <title>hexo how to set git token</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/07/29/hexo-how-to-set-git-token/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/07/29/hexo-how-to-set-git-token/</id>
-    <published>2025-07-29T03:22:30.000Z</published>
-    <updated>2025-07-29T03:22:30.360Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>postgreSql arch summary</title>
     <link href="https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/"/>
     <id>https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/</id>
@@ -473,6 +460,29 @@
         
         
     <summary type="html">&lt;h2 id=&quot;官方定义&quot;&gt;&lt;a href=&quot;#官方定义&quot; class=&quot;headerlink&quot; title=&quot;官方定义&quot;&gt;&lt;/a&gt;官方定义&lt;/h2&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>apache dolphinscheduler</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/03/21/apache-dolphinscheduler/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/03/21/apache-dolphinscheduler/</id>
+    <published>2025-03-21T13:04:37.000Z</published>
+    <updated>2025-03-31T05:41:37.779Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;特性&quot;&gt;&lt;a href=&quot;#特性&quot; class=&quot;headerlink&quot; title=&quot;特性&quot;&gt;&lt;/a&gt;特性&lt;/h2&gt;&lt;h3 id=&quot;简单易用&quot;&gt;&lt;a href=&quot;#简单易用&quot; class=&quot;headerlink&quot;</summary>
         
       
     
