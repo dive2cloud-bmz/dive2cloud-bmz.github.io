@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-08-15T13:09:22.828Z</updated>
+  <updated>2025-08-28T09:16:41.757Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>postgreSql mvcc</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/08/28/postgreSql-mvcc/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/08/28/postgreSql-mvcc/</id>
+    <published>2025-08-28T06:11:48.000Z</published>
+    <updated>2025-08-28T09:16:41.757Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;MVCC&quot;&gt;&lt;a href=&quot;#MVCC&quot; class=&quot;headerlink&quot; title=&quot;MVCC&quot;&gt;&lt;/a&gt;MVCC&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;老生常谈了，简单说一下&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;事务隔离级别&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
+    
+  </entry>
   
   <entry>
     <title>postgreSql pg_basebackup</title>
@@ -460,29 +486,6 @@
         
         
     <summary type="html">&lt;h2 id=&quot;官方定义&quot;&gt;&lt;a href=&quot;#官方定义&quot; class=&quot;headerlink&quot; title=&quot;官方定义&quot;&gt;&lt;/a&gt;官方定义&lt;/h2&gt;&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>apache dolphinscheduler</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/21/apache-dolphinscheduler/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/21/apache-dolphinscheduler/</id>
-    <published>2025-03-21T13:04:37.000Z</published>
-    <updated>2025-03-31T05:41:37.779Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;特性&quot;&gt;&lt;a href=&quot;#特性&quot; class=&quot;headerlink&quot; title=&quot;特性&quot;&gt;&lt;/a&gt;特性&lt;/h2&gt;&lt;h3 id=&quot;简单易用&quot;&gt;&lt;a href=&quot;#简单易用&quot; class=&quot;headerlink&quot;</summary>
         
       
     
