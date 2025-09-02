@@ -341,7 +341,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2025-03-31
+                    2025-09-02
                 </div>
                 
 
@@ -376,7 +376,7 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>简单了解直接看 <a target="_blank" rel="noopener" href="https://thesecretlivesofdata.com/raft/">https://thesecretlivesofdata.com/raft/</a><br>但是这里有一些词语不准确，可能会让人误解。<br>二手理解 blog 80%是一知半解，负分滚粗，我直接看论文<br>英文原文地址 <a target="_blank" rel="noopener" href="https://ramcloud.atlassian.net/wiki/download/attachments/6586375/raft.pdf">https://ramcloud.atlassian.net/wiki/download/attachments/6586375/raft.pdf</a><br>中文翻译地址 <a target="_blank" rel="noopener" href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md</a></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>aft 是一个共识算法（consensus algorithm），所谓共识，就是即使是在部分节点故障、网络延时、网络分割的情况下，多个节点对某个事情也能达成一致的看法。<br>raft 是工程上使用较为广泛的强一致性、去中心化、高可用的分布式协议。<br>在 raft 之前工程上最有名的 paxos，但是 paxos 太难理解，很多人读不懂还在出书写博客瞎谈感受误导别人。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>raft 是一个共识算法（consensus algorithm），所谓共识，就是即使是在部分节点故障、网络延时、网络分割的情况下，多个节点对某个事情也能达成一致的看法。<br>raft 是工程上使用较为广泛的强一致性、去中心化、高可用的分布式协议。<br>在 raft 之前工程上最有名的 paxos，但是 paxos 太难理解，很多人读不懂还在出书写博客瞎谈感受误导别人。</p>
 <h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>为了易于理解，raft 主要做了两件事：</p>
 <ol>
 <li>问题分解<br>将复杂问题“复制集中节点一致性”拆分为多个子问题，使得每个子问题可以独立地被解释、理解和解决。在 raft，子问题包括<br>leader election：当前 leader 故障时，必须有一个新 leader 被选举出来<br>log replication：leader 必须从客户端接受 log entires，然后复制到其他节点，并强制要求其他节点的日志与自己相同<br>safety：任何服务器节点已经应用了一个确定的 log entires 到他的状态机中，那么其他节点不能在同一个日志索引位置 apply 一个不同的指令<br>membership changes：有时会变更集群的配置，比如增减节点等，有一个良好的机制不用停服就能做到</li>
