@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2025-08-28T09:16:41.757Z</updated>
+  <updated>2026-06-08T10:25:52.435Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,80 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从 PG 到 RAG：一个数据库工程师的 AI 转型第一课</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/06/08/week1-day1-rag-basics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/06/08/week1-day1-rag-basics/</id>
+    <published>2026-06-08T10:30:00.000Z</published>
+    <updated>2026-06-08T10:25:52.435Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
+    
+    <category term="Vector-Search" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Search/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>pg replication slot</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/12/16/pg-replication-slot/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/12/16/pg-replication-slot/</id>
+    <published>2025-12-16T07:54:20.000Z</published>
+    <updated>2025-12-16T07:54:48.618Z</updated>
+    
+    
+    
+    
+    
+    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>bigdata is dead</title>
+    <link href="https://dive2cloud-bmz.github.io/2025/12/01/bigdata-is-dead/"/>
+    <id>https://dive2cloud-bmz.github.io/2025/12/01/bigdata-is-dead/</id>
+    <published>2025-12-01T03:17:19.000Z</published>
+    <updated>2025-12-01T03:46:02.090Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在阿里云 RDS 的这段时间，接触了不少 DUCKDB</summary>
+        
+      
+    
+    
+    
+    
+    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
+    
+    <category term="translation" scheme="https://dive2cloud-bmz.github.io/tags/translation/"/>
+    
+  </entry>
   
   <entry>
     <title>postgreSql mvcc</title>
@@ -422,77 +496,6 @@
     
     
     <category term="cloud" scheme="https://dive2cloud-bmz.github.io/tags/cloud/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>aws-instance-controller</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/22/aws-instance-controller/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/22/aws-instance-controller/</id>
-    <published>2025-03-22T13:35:35.000Z</published>
-    <updated>2025-03-31T05:45:21.377Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;反编译过 aws-emr 在虚机内的控制进程 instance-controller&lt;br&gt;&lt;img src=&quot;/2025/03/22/aws-instance-controller/image1.png&quot;&gt;&lt;/p&gt;
-&lt;h2 id=&quot;构造方法&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="cloud" scheme="https://dive2cloud-bmz.github.io/tags/cloud/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>apache hbase</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/22/apache-hbase/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/22/apache-hbase/</id>
-    <published>2025-03-22T13:11:36.000Z</published>
-    <updated>2025-03-31T05:41:37.659Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;架构&quot;&gt;&lt;a href=&quot;#架构&quot; class=&quot;headerlink&quot; title=&quot;架构&quot;&gt;&lt;/a&gt;架构&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/03/22/apache-hbase/arch1.png&quot; alt=&quot;架构图&quot;&gt;&lt;/p&gt;
-&lt;h3</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>apache ambari</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/21/apache-ambari/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/21/apache-ambari/</id>
-    <published>2025-03-21T13:07:58.000Z</published>
-    <updated>2025-03-31T05:41:37.791Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;官方定义&quot;&gt;&lt;a href=&quot;#官方定义&quot; class=&quot;headerlink&quot; title=&quot;官方定义&quot;&gt;&lt;/a&gt;官方定义&lt;/h2&gt;&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
     
   </entry>
   
