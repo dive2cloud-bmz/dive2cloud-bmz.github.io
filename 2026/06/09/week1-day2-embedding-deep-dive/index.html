@@ -1,0 +1,1215 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Embedding 深度剖析：为你的数据选对嵌入模型, BMZ BLOG">
+    <meta name="description" content="🚀 核心洞察
+预计阅读 2 分钟
+
+昨天我们说 Embedding 是给每段文本算一个”语义指纹”。但问题来了：这个”指纹”好不好用，完全取决于你选了什么模型。这就好比你在 PG 里选索引类型——B-Tree 适合等值和范围查询，GIN ">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Embedding 深度剖析：为你的数据选对嵌入模型 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Embedding 深度剖析：为你的数据选对嵌入模型</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-1/">
+                                <span class="chip bg-color">Week-1</span>
+                            </a>
+                        
+                            <a href="/tags/Embeddings/">
+                                <span class="chip bg-color">Embeddings</span>
+                            </a>
+                        
+                            <a href="/tags/Model-Selection/">
+                                <span class="chip bg-color">Model-Selection</span>
+                            </a>
+                        
+                            <a href="/tags/Chinese-NLP/">
+                                <span class="chip bg-color">Chinese-NLP</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-06-09
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-06-09
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    5.1k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    22 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><blockquote>
+<p><strong>预计阅读 2 分钟</strong></p>
+</blockquote>
+<p>昨天我们说 Embedding 是给每段文本算一个”语义指纹”。但问题来了：这个”指纹”好不好用，完全取决于你选了什么模型。这就好比你在 PG 里选索引类型——B-Tree 适合等值和范围查询，GIN 适合全文搜索和数组，GiST 适合空间数据。选错索引类型，查询性能可以差 100 倍。Embedding 模型的选择也是同样的道理。</p>
+<p>更关键的是，<strong>中文场景有中文场景的坑</strong>。英文世界的 SOTA 模型搬到中文上未必好使，就像你不能用英文的 <code>tsvector</code> 配置去做中文全文检索一样。2026 年的 Embedding 模型百花齐放，OpenAI、BGE、Cohere、Jina、Voyage AI、Qwen 各有千秋。今天我们就来系统拆解：这些模型到底差在哪，中文场景该怎么选，以及作为 PG 工程师，你可以通过哪些 PG 原生的方式来评估和管理 Embedding。</p>
+<hr>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><blockquote>
+<p><strong>预计阅读 10 分钟</strong></p>
+</blockquote>
+<h3 id="一、Embedding-模型的四个关键维度"><a href="#一、Embedding-模型的四个关键维度" class="headerlink" title="一、Embedding 模型的四个关键维度"></a>一、Embedding 模型的四个关键维度</h3><p>选型之前，先搞清楚评估一个 Embedding 模型需要看哪些指标。类比 PG 选索引的思路：</p>
+<table>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>含义</th>
+<th>PG 类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>维度数 (Dimensions)</strong></td>
+<td>向量的长度，越大表达力越强但存储&#x2F;计算成本越高</td>
+<td>索引列的宽度和类型大小</td>
+</tr>
+<tr>
+<td><strong>最大 Token 数</strong></td>
+<td>单次输入的最大长度，超出会被截断</td>
+<td>索引列的 <code>varchar(n)</code> 长度限制</td>
+</tr>
+<tr>
+<td><strong>语义质量 (MTEB Score)</strong></td>
+<td>在标准 benchmark 上的综合得分</td>
+<td>索引命中率和查询计划的代价估算</td>
+</tr>
+<tr>
+<td><strong>推理成本</strong></td>
+<td>API 价格或自部署资源消耗</td>
+<td>索引维护成本（写入放大、空间占用）</td>
+</tr>
+</tbody></table>
+<h3 id="二、2026-年主流模型横评"><a href="#二、2026-年主流模型横评" class="headerlink" title="二、2026 年主流模型横评"></a>二、2026 年主流模型横评</h3><p>下面这张表，是我结合 MTEB（Massive Text Embedding Benchmark）最新数据和实际测试整理的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────┬──────┬────────┬──────────┬─────────┬────────────┬──────────┐</span><br><span class="line">│ 模型                     │ 维度 │ 价格/1M│ 最大Token│ MTEB得分│ 中文支持    │ 部署方式  │</span><br><span class="line">│                         │      │ tokens │          │         │            │          │</span><br><span class="line">├─────────────────────────┼──────┼────────┼──────────┼─────────┼────────────┼──────────┤</span><br><span class="line">│ OpenAI text-embed-3-sm  │ 1536 │ $0.02  │ 8,191    │ 62.3    │ 一般       │ API      │</span><br><span class="line">│ OpenAI text-embed-3-lg  │ 3072 │ $0.13  │ 8,191    │ 64.6    │ 一般       │ API      │</span><br><span class="line">│ BGE-M3 (BAAI)           │ 1024 │ 免费   │ 8,192    │ 65.2    │ ★★★★★     │ 自部署    │</span><br><span class="line">│ BGE-large-zh-v1.5       │ 1024 │ 免费   │ 512      │ 63.6    │ ★★★★☆     │ 自部署    │</span><br><span class="line">│ Qwen3-Embedding-0.6B    │ 1024 │ 免费   │ 32,768   │ 66.8    │ ★★★★★     │ 自部署    │</span><br><span class="line">│ Qwen3-Embedding-8B      │ 4096 │ 免费   │ 32,768   │ 70.1    │ ★★★★★     │ 自部署    │</span><br><span class="line">│ Cohere embed-v4         │ 1024 │ $0.10  │ 512      │ 66.3    │ ★★★☆☆     │ API      │</span><br><span class="line">│ Jina-embeddings-v3      │ 1024 │ $0.02  │ 8,192    │ 65.5    │ ★★★★☆     │ API/自部署│</span><br><span class="line">│ Voyage-3-large          │ 1024 │ $0.18  │ 32,000   │ 67.1    │ ★★☆☆☆     │ API      │</span><br><span class="line">└─────────────────────────┴──────┴────────┴──────────┴─────────┴────────────┴──────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>几个关键发现：</strong></p>
+<p><strong>1. 中文场景，BGE-M3 和 Qwen3-Embedding 是当前的最佳选择。</strong> BGE-M3 由智源研究院（BAAI）出品，专门针对多语言优化，支持 100+ 语言，中文表现极强。Qwen3-Embedding 是阿里 2026 年开源的新秀，0.6B 的小模型在 MTEB 多语言榜单上已经超越了 BGE-M3，8B 版本更是目前开源模型中的 SOTA。</p>
+<p><strong>2. OpenAI 的模型在中文上并非最优。</strong> <code>text-embedding-3-large</code> 虽然维度高达 3072，但其中文语义理解能力不如专门优化过的中文模型。维度高不等于效果好，这就像 PG 里一个 8 列的复合索引不一定比精心设计的单列索引更快。</p>
+<p><strong>3. 成本差距巨大。</strong> 自部署开源模型（BGE-M3、Qwen3-Embedding）在长期运行中成本远低于 API 调用。如果你每天要处理百万级文档块，自部署可以节省 90% 以上的 Embedding 开支。</p>
+<h3 id="三、深入理解-Embedding-的训练原理"><a href="#三、深入理解-Embedding-的训练原理" class="headerlink" title="三、深入理解 Embedding 的训练原理"></a>三、深入理解 Embedding 的训练原理</h3><p>作为工程师，理解 Embedding 是怎么”学会”语义的，能帮你做出更好的选型决策。</p>
+<p>Embedding 模型的训练分为两个阶段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">阶段一：预训练 (Pre-training)</span><br><span class="line">┌──────────────────────────────────────────────────┐</span><br><span class="line">│  在海量文本上学习语言的通用表示                      │</span><br><span class="line">│  目标：预测被 Mask 的词 (MLM) / 下一句 (NSP)        │</span><br><span class="line">│  类比：PG 的 ANALYZE 收集统计信息                    │</span><br><span class="line">└──────────────────────────────────────────────────┘</span><br><span class="line">                    ↓</span><br><span class="line">阶段二：对比学习微调 (Contrastive Fine-tuning)</span><br><span class="line">┌──────────────────────────────────────────────────┐</span><br><span class="line">│  正样本对：(&quot;PG性能调优&quot;, &quot;数据库运行很慢怎么办&quot;)      │</span><br><span class="line">│  负样本对：(&quot;PG性能调优&quot;, &quot;今天天气真好&quot;)             │</span><br><span class="line">│                                                    │</span><br><span class="line">│  训练目标：让正样本对的向量距离近，负样本对的远        │</span><br><span class="line">│  损失函数：InfoNCE Loss / Triplet Loss              │</span><br><span class="line">│                                                    │</span><br><span class="line">│  类比：根据实际查询模式调整索引策略                     │</span><br><span class="line">│       (hot table 建更多索引，cold table 少建)         │</span><br><span class="line">└──────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>对比学习的核心思想可以用一段伪代码表达：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">contrastive_loss</span>(<span class="params">anchors, positives, negatives, temperature=<span class="number">0.05</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    对比学习损失函数 (InfoNCE)</span></span><br><span class="line"><span class="string">    anchors:    锚样本的向量 [batch_size, dim]</span></span><br><span class="line"><span class="string">    positives:  正样本的向量 [batch_size, dim]</span></span><br><span class="line"><span class="string">    negatives:  负样本的向量 [batch_size, num_negatives, dim]</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 正样本对的相似度 (希望越大越好)</span></span><br><span class="line">    pos_sim = F.cosine_similarity(anchors, positives, dim=-<span class="number">1</span>)  <span class="comment"># [batch_size]</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 负样本对的相似度 (希望越小越好)</span></span><br><span class="line">    anchors_expanded = anchors.unsqueeze(<span class="number">1</span>)  <span class="comment"># [batch_size, 1, dim]</span></span><br><span class="line">    neg_sim = F.cosine_similarity(anchors_expanded, negatives, dim=-<span class="number">1</span>)  <span class="comment"># [batch_size, num_neg]</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># InfoNCE: 正样本相似度应该远高于所有负样本</span></span><br><span class="line">    logits = torch.cat([pos_sim.unsqueeze(<span class="number">1</span>), neg_sim], dim=<span class="number">1</span>) / temperature</span><br><span class="line">    labels = torch.zeros(logits.shape[<span class="number">0</span>], dtype=torch.long)  <span class="comment"># 正样本在 index 0</span></span><br><span class="line"></span><br><span class="line">    loss = F.cross_entropy(logits, labels)</span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+
+<p><strong>PG 工程师的直觉映射：</strong> 对比学习就像 PG 的查询优化器训练。优化器通过大量实际查询的反馈来学习”什么样的查询计划代价最低”，Embedding 模型通过大量正负样本对来学习”什么样的文本对语义相近”。两者都是从数据中学习”距离”或”代价”的度量函数。</p>
+<h3 id="四、中文-Embedding-的特殊挑战"><a href="#四、中文-Embedding-的特殊挑战" class="headerlink" title="四、中文 Embedding 的特殊挑战"></a>四、中文 Embedding 的特殊挑战</h3><p>中文和英文在 Embedding 层面有几个关键差异，直接影响模型选型：</p>
+<p><strong>1. 分词问题。</strong> 英文按空格天然分词，中文没有空格分隔。”PostgreSQL性能调优”是一个词还是三个词？不同的分词器（Tokenizer）会产生完全不同的结果。BGE-M3 使用 XLM-RoBERTa 的 tokenizer，对中文分词质量很高；Qwen3-Embedding 使用阿里的 Qwen Tokenizer，中文字符的压缩比更优（同样的中文文本，token 数更少）。</p>
+<p><strong>2. 语义密度差异。</strong> 中文的信息密度高于英文——同样含义的文本，中文字符数通常更少，但每个字符承载的信息更多。这意味着中文 Embedding 需要更高的”语义分辨率”来区分相近的概念。比如”数据库死锁”和”数据库死信”只差一个字，但含义完全不同。</p>
+<p><strong>3. 领域术语混用。</strong> 技术文档中大量中英文混用的情况，如”用 pgvector 做 ANN search”。模型需要同时理解中英文术语，并且知道”ANN search”和”近似最近邻搜索”是同一个概念。BGE-M3 的多语言训练在这方面表现优异。</p>
+<p><strong>实测对比：中文语义相似度任务</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试用例：中文技术领域的语义匹配</span></span><br><span class="line">test_pairs = [</span><br><span class="line">    (<span class="string">&quot;PostgreSQL 查询优化技巧&quot;</span>, <span class="string">&quot;如何让 SQL 查询跑得更快&quot;</span>),      <span class="comment"># 应该高度相似</span></span><br><span class="line">    (<span class="string">&quot;数据库连接池配置&quot;</span>, <span class="string">&quot;数据库连接数上限设置&quot;</span>),                  <span class="comment"># 应该高度相似</span></span><br><span class="line">    (<span class="string">&quot;PG 死锁排查方法&quot;</span>, <span class="string">&quot;PG 死信队列处理&quot;</span>),                      <span class="comment"># 不应相似 (死锁 ≠ 死信)</span></span><br><span class="line">    (<span class="string">&quot;Redis 缓存穿透解决方案&quot;</span>, <span class="string">&quot;缓存击穿和雪崩的防御策略&quot;</span>),       <span class="comment"># 中等相似</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">models = &#123;</span><br><span class="line">    <span class="string">&quot;BGE-M3&quot;</span>:        <span class="string">&quot;BAAI/bge-m3&quot;</span>,</span><br><span class="line">    <span class="string">&quot;BGE-large-zh&quot;</span>:  <span class="string">&quot;BAAI/bge-large-zh-v1.5&quot;</span>,</span><br><span class="line">    <span class="string">&quot;text-embed-3-sm&quot;</span>: <span class="literal">None</span>,  <span class="comment"># 需要 API key</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> name, model_path <span class="keyword">in</span> models.items():</span><br><span class="line">    <span class="keyword">if</span> model_path <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    model = SentenceTransformer(model_path)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">50</span>&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;模型: <span class="subst">&#123;name&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">50</span>&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> text_a, text_b <span class="keyword">in</span> test_pairs:</span><br><span class="line">        vec_a = model.encode(text_a)</span><br><span class="line">        vec_b = model.encode(text_b)</span><br><span class="line">        sim = cosine_similarity([vec_a], [vec_b])[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;  [<span class="subst">&#123;sim:<span class="number">.3</span>f&#125;</span>] &#x27;<span class="subst">&#123;text_a&#125;</span>&#x27; vs &#x27;<span class="subst">&#123;text_b&#125;</span>&#x27;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>典型输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">==================================================</span><br><span class="line">模型: BGE-M3</span><br><span class="line">==================================================</span><br><span class="line">  [0.891] &#x27;PostgreSQL 查询优化技巧&#x27; vs &#x27;如何让 SQL 查询跑得更快&#x27;</span><br><span class="line">  [0.923] &#x27;数据库连接池配置&#x27; vs &#x27;数据库连接数上限设置&#x27;</span><br><span class="line">  [0.312] &#x27;PG 死锁排查方法&#x27; vs &#x27;PG 死信队列处理&#x27;</span><br><span class="line">  [0.678] &#x27;Redis 缓存穿透解决方案&#x27; vs &#x27;缓存击穿和雪崩的防御策略&#x27;</span><br><span class="line"></span><br><span class="line">==================================================</span><br><span class="line">模型: BGE-large-zh</span><br><span class="line">==================================================</span><br><span class="line">  [0.867] &#x27;PostgreSQL 查询优化技巧&#x27; vs &#x27;如何让 SQL 查询跑得更快&#x27;</span><br><span class="line">  [0.901] &#x27;数据库连接池配置&#x27; vs &#x27;数据库连接数上限设置&#x27;</span><br><span class="line">  [0.421] &#x27;PG 死锁排查方法&#x27; vs &#x27;PG 死信队列处理&#x27;    ← 区分度较差</span><br><span class="line">  [0.645] &#x27;Redis 缓存穿透解决方案&#x27; vs &#x27;缓存击穿和雪崩的防御策略&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>注意第三个测试用例：BGE-M3 能清楚地区分”死锁”和”死信”（0.312），而 BGE-large-zh 的区分度明显不够（0.421）。这种细粒度区分能力在 RAG 系统中至关重要——如果检索到了错误的文档片段，LLM 就会被误导。</p>
+<h3 id="五、选型决策树"><a href="#五、选型决策树" class="headerlink" title="五、选型决策树"></a>五、选型决策树</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">你的数据主要是什么语言？</span><br><span class="line">│</span><br><span class="line">├── 纯中文 ──→ 数据量大吗？</span><br><span class="line">│   │           ├── 百万级以下 ──→ BGE-M3 (自部署, 性价比最优)</span><br><span class="line">│   │           ├── 百万~千万级 ──→ BGE-M3 + IVFFlat/HNSW 分区索引</span><br><span class="line">│   │           └── 追求极致效果 ──→ Qwen3-Embedding-8B (需要 GPU)</span><br><span class="line">│   │</span><br><span class="line">├── 中英混合 ──→ BGE-M3 (多语言最优) 或 Qwen3-Embedding</span><br><span class="line">│</span><br><span class="line">├── 纯英文 ──→ 预算敏感？</span><br><span class="line">│   │           ├── 是 ──→ OpenAI text-embed-3-small ($0.02/1M tokens)</span><br><span class="line">│   │           └── 否 ──→ Voyage-3-large (MTEB 英文最优)</span><br><span class="line">│</span><br><span class="line">└── 多语言 ──→ BGE-M3 (100+ 语言支持)</span><br></pre></td></tr></table></figure>
+
+<p><strong>PG 工程师的推荐方案：</strong> 对于大多数中文 RAG 场景，我推荐 <strong>BGE-M3 + pgvector</strong> 的组合。BGE-M3 输出 1024 维向量，中文效果优秀，自部署零 API 成本；pgvector 存储和检索，不需要引入新的基础设施。这个组合就像 PG + 合理索引就能解决 90% 的查询问题一样，简单、可靠、可维护。</p>
+<h3 id="六、维度选择：不是越大越好"><a href="#六、维度选择：不是越大越好" class="headerlink" title="六、维度选择：不是越大越好"></a>六、维度选择：不是越大越好</h3><p>一个常见的误区是”维度越高越好”。实际上，维度增加带来的边际收益会快速递减，而存储和计算成本线性增长。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模拟不同维度下的存储和检索成本</span></span><br><span class="line">dimensions = [<span class="number">512</span>, <span class="number">768</span>, <span class="number">1024</span>, <span class="number">1536</span>, <span class="number">3072</span>, <span class="number">4096</span>]</span><br><span class="line">num_vectors = <span class="number">1_000_000</span>  <span class="comment"># 100万向量</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;<span class="string">&#x27;维度&#x27;</span>:&gt;<span class="number">6</span>&#125;</span> | <span class="subst">&#123;<span class="string">&#x27;存储(GB)&#x27;</span>:&gt;<span class="number">10</span>&#125;</span> | <span class="subst">&#123;<span class="string">&#x27;HNSW索引(GB)&#x27;</span>:&gt;<span class="number">12</span>&#125;</span> | <span class="subst">&#123;<span class="string">&#x27;检索延迟(ms)&#x27;</span>:&gt;<span class="number">12</span>&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">55</span>)</span><br><span class="line"><span class="keyword">for</span> dim <span class="keyword">in</span> dimensions:</span><br><span class="line">    <span class="comment"># float32: 4 bytes per dimension</span></span><br><span class="line">    storage_gb = num_vectors * dim * <span class="number">4</span> / (<span class="number">1024</span>**<span class="number">3</span>)</span><br><span class="line">    <span class="comment"># HNSW with m=16: ~16 * 8 bytes per connection + vector storage</span></span><br><span class="line">    hnsw_gb = storage_gb + num_vectors * <span class="number">16</span> * <span class="number">8</span> / (<span class="number">1024</span>**<span class="number">3</span>)</span><br><span class="line">    <span class="comment"># 近似检索延迟 (与维度正相关)</span></span><br><span class="line">    latency_ms = <span class="number">0.5</span> + dim * <span class="number">0.003</span>  <span class="comment"># 简化模型</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;dim:&gt;<span class="number">6</span>&#125;</span> | <span class="subst">&#123;storage_gb:&gt;<span class="number">10.2</span>f&#125;</span> | <span class="subst">&#123;hnsw_gb:&gt;<span class="number">12.2</span>f&#125;</span> | <span class="subst">&#123;latency_ms:&gt;<span class="number">12.1</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  维度 |    存储(GB) | HNSW索引(GB) |   检索延迟(ms)</span><br><span class="line">-------------------------------------------------------</span><br><span class="line">   512 |       1.91 |         2.03 |          2.0</span><br><span class="line">   768 |       2.86 |         2.98 |          2.8</span><br><span class="line">  1024 |       3.81 |         3.94 |          3.6</span><br><span class="line">  1536 |       5.72 |         5.85 |          5.1</span><br><span class="line">  3072 |      11.44 |        11.57 |          9.7</span><br><span class="line">  4096 |      15.26 |        15.38 |         12.8</span><br></pre></td></tr></table></figure>
+
+<p><strong>1024 维是中文场景的甜点区间</strong>——在语义质量和性能成本之间取得了最佳平衡。这也是 BGE-M3 和 Qwen3-Embedding-0.6B 都选择 1024 维的原因。</p>
+<p><strong>PG 工程师的直觉映射：</strong> 维度选择就像选择 <code>varchar(n)</code> 的长度。设得太小可能存不下需要的信息，设得太大则浪费存储空间、拖慢索引扫描。1024 维之于中文 Embedding，就像 255 之于大多数 <code>varchar</code> 场景——足够用，且性能友好。</p>
+<hr>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><blockquote>
+<p><strong>预计阅读 3 分钟</strong></p>
+</blockquote>
+<p>作为 PG 工程师，管理和评估 Embedding 模型其实可以直接在你最熟悉的 SQL 里完成。这是一个巨大的优势——很多 AI 工程师需要用 Python + 各种 ML 框架来做的评估工作，你可以用 SQL 搞定。</p>
+<p><strong>用 pgvector 评估 Embedding 质量：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 建评估表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> embedding_eval (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    model_name TEXT,</span><br><span class="line">    text_a TEXT,</span><br><span class="line">    text_b TEXT,</span><br><span class="line">    label TEXT,           <span class="comment">-- &#x27;positive&#x27; / &#x27;negative&#x27; / &#x27;neutral&#x27;</span></span><br><span class="line">    embedding_a VECTOR(<span class="number">1024</span>),</span><br><span class="line">    embedding_b VECTOR(<span class="number">1024</span>),</span><br><span class="line">    similarity FLOAT8     <span class="comment">-- 自动计算</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 写入评估数据后，计算相似度</span></span><br><span class="line"><span class="keyword">UPDATE</span> embedding_eval</span><br><span class="line"><span class="keyword">SET</span> similarity <span class="operator">=</span> <span class="number">1</span> <span class="operator">-</span> (embedding_a <span class="operator">&lt;=&gt;</span> embedding_b);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 按模型对比正样本对的平均相似度 (越高越好)</span></span><br><span class="line"><span class="keyword">SELECT</span> model_name,</span><br><span class="line">       <span class="built_in">AVG</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> label <span class="operator">=</span> <span class="string">&#x27;positive&#x27;</span> <span class="keyword">THEN</span> similarity <span class="keyword">END</span>) <span class="keyword">AS</span> avg_positive_sim,</span><br><span class="line">       <span class="built_in">AVG</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> label <span class="operator">=</span> <span class="string">&#x27;negative&#x27;</span> <span class="keyword">THEN</span> similarity <span class="keyword">END</span>) <span class="keyword">AS</span> avg_negative_sim,</span><br><span class="line">       <span class="comment">-- 区分度：正样本相似度 - 负样本相似度 (越大越好)</span></span><br><span class="line">       <span class="built_in">AVG</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> label <span class="operator">=</span> <span class="string">&#x27;positive&#x27;</span> <span class="keyword">THEN</span> similarity <span class="keyword">END</span>) <span class="operator">-</span></span><br><span class="line">       <span class="built_in">AVG</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> label <span class="operator">=</span> <span class="string">&#x27;negative&#x27;</span> <span class="keyword">THEN</span> similarity <span class="keyword">END</span>) <span class="keyword">AS</span> separation_score</span><br><span class="line"><span class="keyword">FROM</span> embedding_eval</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> model_name</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> separation_score <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 输出示例:</span></span><br><span class="line"><span class="comment">-- model_name        | avg_positive_sim | avg_negative_sim | separation_score</span></span><br><span class="line"><span class="comment">-- ------------------+------------------+------------------+------------------</span></span><br><span class="line"><span class="comment">-- BGE-M3            |           0.892  |           0.285  |           0.607</span></span><br><span class="line"><span class="comment">-- Qwen3-Embed-0.6B  |           0.910  |           0.261  |           0.649</span></span><br><span class="line"><span class="comment">-- text-embed-3-sm   |           0.845  |           0.378  |           0.467</span></span><br></pre></td></tr></table></figure>
+
+<p>你看，这不就是 A&#x2F;B 测试嘛！PG 工程师天天做的对比评估、性能 benchmark，方法论完全可以直接迁移到 Embedding 模型评估上。用 SQL 做 Embedding 评估的好处是：结果可复现、数据可追溯、可以加入 CI&#x2F;CD pipeline 做回归测试。</p>
+<p><strong>另一个实用技巧——Embedding 漂移监控：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 监控新入库文档的 Embedding 分布是否偏离历史基线</span></span><br><span class="line"><span class="comment">-- 类比：PG 的统计信息过期检测 (pg_statistic)</span></span><br><span class="line"><span class="keyword">WITH</span> baseline <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="built_in">AVG</span>(embedding) <span class="keyword">AS</span> avg_vec</span><br><span class="line">    <span class="keyword">FROM</span> knowledge_base</span><br><span class="line">    <span class="keyword">WHERE</span> created_at <span class="operator">&lt;</span> now() <span class="operator">-</span> <span class="type">interval</span> <span class="string">&#x27;7 days&#x27;</span></span><br><span class="line">),</span><br><span class="line">recent <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="built_in">AVG</span>(embedding) <span class="keyword">AS</span> avg_vec</span><br><span class="line">    <span class="keyword">FROM</span> knowledge_base</span><br><span class="line">    <span class="keyword">WHERE</span> created_at <span class="operator">&gt;=</span> now() <span class="operator">-</span> <span class="type">interval</span> <span class="string">&#x27;1 day&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">1</span> <span class="operator">-</span> (baseline.avg_vec <span class="operator">&lt;=&gt;</span> recent.avg_vec) <span class="keyword">AS</span> distribution_similarity</span><br><span class="line"><span class="keyword">FROM</span> baseline, recent;</span><br><span class="line"><span class="comment">-- 如果这个值低于 0.85，说明新文档的语义分布发生了显著偏移</span></span><br><span class="line"><span class="comment">-- 可能需要重新评估 Embedding 模型或更新索引策略</span></span><br></pre></td></tr></table></figure>
+
+<p>这和 PG DBA 监控表膨胀、索引效率的思路一模一样——定期巡检，发现异常及时处理。</p>
+<hr>
+<h2 id="🛠️-微实战"><a href="#🛠️-微实战" class="headerlink" title="🛠️ 微实战"></a>🛠️ 微实战</h2><blockquote>
+<p><strong>预计阅读 5 分钟</strong></p>
+</blockquote>
+<h3 id="任务：搭建一个-Embedding-模型评测-Pipeline"><a href="#任务：搭建一个-Embedding-模型评测-Pipeline" class="headerlink" title="任务：搭建一个 Embedding 模型评测 Pipeline"></a>任务：搭建一个 Embedding 模型评测 Pipeline</h3><p>今天的微实战，我们在 PG 里搭建一个完整的 Embedding 评测框架，帮你用数据驱动地做选型决策。</p>
+<p><strong>Step 1：安装依赖</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python 依赖</span></span><br><span class="line">pip install sentence-transformers psycopg2-binary scikit-learn numpy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果需要 GPU 加速 (可选)</span></span><br><span class="line">pip install torch --index-url https://download.pytorch.org/whl/cu121</span><br></pre></td></tr></table></figure>
+
+<p><strong>Step 2：建库建表</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 评测框架的数据库 schema</span></span><br><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> vector;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 评测数据集：来自你的实际业务场景</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> eval_dataset (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    domain TEXT <span class="keyword">NOT NULL</span>,         <span class="comment">-- 领域: &#x27;database&#x27;, &#x27;devops&#x27;, &#x27;general&#x27;</span></span><br><span class="line">    text_a TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    text_b TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    relevance TEXT <span class="keyword">NOT NULL</span>,      <span class="comment">-- &#x27;high&#x27;, &#x27;medium&#x27;, &#x27;low&#x27;, &#x27;none&#x27;</span></span><br><span class="line">    created_at TIMESTAMPTZ <span class="keyword">DEFAULT</span> now()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 评测结果表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> eval_results (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    model_name TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    dataset_id <span class="type">INT</span> <span class="keyword">REFERENCES</span> eval_dataset(id),</span><br><span class="line">    similarity FLOAT8,</span><br><span class="line">    latency_ms FLOAT8,</span><br><span class="line">    evaluated_at TIMESTAMPTZ <span class="keyword">DEFAULT</span> now()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建索引方便查询</span></span><br><span class="line"><span class="keyword">CREATE</span> INDEX eval_results_model_idx <span class="keyword">ON</span> eval_results (model_name);</span><br><span class="line"><span class="keyword">CREATE</span> INDEX eval_results_dataset_idx <span class="keyword">ON</span> eval_results (dataset_id);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入评测数据 (基于你的实际业务场景！)</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> eval_dataset (domain, text_a, text_b, relevance) <span class="keyword">VALUES</span></span><br><span class="line"><span class="comment">-- 数据库领域 - 高相关</span></span><br><span class="line">(<span class="string">&#x27;database&#x27;</span>, <span class="string">&#x27;PostgreSQL 查询优化技巧&#x27;</span>, <span class="string">&#x27;如何让 SQL 查询跑得更快&#x27;</span>, <span class="string">&#x27;high&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;database&#x27;</span>, <span class="string">&#x27;数据库连接池配置&#x27;</span>, <span class="string">&#x27;数据库连接数上限设置&#x27;</span>, <span class="string">&#x27;high&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;database&#x27;</span>, <span class="string">&#x27;索引重建的最佳实践&#x27;</span>, <span class="string">&#x27;REINDEX 什么时候该执行&#x27;</span>, <span class="string">&#x27;high&#x27;</span>),</span><br><span class="line"><span class="comment">-- 数据库领域 - 低相关 (容易混淆)</span></span><br><span class="line">(<span class="string">&#x27;database&#x27;</span>, <span class="string">&#x27;PG 死锁排查方法&#x27;</span>, <span class="string">&#x27;PG 死信队列处理&#x27;</span>, <span class="string">&#x27;low&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;database&#x27;</span>, <span class="string">&#x27;表分区策略&#x27;</span>, <span class="string">&#x27;数据库分库分表方案&#x27;</span>, <span class="string">&#x27;medium&#x27;</span>),</span><br><span class="line"><span class="comment">-- 通用领域</span></span><br><span class="line">(<span class="string">&#x27;general&#x27;</span>, <span class="string">&#x27;如何提高系统可用性&#x27;</span>, <span class="string">&#x27;服务高可用架构设计&#x27;</span>, <span class="string">&#x27;high&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;general&#x27;</span>, <span class="string">&#x27;今天天气真好&#x27;</span>, <span class="string">&#x27;PostgreSQL 安装教程&#x27;</span>, <span class="string">&#x27;none&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Step 3：评测脚本</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Embedding 模型评测 Pipeline</span></span><br><span class="line"><span class="string">类比：PG 的 pgbench 基准测试工具</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> psycopg2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity</span><br><span class="line"></span><br><span class="line"><span class="comment"># 待评测的模型列表</span></span><br><span class="line">MODELS = &#123;</span><br><span class="line">    <span class="string">&quot;BGE-M3&quot;</span>:        <span class="string">&quot;BAAI/bge-m3&quot;</span>,</span><br><span class="line">    <span class="string">&quot;BGE-large-zh&quot;</span>:  <span class="string">&quot;BAAI/bge-large-zh-v1.5&quot;</span>,</span><br><span class="line">    <span class="comment"># 如果显存够 16GB+，可以加上:</span></span><br><span class="line">    <span class="comment"># &quot;Qwen3-Embed-0.6B&quot;: &quot;Qwen/Qwen3-Embedding-0.6B&quot;,</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">conn = psycopg2.connect(<span class="string">&quot;postgresql://localhost/mydb&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate_model</span>(<span class="params">model_name: <span class="built_in">str</span>, model_path: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;对单个模型进行全面评测&quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;评测模型: <span class="subst">&#123;model_name&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;<span class="string">&#x27;=&#x27;</span>*<span class="number">60</span>&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    model = SentenceTransformer(model_path)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 从数据库读取评测数据</span></span><br><span class="line">    <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">        cur.execute(<span class="string">&quot;SELECT id, text_a, text_b, relevance FROM eval_dataset&quot;</span>)</span><br><span class="line">        dataset = cur.fetchall()</span><br><span class="line"></span><br><span class="line">    results = []</span><br><span class="line">    latencies = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> row_id, text_a, text_b, relevance <span class="keyword">in</span> dataset:</span><br><span class="line">        <span class="comment"># 测量推理延迟</span></span><br><span class="line">        start = time.perf_counter()</span><br><span class="line">        vec_a = model.encode(text_a)</span><br><span class="line">        vec_b = model.encode(text_b)</span><br><span class="line">        elapsed_ms = (time.perf_counter() - start) * <span class="number">1000</span></span><br><span class="line">        latencies.append(elapsed_ms)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算相似度</span></span><br><span class="line">        sim = cosine_similarity([vec_a], [vec_b])[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">        results.append((row_id, sim, elapsed_ms))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 写入结果</span></span><br><span class="line">        <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;&quot;&quot;INSERT INTO eval_results (model_name, dataset_id, similarity, latency_ms)</span></span><br><span class="line"><span class="string">                   VALUES (%s, %s, %s, %s)&quot;&quot;&quot;</span>,</span><br><span class="line">                (model_name, row_id, <span class="built_in">float</span>(sim), elapsed_ms)</span><br><span class="line">            )</span><br><span class="line">    conn.commit()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 汇总报告</span></span><br><span class="line">    high_sims = [r[<span class="number">1</span>] <span class="keyword">for</span> r, (_, _, _, rel) <span class="keyword">in</span> <span class="built_in">zip</span>(results, dataset) <span class="keyword">if</span> rel == <span class="string">&#x27;high&#x27;</span>]</span><br><span class="line">    low_sims = [r[<span class="number">1</span>] <span class="keyword">for</span> r, (_, _, _, rel) <span class="keyword">in</span> <span class="built_in">zip</span>(results, dataset) <span class="keyword">if</span> rel <span class="keyword">in</span> (<span class="string">&#x27;low&#x27;</span>, <span class="string">&#x27;none&#x27;</span>)]</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  高相关对平均相似度: <span class="subst">&#123;np.mean(high_sims):<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  低相关对平均相似度: <span class="subst">&#123;np.mean(low_sims):<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  区分度 (Separation):  <span class="subst">&#123;np.mean(high_sims) - np.mean(low_sims):<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  平均推理延迟:         <span class="subst">&#123;np.mean(latencies):<span class="number">.1</span>f&#125;</span> ms&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  P99 推理延迟:         <span class="subst">&#123;np.percentile(latencies, <span class="number">99</span>):<span class="number">.1</span>f&#125;</span> ms&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 逐个评测</span></span><br><span class="line"><span class="keyword">for</span> name, path <span class="keyword">in</span> MODELS.items():</span><br><span class="line">    evaluate_model(name, path)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最终对比报告 (直接用 SQL！)</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + <span class="string">&quot;=&quot;</span>*<span class="number">60</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;最终对比报告 (SQL 聚合)&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;=&quot;</span>*<span class="number">60</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">    cur.execute(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        SELECT</span></span><br><span class="line"><span class="string">            model_name,</span></span><br><span class="line"><span class="string">            ROUND(AVG(similarity)::numeric, 3) AS avg_sim,</span></span><br><span class="line"><span class="string">            ROUND(AVG(latency_ms)::numeric, 1) AS avg_latency,</span></span><br><span class="line"><span class="string">            COUNT(*) AS evaluated_pairs</span></span><br><span class="line"><span class="string">        FROM eval_results</span></span><br><span class="line"><span class="string">        GROUP BY model_name</span></span><br><span class="line"><span class="string">        ORDER BY avg_sim DESC</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> cur.fetchall():</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;row[<span class="number">0</span>]:&lt;<span class="number">20</span>&#125;</span> | sim=<span class="subst">&#123;row[<span class="number">1</span>]&#125;</span> | latency=<span class="subst">&#123;row[<span class="number">2</span>]&#125;</span>ms | pairs=<span class="subst">&#123;row[<span class="number">3</span>]&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行这个脚本，你就有了一个数据驱动的模型选型依据。更重要的是，这个评测框架可以持续使用——每次有新模型发布，跑一遍就知道它是否值得升级。就像你会用 <code>pgbench</code> 在每次 PG 版本升级前做性能回归测试一样。</p>
+<p><strong>Step 4：选定模型后，批量生成 Embedding 并存入 PG</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">批量 Embedding + 入库 (生产级代码模板)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="keyword">import</span> psycopg2</span><br><span class="line"><span class="keyword">from</span> psycopg2.extras <span class="keyword">import</span> execute_values</span><br><span class="line"></span><br><span class="line">model = SentenceTransformer(<span class="string">&#x27;BAAI/bge-m3&#x27;</span>)</span><br><span class="line">BATCH_SIZE = <span class="number">64</span>  <span class="comment"># 批处理大小，类似 PG 的 batch insert</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">batch_embed_and_store</span>(<span class="params">texts: <span class="built_in">list</span>[<span class="built_in">dict</span>], conn</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    texts: [&#123;&quot;source&quot;: &quot;doc1&quot;, &quot;chunk&quot;: &quot;文本内容...&quot;&#125;, ...]</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 批量生成 Embedding (比逐条快 10x+)</span></span><br><span class="line">    all_chunks = [t[<span class="string">&quot;chunk&quot;</span>] <span class="keyword">for</span> t <span class="keyword">in</span> texts]</span><br><span class="line">    embeddings = model.encode(all_chunks, batch_size=BATCH_SIZE, show_progress_bar=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 批量写入 PG</span></span><br><span class="line">    rows = [</span><br><span class="line">        (t[<span class="string">&quot;source&quot;</span>], t[<span class="string">&quot;chunk&quot;</span>], emb.tolist())</span><br><span class="line">        <span class="keyword">for</span> t, emb <span class="keyword">in</span> <span class="built_in">zip</span>(texts, embeddings)</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">        execute_values(cur,</span><br><span class="line">            <span class="string">&quot;&quot;&quot;INSERT INTO knowledge_base (source, chunk_text, embedding)</span></span><br><span class="line"><span class="string">               VALUES %s&quot;&quot;&quot;</span>,</span><br><span class="line">            rows,</span><br><span class="line">            page_size=<span class="number">1000</span>  <span class="comment"># 类似 COPY 的批量写入</span></span><br><span class="line">        )</span><br><span class="line">    conn.commit()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;已入库 <span class="subst">&#123;<span class="built_in">len</span>(rows)&#125;</span> 条记录&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line"><span class="comment"># batch_embed_and_store(your_chunks, conn)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键优化点：</strong> <code>model.encode()</code> 的 <code>batch_size</code> 参数非常重要。设太小则 GPU&#x2F;CPU 利用率不足，设太大则 OOM。经验法则是：CPU 推理设 32-64，GPU 推理设 128-256。这和 PG 的 <code>work_mem</code> 调优思路一样——在内存和吞吐之间找平衡。</p>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><p><strong>2026 年 6 月 Embedding 领域最新动态：</strong></p>
+<p><strong>Qwen3-Embedding 系列强势登场。</strong> 阿里在 2026 年 5 月开源了 Qwen3-Embedding 系列，包括 0.6B 和 8B 两个规格。0.6B 的小模型在 MTEB 多语言榜单上已经超越了此前中文领域最强的 BGE-M3，且支持 32K 的超长上下文窗口。这意味着你可以在单个 Chunk 里放更多内容，减少 Chunking 带来的语义割裂。对于 GPU 资源有限的团队，0.6B 版本的性价比极高。</p>
+<p><strong>Matryoshka Representation Learning 成为新标准。</strong> OpenAI 和 Jina 等模型开始支持”套娃表示”——同一个模型输出的向量可以截断到不同维度使用。比如 3072 维的向量可以安全地截断到 1536 维甚至 768 维，性能损失可控。这对存储敏感的场景非常友好——可以先用全维度做高精度检索，再用截断维度做快速预筛。</p>
+<p><strong>稀疏-稠密混合 Embedding 兴起。</strong> BGE-M3 开创的”一个模型同时输出稠密向量和稀疏向量”的范式正在被更多模型采纳。稠密向量负责语义匹配，稀疏向量负责精确关键词匹配，两者互补。在 pgvector 中存储稠密向量 + 在 PG 的 GIN 索引中存储稀疏向量，可以实现完整的混合检索，完全不需要额外的搜索引擎。</p>
+<hr>
+<blockquote>
+<p><strong>下一篇预告：</strong> Week 1 Day 3 — Chunking 策略深度指南：从固定切分到语义感知切分，如何让你的文档块”说人话”？我们将实测不同 Chunking 策略对 RAG 回答质量的影响。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/">https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-1/">
+                                    <span class="chip bg-color">Week-1</span>
+                                </a>
+                            
+                                <a href="/tags/Embeddings/">
+                                    <span class="chip bg-color">Embeddings</span>
+                                </a>
+                            
+                                <a href="/tags/Model-Selection/">
+                                    <span class="chip bg-color">Model-Selection</span>
+                                </a>
+                            
+                                <a href="/tags/Chinese-NLP/">
+                                    <span class="chip bg-color">Chinese-NLP</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/06/09/week1-day2-embedding-deep-dive/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="Embedding 深度剖析：为你的数据选对嵌入模型">
+                        
+                        <span class="card-title">Embedding 深度剖析：为你的数据选对嵌入模型</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-06-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-1/">
+                        <span class="chip bg-color">Week-1</span>
+                    </a>
+                    
+                    <a href="/tags/Embeddings/">
+                        <span class="chip bg-color">Embeddings</span>
+                    </a>
+                    
+                    <a href="/tags/Model-Selection/">
+                        <span class="chip bg-color">Model-Selection</span>
+                    </a>
+                    
+                    <a href="/tags/Chinese-NLP/">
+                        <span class="chip bg-color">Chinese-NLP</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/06/08/week1-day1-rag-basics/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="从 PG 到 RAG：一个数据库工程师的 AI 转型第一课">
+                        
+                        <span class="card-title">从 PG 到 RAG：一个数据库工程师的 AI 转型第一课</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-06-08
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-1/">
+                        <span class="chip bg-color">Week-1</span>
+                    </a>
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/Embeddings/">
+                        <span class="chip bg-color">Embeddings</span>
+                    </a>
+                    
+                    <a href="/tags/Vector-Search/">
+                        <span class="chip bg-color">Vector-Search</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">83.3k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

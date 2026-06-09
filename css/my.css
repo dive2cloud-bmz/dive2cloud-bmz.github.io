@@ -1,1 +1,6 @@
 /* Here is your custom css styles. */
+
+/* Fix: 防止全局 .title 样式影响代码块中的函数名高亮 */
+figure.highlight .title {
+    font-size: inherit !important;
+}

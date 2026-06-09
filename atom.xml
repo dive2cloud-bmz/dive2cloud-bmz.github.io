@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-06-08T10:25:52.435Z</updated>
+  <updated>2026-06-09T13:05:42.389Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Embedding 深度剖析：为你的数据选对嵌入模型</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/</id>
+    <published>2026-06-09T13:00:00.000Z</published>
+    <updated>2026-06-09T13:05:42.389Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
+    
+    <category term="Model-Selection" scheme="https://dive2cloud-bmz.github.io/tags/Model-Selection/"/>
+    
+    <category term="Chinese-NLP" scheme="https://dive2cloud-bmz.github.io/tags/Chinese-NLP/"/>
+    
+  </entry>
   
   <entry>
     <title>从 PG 到 RAG：一个数据库工程师的 AI 转型第一课</title>
@@ -396,9 +430,9 @@
     
     
     
-    <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
     <category term="3PC" scheme="https://dive2cloud-bmz.github.io/tags/3PC/"/>
+    
+    <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
   </entry>
   
@@ -469,33 +503,9 @@
     
     
     
-    <category term="2PC" scheme="https://dive2cloud-bmz.github.io/tags/2PC/"/>
-    
     <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
-  </entry>
-  
-  <entry>
-    <title>cloud init</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/22/cloud-init/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/22/cloud-init/</id>
-    <published>2025-03-22T13:46:13.000Z</published>
-    <updated>2025-03-31T05:45:21.359Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;我们不光是大数据开发者，更是云计算开发者。了解云计算的工具很有必要。&lt;/p&gt;
-&lt;h2 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="cloud" scheme="https://dive2cloud-bmz.github.io/tags/cloud/"/>
+    <category term="2PC" scheme="https://dive2cloud-bmz.github.io/tags/2PC/"/>
     
   </entry>
   
