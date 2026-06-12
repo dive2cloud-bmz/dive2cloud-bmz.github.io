@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-06-09T13:05:42.389Z</updated>
+  <updated>2026-06-12T14:52:48.195Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Chunking 策略深度指南：从固定切分到语义感知切分</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/06/12/week1-day3-chunking-strategies/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/06/12/week1-day3-chunking-strategies/</id>
+    <published>2026-06-12T13:06:00.000Z</published>
+    <updated>2026-06-12T14:52:48.195Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
+    
+    <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
+  </entry>
   
   <entry>
     <title>Embedding 深度剖析：为你的数据选对嵌入模型</title>
@@ -430,9 +464,9 @@
     
     
     
-    <category term="3PC" scheme="https://dive2cloud-bmz.github.io/tags/3PC/"/>
-    
     <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    <category term="3PC" scheme="https://dive2cloud-bmz.github.io/tags/3PC/"/>
     
   </entry>
   
@@ -480,32 +514,6 @@
     
     
     <category term="hashicorp" scheme="https://dive2cloud-bmz.github.io/tags/hashicorp/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2PC</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/23/2PC/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/23/2PC/</id>
-    <published>2025-03-23T13:19:17.000Z</published>
-    <updated>2025-03-31T05:41:37.727Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;角色&quot;&gt;&lt;a href=&quot;#角色&quot; class=&quot;headerlink&quot; title=&quot;角色&quot;&gt;&lt;/a&gt;角色&lt;/h2&gt;&lt;p&gt;一个协调者&lt;br&gt;N 个执行者&lt;/p&gt;
-&lt;h2 id=&quot;思路&quot;&gt;&lt;a href=&quot;#思路&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-    <category term="2PC" scheme="https://dive2cloud-bmz.github.io/tags/2PC/"/>
     
   </entry>
   
