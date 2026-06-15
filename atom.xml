@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-06-12T14:52:48.195Z</updated>
+  <updated>2026-06-15T13:02:54.786Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>向量数据库选型实战：pgvector vs 专用向量库，PG 工程师该怎么选？</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/06/15/week1-day4-vector-databases/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/06/15/week1-day4-vector-databases/</id>
+    <published>2026-06-15T13:00:00.000Z</published>
+    <updated>2026-06-15T13:02:54.786Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
+    
+    <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
+    
+    <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
+    
+    <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
+  </entry>
   
   <entry>
     <title>Chunking 策略深度指南：从固定切分到语义感知切分</title>
@@ -42,11 +80,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
     
     <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -490,30 +528,6 @@
     
     
     <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>hashicorp</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/23/hashicorp/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/23/hashicorp/</id>
-    <published>2025-03-23T13:49:34.000Z</published>
-    <updated>2025-03-31T05:41:37.688Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;HashiCorp提供了大量的DevOps 基础设施自动化工具，集开发、运营和安全性于一体，可以帮助开发者编写和部署应用程序，加速应用程序分发，助力企业提升开发效率。&lt;/p&gt;
-&lt;h2 id=&quot;服务列表&quot;&gt;&lt;a href=&quot;#服务列表&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="hashicorp" scheme="https://dive2cloud-bmz.github.io/tags/hashicorp/"/>
     
   </entry>
   
