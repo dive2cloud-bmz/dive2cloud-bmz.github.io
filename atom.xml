@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-06-26T07:47:38.503Z</updated>
+  <updated>2026-07-06T13:55:59.106Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>W1D1 初识Embedding：让AI读懂语义的向量密码</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/06/week-1-day-1-embedding/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/06/week-1-day-1-embedding/</id>
+    <published>2026-07-06T13:14:13.000Z</published>
+    <updated>2026-07-06T13:55:59.106Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;🚀 核心洞察（2分钟）&lt;/p&gt;
+&lt;p&gt;如果你做了多年 PostgreSQL 或后端开发，想必对”索引”这个词有肌肉记忆：B-tree 让等值查询从 O(n) 降到 O(log n)，GIN 让全文检索变得可用，BRIN 让时序数据 Scan 成本骤降。大模型时代的</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
+    
+  </entry>
   
   <entry>
     <title>RAG 评估体系：你怎么知道你的 RAG 没有&quot;一本正经地胡说八道&quot;？</title>
@@ -118,8 +152,6 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -127,6 +159,8 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -156,11 +190,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
     
     <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -529,29 +563,6 @@
     
     
     <category term="DDD" scheme="https://dive2cloud-bmz.github.io/tags/DDD/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>raft</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/24/raft/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/24/raft/</id>
-    <published>2025-03-24T13:08:24.000Z</published>
-    <updated>2025-09-02T11:21:49.344Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;简单了解直接看 &lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="分布式" scheme="https://dive2cloud-bmz.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
   </entry>
   
