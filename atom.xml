@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-07T03:52:39.802Z</updated>
+  <updated>2026-07-07T13:34:08.278Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>W1D2 RAG文本分块：切块大小如何决定检索天花板</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/07/week-1-day-2-rag-chunking-text-splitting/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/07/week-1-day-2-rag-chunking-text-splitting/</id>
+    <published>2026-07-07T13:00:14.000Z</published>
+    <updated>2026-07-07T13:34:08.278Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2分钟）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2分钟）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2分钟）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2分钟）&lt;/h2&gt;&lt;p&gt;如果你做过 PostgreSQL</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
+    
+    <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
+    
+  </entry>
   
   <entry>
     <title>AI Agent 入门与 Function Calling：从被动检索到主动决策</title>
@@ -225,11 +258,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
     
     <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -549,31 +582,6 @@
     
     
     <category term="docker" scheme="https://dive2cloud-bmz.github.io/tags/docker/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>page cache</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/25/page-cache/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/25/page-cache/</id>
-    <published>2025-03-25T12:36:49.000Z</published>
-    <updated>2025-03-31T06:39:19.358Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;读取&quot;&gt;&lt;a href=&quot;#读取&quot; class=&quot;headerlink&quot; title=&quot;读取&quot;&gt;&lt;/a&gt;读取&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/2025/03/25/page-cache/read.png&quot;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;app 调用系统</summary>
-        
-      
-    
-    
-    
-    
-    <category term="linux" scheme="https://dive2cloud-bmz.github.io/tags/linux/"/>
     
   </entry>
   
