@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-06T13:55:59.106Z</updated>
+  <updated>2026-07-07T03:52:39.802Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>AI Agent 入门与 Function Calling：从被动检索到主动决策</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/07/week2-day1-ai-agent-function-calling/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/07/week2-day1-ai-agent-function-calling/</id>
+    <published>2026-07-07T12:00:00.000Z</published>
+    <updated>2026-07-07T03:52:39.802Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;过去一周我们完成了 RAG 的核心链路——从</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+  </entry>
   
   <entry>
     <title>W1D1 初识Embedding：让AI读懂语义的向量密码</title>
@@ -539,30 +574,6 @@
     
     
     <category term="linux" scheme="https://dive2cloud-bmz.github.io/tags/linux/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>ddd</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/25/ddd/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/25/ddd/</id>
-    <published>2025-03-25T12:35:38.000Z</published>
-    <updated>2025-03-31T05:41:37.774Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;这篇文章写的不错&lt;br&gt;&lt;a href=&quot;https://juejin.cn/post/7298160530292703244&quot;&gt;https://juejin.cn/post/7298160530292703244&lt;/a&gt;&lt;/p&gt;
-&lt;h2</summary>
-        
-      
-    
-    
-    
-    
-    <category term="DDD" scheme="https://dive2cloud-bmz.github.io/tags/DDD/"/>
     
   </entry>
   
