@@ -41,15 +41,48 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>从向量到语义：Embedding如何桥接文本与检索</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/08/week-1-day-3-rag-embeddings-similarity-metrics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/08/week-1-day-3-rag-embeddings-similarity-metrics/</id>
+    <published>2026-07-08T01:00:00.000Z</published>
+    <updated>2026-07-08T13:34:49.521Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2分钟）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2分钟）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2分钟）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2分钟）&lt;/h2&gt;&lt;p&gt;如果你做过后端或</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
+    
+    <category term="Similarity" scheme="https://dive2cloud-bmz.github.io/tags/Similarity/"/>
     
   </entry>
   
@@ -111,13 +144,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
-    
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
     
   </entry>
   
@@ -257,6 +290,8 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -264,8 +299,6 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -573,29 +606,6 @@
     
     
     <category term="dev" scheme="https://dive2cloud-bmz.github.io/tags/dev/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>optional pattern</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/28/optional-pattern/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/28/optional-pattern/</id>
-    <published>2025-03-28T09:36:49.000Z</published>
-    <updated>2025-03-31T02:44:52.024Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在程序开发中，经常会遇到模块间的相互依赖问题，比如</summary>
-        
-      
-    
-    
-    
-    
-    <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
     
   </entry>
   

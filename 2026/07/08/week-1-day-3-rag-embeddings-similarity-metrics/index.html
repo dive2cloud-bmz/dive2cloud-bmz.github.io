@@ -1,0 +1,1303 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="从向量到语义：Embedding如何桥接文本与检索, BMZ BLOG">
+    <meta name="description" content="🚀 核心洞察（2分钟）如果你做过后端或 PostgreSQL，应该对“索引决定查询天花板”这句话有肌肉记忆：B-tree 让等值查询从 O(n) 降到 O(log n)，GIN 让全文检索变得可用，BRIN 让时序数据扫描成本骤降。进入大">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>从向量到语义：Embedding如何桥接文本与检索 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">从向量到语义：Embedding如何桥接文本与检索</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-1/">
+                                <span class="chip bg-color">Week-1</span>
+                            </a>
+                        
+                            <a href="/tags/RAG/">
+                                <span class="chip bg-color">RAG</span>
+                            </a>
+                        
+                            <a href="/tags/Embeddings/">
+                                <span class="chip bg-color">Embeddings</span>
+                            </a>
+                        
+                            <a href="/tags/Similarity/">
+                                <span class="chip bg-color">Similarity</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-08
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-08
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.2k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="🚀-核心洞察（2分钟）"><a href="#🚀-核心洞察（2分钟）" class="headerlink" title="🚀 核心洞察（2分钟）"></a>🚀 核心洞察（2分钟）</h2><p>如果你做过后端或 PostgreSQL，应该对“索引决定查询天花板”这句话有肌肉记忆：B-tree 让等值查询从 O(n) 降到 O(log n)，GIN 让全文检索变得可用，BRIN 让时序数据扫描成本骤降。进入大模型时代，Embedding 就是把这种“结构化索引”的能力延伸到语义空间的关键技术。它把一段文本、一张图片甚至一段代码，压缩成一个低维稠密向量，让机器可以用距离来度量“意思有多近”。</p>
+<p>对 PG&#x2F;Backend 工程师来说，RAG 系统的检索质量并不首先取决于用了多大的 LLM，而是取决于两件事：第一，Embedding 模型能否把语义相似的文本映射到相邻的向量；第二，相似度度量是否准确地表达了这种相邻关系。选错了 Embedding 模型，就像给字符串列建了 Hash 索引却要做 <code>LIKE &#39;%keyword%&#39;</code> 查询——语法上跑得通，效果上全跑偏。选错了相似度度量，就像用了不合适的操作符去走索引，召回结果会系统性偏差。</p>
+<p>昨天的文章已经聊了 Chunking 如何决定“切多少、怎么切”。今天我们把镜头对准 Chunk 进入向量库之前的最后一道关卡：Embedding 与相似度。核心结论可以一句话概括：<strong>先让“意思相近”这件事被正确地度量和索引，再谈 Prompt 工程、重排策略和模型选择。</strong></p>
+<hr>
+<h2 id="🧠-核心概念（10分钟）"><a href="#🧠-核心概念（10分钟）" class="headerlink" title="🧠 核心概念（10分钟）"></a>🧠 核心概念（10分钟）</h2><h3 id="1-稠密向量-vs-稀疏向量"><a href="#1-稠密向量-vs-稀疏向量" class="headerlink" title="1. 稠密向量 vs 稀疏向量"></a>1. 稠密向量 vs 稀疏向量</h3><p>文本进入计算机的第一种表示通常是离散的：一个词对应一个编号，一个文档对应一个词袋。稀疏向量的典型代表是 TF-IDF 和 BM25。它们把文档表示成一个高维但大部分为零的向量，每一维对应词表里的一个词，权重表示该词在文档中的重要性。优点是解释性强，对精确匹配友好；缺点是天然无法捕捉同义词、语义改写和上下文含义。</p>
+<p>稠密向量（Dense Embedding）则完全不同。它通常只有 384、768、1024 或 3072 维，但每一维都有实际数值。这些数值没有人类可直接解读的含义，向量之间的距离却能刻画语义关系。稠密向量的强项是召回语义相关的结果，即使关键词并不重叠。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>稀疏向量（TF-IDF &#x2F; BM25）</th>
+<th>稠密向量（Embedding）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>向量维度</td>
+<td>词表大小（万级甚至百万级）</td>
+<td>384 &#x2F; 768 &#x2F; 1024 &#x2F; 3072</td>
+</tr>
+<tr>
+<td>可解释性</td>
+<td>每维对应一个词，直观</td>
+<td>每维无显式含义</td>
+</tr>
+<tr>
+<td>同义词&#x2F;改写</td>
+<td>无法处理</td>
+<td>天然接近</td>
+</tr>
+<tr>
+<td>长尾词&#x2F;新词</td>
+<td>容易过拟合或零命中</td>
+<td>依赖模型泛化能力</td>
+</tr>
+<tr>
+<td>存储与索引</td>
+<td>倒排索引高度可压缩</td>
+<td>需专用向量数据库或扩展</td>
+</tr>
+<tr>
+<td>典型场景</td>
+<td>关键词检索、合规匹配</td>
+<td>语义检索、RAG 召回</td>
+</tr>
+</tbody></table>
+<p>生产环境里，两者的边界正在模糊。以 BGE-M3 为代表的模型可以同时输出稠密向量和稀疏向量，再用一个权重把两者的分数融合起来。这就好比 PostgreSQL 里把 B-tree 等值查询和 GIN 全文检索 union 起来：既保留精确匹配的可控性，又获得语义召回的泛化性。</p>
+<h3 id="2-主流嵌入模型与选型"><a href="#2-主流嵌入模型与选型" class="headerlink" title="2. 主流嵌入模型与选型"></a>2. 主流嵌入模型与选型</h3><p>2026 年的 Embedding 模型百花齐放，但选型逻辑和后端选数据库索引非常相似：没有绝对最强，只有最贴合业务。下面是常见模型的定位与取舍。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>维度</th>
+<th>语言&#x2F;场景</th>
+<th>关键特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenAI text-embedding-3-small</td>
+<td>1536</td>
+<td>多语言</td>
+<td>成本低、API 即插即用，支持 <code>dimensions</code> 参数截断</td>
+</tr>
+<tr>
+<td>OpenAI text-embedding-3-large</td>
+<td>3072</td>
+<td>多语言</td>
+<td>效果稳定，但价格与延迟都更高</td>
+</tr>
+<tr>
+<td>Cohere Embed v3&#x2F;v4</td>
+<td>1024</td>
+<td>多语言</td>
+<td>支持 binary&#x2F;int8 量化，对多语言长文档友好</td>
+</tr>
+<tr>
+<td>BGE-M3 (BAAI)</td>
+<td>1024</td>
+<td>100+ 语言</td>
+<td>同时输出稠密+稀疏+多向量，开源可自部署</td>
+</tr>
+<tr>
+<td>BGE-large-zh-v1.5</td>
+<td>1024</td>
+<td>中文</td>
+<td>中文场景经典选择，512 token 上限</td>
+</tr>
+<tr>
+<td>E5 (Microsoft)</td>
+<td>768&#x2F;1024</td>
+<td>英文为主</td>
+<td>基于监督对比学习，检索任务表现强</td>
+</tr>
+<tr>
+<td>GTE (Alibaba)</td>
+<td>768&#x2F;1024</td>
+<td>中英文</td>
+<td>在中文长文本检索上有不错性价比</td>
+</tr>
+<tr>
+<td>Jina Embeddings v3</td>
+<td>1024</td>
+<td>多语言</td>
+<td>支持 8k 上下文，API&#x2F;本地均可</td>
+</tr>
+</tbody></table>
+<p>选模型时要问自己四个问题：</p>
+<ol>
+<li><strong>数据语言是什么？</strong> 中文文档优先用 BGE-M3、BGE-large-zh、GTE 或 Qwen3-Embedding；英文文档可选范围更广，E5、GTE、OpenAI 都不错。</li>
+<li><strong>平均文档长度是多少？</strong> 模型有最大 token 限制，超出会被截断。长文档需要考虑上下文窗口更大的模型，或者先做更细粒度的 Chunking。</li>
+<li><strong>对延迟和成本有多敏感？</strong> API 模型按 token 计费，自部署开源模型需要 GPU&#x2F;CPU 资源。日均百万级文档时，自部署通常更便宜。</li>
+<li><strong>向量是否已经归一化？</strong> 这会直接影响你后面选余弦还是点积。sentence-transformers 系列大多已经做了 L2 归一化，OpenAI 的 text-embedding-3 默认不归一化。</li>
+</ol>
+<h3 id="3-相似度度量：余弦、点积与欧氏距离"><a href="#3-相似度度量：余弦、点积与欧氏距离" class="headerlink" title="3. 相似度度量：余弦、点积与欧氏距离"></a>3. 相似度度量：余弦、点积与欧氏距离</h3><p>拿到两个向量后，怎么判断它们“像不像”？生产环境里最常用的有三种度量方式，理解它们的物理意义比盲目调参更重要。</p>
+<p><strong>余弦相似度（Cosine Similarity）</strong> 只看方向，不看长度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cosine_similarity</span>(<span class="params">a, b</span>):</span><br><span class="line">    <span class="keyword">return</span> np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))</span><br></pre></td></tr></table></figure>
+
+<p>它的取值范围在 -1 到 1 之间，语义检索通常落在 0.6 到 0.95 之间。余弦适合模型输出向量模长不一致的场景，例如 OpenAI 的 text-embedding-3 系列。对这类向量，如果直接用点积，长文本会因为模长更大而获得不公平的优势。</p>
+<p><strong>点积（Dot Product）</strong> 同时考虑方向和模长：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dot_product</span>(<span class="params">a, b</span>):</span><br><span class="line">    <span class="keyword">return</span> np.dot(a, b)</span><br></pre></td></tr></table></figure>
+
+<p>如果 Embedding 模型在训练时已经做了 L2 归一化，那么点积和余弦是等价的，因为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a_n = a / np.linalg.norm(a)</span><br><span class="line">b_n = b / np.linalg.norm(b)</span><br><span class="line"><span class="keyword">assert</span> np.isclose(cosine_similarity(a, b), np.dot(a_n, b_n))</span><br></pre></td></tr></table></figure>
+
+<p>但在某些场景下，长文档的向量模长更大，点积会天然偏向长文本。这可能正是你想要的——比如你想让信息更完整的文档排在前面。也可能不是你想要的——比如你想找的是一句精确的定义，而不是一篇长篇大论。</p>
+<p><strong>欧氏距离（Euclidean Distance）</strong> 强调向量终点之间的绝对距离：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">euclidean_distance</span>(<span class="params">a, b</span>):</span><br><span class="line">    <span class="keyword">return</span> np.linalg.norm(a - b)</span><br></pre></td></tr></table></figure>
+
+<p>当向量已经归一化到单位球面上时，欧氏距离和余弦相似度是单调关系，可以互换。实际工程中，优先用余弦；如果向量已经 L2 归一化，点积计算效率更高，因为省掉了两次除法。</p>
+<p>下面这段代码可以帮你直观感受三者的差异：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">a = np.array([<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>])</span><br><span class="line">b = np.array([<span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>])</span><br><span class="line">c = np.array([<span class="number">10.0</span>, <span class="number">20.0</span>, <span class="number">30.0</span>])  <span class="comment"># 与 a 同方向但模长更大</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;cosine(a,b):&quot;</span>, cosine_similarity(a, b))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;cosine(a,c):&quot;</span>, cosine_similarity(a, c))  <span class="comment"># 方向相同，余弦接近 1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;dot(a,b):&quot;</span>, dot_product(a, b))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;dot(a,c):&quot;</span>, dot_product(a, c))           <span class="comment"># 模长差异导致点积差异巨大</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-向量归一化、维度灾难与聚类边界"><a href="#4-向量归一化、维度灾难与聚类边界" class="headerlink" title="4. 向量归一化、维度灾难与聚类边界"></a>4. 向量归一化、维度灾难与聚类边界</h3><p><strong>归一化</strong> 是最容易被忽略但影响巨大的细节。L2 归一化把一个向量缩放到单位长度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v_norm = v / np.linalg.norm(v)</span><br></pre></td></tr></table></figure>
+
+<p>归一化后，点积直接等于余弦，向量数据库里很多索引也只支持固定距离函数。例如 pgvector 的 <code>vector_cosine_ops</code> 就是基于余弦距离的运算符族。如果你插入了未归一化的向量却走了 cosine 索引，结果在数学上仍然正确，但会多计算一次模长；如果你在应用层自己做了归一化，再使用点积索引，通常能换来更快的查询速度。</p>
+<p><strong>维度灾难（Curse of Dimensionality）</strong> 是高维向量检索的隐形敌人。随着维度增加，数据点之间的距离对比度会下降，所有点看起来都差不多远。这会导致近似最近邻（ANN）索引的召回率下降。缓解方法包括：</p>
+<ul>
+<li>选择合适维度的模型，不盲目追求高维；</li>
+<li>使用 Matryoshka 表示学习，训练时让模型学会“可截断”的向量，用 256 维甚至 128 维也能保持较高精度；</li>
+<li>在索引层面使用 HNSW、IVFFlat 等 ANN 算法，用可接受的精度损失换取数量级的速度提升。</li>
+</ul>
+<p><strong>聚类边界</strong> 是语义检索的另一个陷阱。Embedding 空间往往不是均匀分布的，而是按主题聚成簇。查询向量如果落在两个簇的边界上，最近邻可能会“跳过”真正相关的文档，落在同一簇内但语义偏差的结果上。这就像数据库查询里，按一个列排序却漏掉了跨分区的相关行。解决办法包括 hybrid search、rerank，以及针对性地微调 Embedding。</p>
+<p>下面这张图展示了语义空间中的典型结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    subgraph 语义空间</span><br><span class="line">        Q[查询：数据库索引优化]</span><br><span class="line">        A[文档 A：B+树原理]</span><br><span class="line">        B[文档 B：PostgreSQL 索引调优]</span><br><span class="line">        C[文档 C：MySQL 索引实践]</span><br><span class="line">        D[文档 D：猫粮选购指南]</span><br><span class="line">    end</span><br><span class="line">    Q -- 高余弦相似度 --&gt; A</span><br><span class="line">    Q -- 高余弦相似度 --&gt; B</span><br><span class="line">    Q -- 跨数据库簇仍相关 --&gt; C</span><br><span class="line">    Q -- 距离远 --&gt; D</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔗-后端桥接（3分钟）"><a href="#🔗-后端桥接（3分钟）" class="headerlink" title="🔗 后端桥接（3分钟）"></a>🔗 后端桥接（3分钟）</h2><p>把 Embedding 映射回你熟悉的 PG&#x2F;Backend 世界，会有三条非常清晰的类比。</p>
+<p><strong>第一，Embedding 是“语义 B+ 树”。</strong> 传统数据库用 B+ 树把 <code>WHERE id = ?</code> 的等值查询从 O(n) 降到 O(log n)；GIN 索引把 <code>WHERE text @@ to_tsquery(...)</code> 的全文检索变得可用。Embedding 则是把“语义相似”这种原本无法索引的查询，通过学习到的向量映射，变成在向量空间里的最近邻搜索。</p>
+<p><strong>第二，相似度度量是索引的“操作符”。</strong> 在 PostgreSQL 里，你会根据查询类型选择 <code>=</code>、<code>&lt;@</code>、<code>@@</code> 或 <code>&lt;-&gt;</code>。在向量检索里，你要根据向量特性选择余弦、点积或欧氏距离。选错了操作符，索引仍然会被使用，但结果会系统性偏差。</p>
+<p><strong>第三，ANN 索引是“带精度的分区扫描”。</strong> HNSW 和 IVFFlat 都不是精确 kNN，而是用可接受的召回率损失换取数量级的速度提升。它们就像数据库里把大表按 hash 分区、再在每个分区内做局部扫描。pgvector 让你可以直接在 PostgreSQL 里体验这套机制。</p>
+<p>下面是一段可以直接在安装了 <code>pgvector</code> 扩展的 PostgreSQL 里运行的 SQL：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用扩展</span></span><br><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> vector;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建带向量的表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> documents (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    content TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    embedding vector(<span class="number">768</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 精确 kNN 查询（速度慢，召回率 100%）</span></span><br><span class="line"><span class="keyword">SELECT</span> id, content, embedding <span class="operator">&lt;=&gt;</span> :query_embedding <span class="keyword">AS</span> distance</span><br><span class="line"><span class="keyword">FROM</span> documents</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> :query_embedding</span><br><span class="line">LIMIT <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- HNSW 近似索引（速度快，召回率接近 100%）</span></span><br><span class="line"><span class="keyword">CREATE</span> INDEX idx_documents_embedding_hnsw</span><br><span class="line"><span class="keyword">ON</span> documents</span><br><span class="line"><span class="keyword">USING</span> hnsw (embedding vector_cosine_ops)</span><br><span class="line"><span class="keyword">WITH</span> (m <span class="operator">=</span> <span class="number">16</span>, ef_construction <span class="operator">=</span> <span class="number">64</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询时调整 ef 参数平衡速度与精度</span></span><br><span class="line"><span class="keyword">SET</span> hnsw.ef_search <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="keyword">SELECT</span> id, content, embedding <span class="operator">&lt;=&gt;</span> :query_embedding <span class="keyword">AS</span> distance</span><br><span class="line"><span class="keyword">FROM</span> documents</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> :query_embedding</span><br><span class="line">LIMIT <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<p>对比 HNSW 和 IVFFlat，就像对比 B-tree 和分区表：HNSW 构建成本更高、占用内存更多，但查询更稳定；IVFFlat 构建快、占用少，但对高维数据和分布偏移更敏感。实际选型时，先用真实数据跑召回率 benchmark，再决定用哪个索引。</p>
+<hr>
+<h2 id="🛠️-微实战（5分钟）"><a href="#🛠️-微实战（5分钟）" class="headerlink" title="🛠️ 微实战（5分钟）"></a>🛠️ 微实战（5分钟）</h2><p><strong>任务目标</strong>：用 sentence-transformers 为 100 条文档生成 Embedding，对比余弦相似度与点积在归一化前后的 Top-5 检索差异。</p>
+<h3 id="步骤-1：准备环境"><a href="#步骤-1：准备环境" class="headerlink" title="步骤 1：准备环境"></a>步骤 1：准备环境</h3><p><strong>做什么</strong>：安装必要的 Python 包。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install sentence-transformers numpy scikit-learn</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：<code>python -c &quot;import sentence_transformers, numpy, sklearn; print(&#39;ok&#39;)&quot;</code> 不报错。</p>
+<h3 id="步骤-2：准备数据"><a href="#步骤-2：准备数据" class="headerlink" title="步骤 2：准备数据"></a>步骤 2：准备数据</h3><p><strong>做什么</strong>：加载 100 条文档，主题尽量集中在技术领域。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> fetch_20newsgroups</span><br><span class="line"></span><br><span class="line">docs = fetch_20newsgroups(</span><br><span class="line">    subset=<span class="string">&#x27;train&#x27;</span>,</span><br><span class="line">    categories=[<span class="string">&#x27;comp.graphics&#x27;</span>, <span class="string">&#x27;comp.sys.mac.hardware&#x27;</span>, <span class="string">&#x27;sci.space&#x27;</span>],</span><br><span class="line">    remove=(<span class="string">&#x27;headers&#x27;</span>, <span class="string">&#x27;footers&#x27;</span>, <span class="string">&#x27;quotes&#x27;</span>)</span><br><span class="line">).data[:<span class="number">100</span>]</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：<code>len(docs) == 100</code>，且每条文档长度大于 20 个字符。</p>
+<h3 id="步骤-3：生成向量"><a href="#步骤-3：生成向量" class="headerlink" title="步骤 3：生成向量"></a>步骤 3：生成向量</h3><p><strong>做什么</strong>：用轻量模型把文档编码成向量。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">model = SentenceTransformer(<span class="string">&#x27;sentence-transformers/all-MiniLM-L6-v2&#x27;</span>)</span><br><span class="line">embeddings = model.encode(docs, convert_to_numpy=<span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(embeddings.shape)  <span class="comment"># (100, 384)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：输出形状为 <code>(100, 384)</code>，且没有 NaN。</p>
+<h3 id="步骤-4：计算相似度并对比-Top-5"><a href="#步骤-4：计算相似度并对比-Top-5" class="headerlink" title="步骤 4：计算相似度并对比 Top-5"></a>步骤 4：计算相似度并对比 Top-5</h3><p><strong>做什么</strong>：对 3 个不同查询，分别用“未归一化点积”“未归一化余弦”“归一化后点积”做 Top-5 检索，观察排序差异。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> spearmanr</span><br><span class="line"></span><br><span class="line">queries = [</span><br><span class="line">    <span class="string">&quot;how to optimize graphics rendering&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Mac hardware upgrade advice&quot;</span>,</span><br><span class="line">    <span class="string">&quot;latest news about Mars missions&quot;</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">norm_embeddings = embeddings / np.linalg.norm(embeddings, axis=<span class="number">1</span>, keepdims=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">top5_indices</span>(<span class="params">query, emb, metric</span>):</span><br><span class="line">    q = model.encode([query])</span><br><span class="line">    <span class="keyword">if</span> metric == <span class="string">&#x27;cosine&#x27;</span>:</span><br><span class="line">        scores = np.dot(emb, q.T).flatten() / (</span><br><span class="line">            np.linalg.norm(emb, axis=<span class="number">1</span>) * np.linalg.norm(q)</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">elif</span> metric == <span class="string">&#x27;dot&#x27;</span>:</span><br><span class="line">        scores = np.dot(emb, q.T).flatten()</span><br><span class="line">    <span class="keyword">elif</span> metric == <span class="string">&#x27;dot_norm&#x27;</span>:</span><br><span class="line">        q_n = q / np.linalg.norm(q)</span><br><span class="line">        scores = np.dot(emb, q_n.T).flatten()</span><br><span class="line">    <span class="keyword">return</span> np.argsort(scores)[-<span class="number">5</span>:][::-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> q <span class="keyword">in</span> queries:</span><br><span class="line">    t_cos = top5_indices(q, embeddings, <span class="string">&#x27;cosine&#x27;</span>)</span><br><span class="line">    t_dot = top5_indices(q, embeddings, <span class="string">&#x27;dot&#x27;</span>)</span><br><span class="line">    t_dn = top5_indices(q, norm_embeddings, <span class="string">&#x27;dot_norm&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Query: <span class="subst">&#123;q&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  cosine   : <span class="subst">&#123;t_cos&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  dot      : <span class="subst">&#123;t_dot&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  dot_norm : <span class="subst">&#123;t_dn&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  cosine vs dot_norm match: <span class="subst">&#123;np.array_equal(t_cos, t_dn)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：</p>
+<ol>
+<li>至少有一个查询的“未归一化点积 Top-5”与“未归一化余弦 Top-5”存在差异。</li>
+<li>所有查询的“归一化后点积 Top-5”与“余弦 Top-5”完全一致。</li>
+<li>输出差异文档数量，并记录到本地文件 <code>similarity_diff.txt</code>。</li>
+</ol>
+<h3 id="步骤-5：写入观察笔记"><a href="#步骤-5：写入观察笔记" class="headerlink" title="步骤 5：写入观察笔记"></a>步骤 5：写入观察笔记</h3><p><strong>做什么</strong>：用三句话总结你观察到的现象。</p>
+<p><strong>怎么做</strong>：把下面问题写到 <code>observation.md</code>：</p>
+<ul>
+<li>未归一化时，点积更倾向于把长文档排在前面吗？</li>
+<li>归一化后，点积和余弦的结果是否完全相同？</li>
+<li>如果你要部署到 pgvector，你会选择 cosine 还是 dot 索引？为什么？</li>
+</ul>
+<p><strong>验证标准</strong>：笔记中包含对“模长偏见”和“索引选型”的明确结论。</p>
+<hr>
+<h2 id="📰-技术雷达：最新AI动态"><a href="#📰-技术雷达：最新AI动态" class="headerlink" title="📰 技术雷达：最新AI动态"></a>📰 技术雷达：最新AI动态</h2><p>Embedding 领域在 2025-2026 年有几个值得持续跟踪的方向：</p>
+<ul>
+<li><strong>MTEB 排行榜仍是选型参考，但不是唯一标准</strong>。榜单上的高分模型未必在你的业务数据上表现最好，建议用自己的 query-doc 对做召回率 benchmark。排行榜地址可参考 Hugging Face MTEB Leaderboard。</li>
+<li><strong>Matryoshka 表示学习正在普及</strong>。这种训练目标让模型输出“可截断”的向量，你可以在推理时只取前 256、128 甚至 64 维，显著降低存储和计算成本，而精度损失可控。OpenAI text-embedding-3 的 <code>dimensions</code> 参数就是这一思想的工程化。</li>
+<li><strong>多模态 Embedding 进入实用阶段</strong>。除了文本，CLIP、Cohere 的多模态模型以及 Google 的 Gemini Embedding 已经支持图像、视频甚至 PDF 的统一向量表示，跨模态检索正在成为 RAG 的新战场。</li>
+<li><strong>Late Interaction 与 ColBERT</strong>。与单向量 Embedding 不同，ColBERT 类模型为每个 token 生成一个向量，通过延迟交互计算细粒度相关性，在需要精确匹配短语的检索任务中表现优异，但存储和计算成本更高。</li>
+<li><strong>领域微调仍是最后一公里</strong>。通用 Embedding 在垂直领域往往不如一个轻量微调模型。用对比学习（InfoNCE &#x2F; Triplet Loss）在自己的 query-positive-negative 三元组上微调，通常能换来 10%-30% 的召回率提升。</li>
+</ul>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Embedding 和相似度度量是 RAG 检索的底座。作为 PG&#x2F;Backend 背景的工程师，你可以把它理解为一门新的“索引技术”：Embedding 模型负责把文本映射成可索引的向量，相似度度量定义了索引的操作符，向量数据库里的 ANN 索引则决定了查询成本与召回率之间的 trade-off。</p>
+<p>选模型时不要只看 MTEB 分数，要结合语言、上下文长度、成本、是否归一化等因素。做检索时要清楚自己用的是余弦、点积还是欧氏距离，并理解它们对向量模长的不同态度。最后，一定要用真实数据做 benchmark，因为 leaderboard 上的冠军，未必是你业务里的最优解。</p>
+<p>明天的阶段 3 将进入重排与评估，我们会把今天召回到的结果再做一次精排，并学习如何用指标量化整个检索链路的效果。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/08/week-1-day-3-rag-embeddings-similarity-metrics/">https://dive2cloud-bmz.github.io/2026/07/08/week-1-day-3-rag-embeddings-similarity-metrics/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-1/">
+                                    <span class="chip bg-color">Week-1</span>
+                                </a>
+                            
+                                <a href="/tags/RAG/">
+                                    <span class="chip bg-color">RAG</span>
+                                </a>
+                            
+                                <a href="/tags/Embeddings/">
+                                    <span class="chip bg-color">Embeddings</span>
+                                </a>
+                            
+                                <a href="/tags/Similarity/">
+                                    <span class="chip bg-color">Similarity</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2026/07/08/week2-day2-react-deep-dive-reasoning-acting/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="ReAct 深度解析：当 LLM 学会“先想后做”">
+                        
+                        <span class="card-title">ReAct 深度解析：当 LLM 学会“先想后做”</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-08
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-2/">
+                        <span class="chip bg-color">Week-2</span>
+                    </a>
+                    
+                    <a href="/tags/ReAct/">
+                        <span class="chip bg-color">ReAct</span>
+                    </a>
+                    
+                    <a href="/tags/Agent/">
+                        <span class="chip bg-color">Agent</span>
+                    </a>
+                    
+                    <a href="/tags/Reasoning/">
+                        <span class="chip bg-color">Reasoning</span>
+                    </a>
+                    
+                    <a href="/tags/Tool-Use/">
+                        <span class="chip bg-color">Tool-Use</span>
+                    </a>
+                    
+                    <a href="/tags/Function-Calling/">
+                        <span class="chip bg-color">Function-Calling</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/07/week-1-day-2-rag-chunking-text-splitting/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="W1D2 RAG文本分块：切块大小如何决定检索天花板">
+                        
+                        <span class="card-title">W1D2 RAG文本分块：切块大小如何决定检索天花板</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-1/">
+                        <span class="chip bg-color">Week-1</span>
+                    </a>
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/Chunking/">
+                        <span class="chip bg-color">Chunking</span>
+                    </a>
+                    
+                    <a href="/tags/Text-Splitting/">
+                        <span class="chip bg-color">Text-Splitting</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">130.9k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
