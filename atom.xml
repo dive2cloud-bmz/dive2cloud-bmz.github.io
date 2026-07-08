@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-07T13:34:08.278Z</updated>
+  <updated>2026-07-08T03:06:00.277Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ReAct 深度解析：当 LLM 学会“先想后做”</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/08/week2-day2-react-deep-dive-reasoning-acting/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/08/week2-day2-react-deep-dive-reasoning-acting/</id>
+    <published>2026-07-08T03:00:32.000Z</published>
+    <updated>2026-07-08T03:06:00.277Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;昨天我们聊到了 &lt;strong&gt;Function</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
+    
+  </entry>
   
   <entry>
     <title>W1D2 RAG文本分块：切块大小如何决定检索天花板</title>
@@ -559,29 +596,6 @@
     
     
     <category term="Go" scheme="https://dive2cloud-bmz.github.io/tags/Go/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>docker</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/25/docker/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/25/docker/</id>
-    <published>2025-03-25T13:38:31.000Z</published>
-    <updated>2025-03-31T05:45:21.384Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;本质&quot;&gt;&lt;a href=&quot;#本质&quot; class=&quot;headerlink&quot; title=&quot;本质&quot;&gt;&lt;/a&gt;本质&lt;/h2&gt;&lt;p&gt;想要了解 docker，首先要知道容器 和 虚拟机之间的区别。&lt;br&gt;&lt;img</summary>
-        
-      
-    
-    
-    
-    
-    <category term="docker" scheme="https://dive2cloud-bmz.github.io/tags/docker/"/>
     
   </entry>
   
