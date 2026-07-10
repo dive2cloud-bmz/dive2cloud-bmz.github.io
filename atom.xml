@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-08T03:06:00.277Z</updated>
+  <updated>2026-07-10T03:04:12.773Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,78 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Plan-and-Execute 与 Reflection：让 Agent 学会‘先定计划、再复盘纠错’</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/10/week2-day3-plan-and-execute-reflection/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/10/week2-day3-plan-and-execute-reflection/</id>
+    <published>2026-07-10T03:05:00.000Z</published>
+    <updated>2026-07-10T03:04:12.773Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;前两天的学习中，我们见证了</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
+    
+    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>从Recall到RAGAS：RAG系统评估全景</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/09/week-1-day-5-rag-evaluation-metrics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/09/week-1-day-5-rag-evaluation-metrics/</id>
+    <published>2026-07-09T13:00:21.000Z</published>
+    <updated>2026-07-09T13:33:21.617Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2分钟）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2分钟）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2分钟）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2分钟）&lt;/h2&gt;&lt;p&gt;如果你维护过 PostgreSQL</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+  </entry>
   
   <entry>
     <title>ReAct 深度解析：当 LLM 学会“先想后做”</title>
@@ -41,15 +113,15 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
-    
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
   </entry>
   
@@ -144,13 +216,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
     
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
-    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
   </entry>
   
@@ -214,9 +286,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="RAG-Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Evaluation/"/>
     
     <category term="RAG-Triad" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Triad/"/>
     
@@ -559,53 +631,6 @@
     
     
     <category term="duckDB" scheme="https://dive2cloud-bmz.github.io/tags/duckDB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>kubectl</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/31/kubectl/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/31/kubectl/</id>
-    <published>2025-03-31T06:54:00.000Z</published>
-    <updated>2025-03-31T08:30:41.162Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;官网 &lt;a href=&quot;https://kubernetes.io/zh-cn/docs/reference/kubectl/&quot;&gt;https://kubernetes.io/zh-cn/docs/reference/kubectl/&lt;/a&gt;&lt;/p&gt;
-&lt;h2</summary>
-        
-      
-    
-    
-    
-    
-    <category term="k8s" scheme="https://dive2cloud-bmz.github.io/tags/k8s/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>software design principle</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/03/28/software-design-principle/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/03/28/software-design-principle/</id>
-    <published>2025-03-28T13:32:48.000Z</published>
-    <updated>2025-03-31T06:39:19.327Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;开闭原则&quot;&gt;&lt;a href=&quot;#开闭原则&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    
-    <category term="dev" scheme="https://dive2cloud-bmz.github.io/tags/dev/"/>
     
   </entry>
   
