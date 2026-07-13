@@ -1,0 +1,1271 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="RAG评估体系：如何让检索结果&#34;说得清、靠得住&#34;, BMZ BLOG">
+    <meta name="description" content="🚀 核心洞察（2分钟）如果你维护过 PostgreSQL 或任何后端服务，应该熟悉这样的工作流：系统上线前先压测，上线后盯监控，出问题时先翻日志和指标面板。性能调优从来不是凭感觉，而是靠 pg_stat_statements 里的慢查询、">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>RAG评估体系：如何让检索结果&#34;说得清、靠得住&#34; | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">RAG评估体系：如何让检索结果&#34;说得清、靠得住&#34;</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-1/">
+                                <span class="chip bg-color">Week-1</span>
+                            </a>
+                        
+                            <a href="/tags/RAG/">
+                                <span class="chip bg-color">RAG</span>
+                            </a>
+                        
+                            <a href="/tags/RAGAS/">
+                                <span class="chip bg-color">RAGAS</span>
+                            </a>
+                        
+                            <a href="/tags/Evaluation/">
+                                <span class="chip bg-color">Evaluation</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-13
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-13
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.2k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    17 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="🚀-核心洞察（2分钟）"><a href="#🚀-核心洞察（2分钟）" class="headerlink" title="🚀 核心洞察（2分钟）"></a>🚀 核心洞察（2分钟）</h2><p>如果你维护过 PostgreSQL 或任何后端服务，应该熟悉这样的工作流：系统上线前先压测，上线后盯监控，出问题时先翻日志和指标面板。性能调优从来不是凭感觉，而是靠 <code>pg_stat_statements</code> 里的慢查询、<code>pg_stat_user_tables</code> 里的顺序扫描次数、以及 <code>EXPLAIN ANALYZE</code> 给出的实际执行计划。RAG 系统进入生产环境后，也需要同样的纪律，只是评估对象从 SQL 执行计划变成了”检索 + 生成”的端到端链路。</p>
+<p>很多团队搭建 RAG 原型时的路径高度相似：选一个 Embedding 模型，把文档灌进向量数据库，写几段 Prompt，再肉眼挑几个 query 看答案”像不像”。这种方式能跑通 demo，却无法支撑持续迭代。真实痛点往往不在于”能不能召回”，而在于”检索到的内容生成时没用””答案看着对但实际上是幻觉””上下文里明明有答案却被模型忽略”。更隐蔽的是，这些问题不会直接报错，只会悄悄降低用户信任。</p>
+<p>今天的核心洞察可以一句话概括：<strong>RAG 评估不是事后质检，而是贯穿检索、生成、上线、迭代全链路的反馈闭环。</strong> 它决定了一个系统能否从 Demo 演进为生产可信服务。对 PG&#x2F;Backend 工程师来说，这就像把”只看索引是否命中”升级到”看事务最终是否满足业务一致性”——指标要覆盖中间过程，更要覆盖最终效果。</p>
+<hr>
+<h2 id="🧠-核心概念（10分钟）"><a href="#🧠-核心概念（10分钟）" class="headerlink" title="🧠 核心概念（10分钟）"></a>🧠 核心概念（10分钟）</h2><h3 id="1-检索评估：Recall-K、MRR、NDCG-与命中率"><a href="#1-检索评估：Recall-K、MRR、NDCG-与命中率" class="headerlink" title="1. 检索评估：Recall@K、MRR、NDCG 与命中率"></a>1. 检索评估：Recall@K、MRR、NDCG 与命中率</h3><p>检索是 RAG 的第一道关卡。无论后面的 LLM 多强大，如果关键上下文没进入候选集，答案就不可能好。检索评估通常假设我们有一个”相关文档集合”作为 ground truth，然后看系统召回的结果与它有多接近。</p>
+<h4 id="Recall-K"><a href="#Recall-K" class="headerlink" title="Recall@K"></a>Recall@K</h4><p>Recall@K 衡量的是：在排名前 K 的结果里，系统找回了多少真正相关的文档。公式很直接：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Recall@K = (Top-K 结果中的相关文档数) / (所有相关文档总数)</span><br></pre></td></tr></table></figure>
+
+<p>它适合关心”不漏”的场景，比如医疗、法律、合规问答。缺点是只看有没有，不看排序。一个把最相关文档排在第 K 位的系统，和一个把最相关文档排在第 1 位的系统，Recall@K 可能完全一样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span>, <span class="type">Set</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">recall_at_k</span>(<span class="params">retrieved: <span class="type">List</span>[<span class="built_in">str</span>], relevant: <span class="type">Set</span>[<span class="built_in">str</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    retrieved_k = <span class="built_in">set</span>(retrieved[:k])</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> relevant:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(retrieved_k &amp; relevant) / <span class="built_in">len</span>(relevant)</span><br><span class="line"></span><br><span class="line">retrieved = [<span class="string">&quot;doc-1&quot;</span>, <span class="string">&quot;doc-2&quot;</span>, <span class="string">&quot;doc-3&quot;</span>, <span class="string">&quot;doc-4&quot;</span>, <span class="string">&quot;doc-5&quot;</span>]</span><br><span class="line">relevant = &#123;<span class="string">&quot;doc-2&quot;</span>, <span class="string">&quot;doc-5&quot;</span>, <span class="string">&quot;doc-9&quot;</span>&#125;</span><br><span class="line"><span class="built_in">print</span>(recall_at_k(retrieved, relevant, k=<span class="number">3</span>))  <span class="comment"># 1/3 ≈ 0.333</span></span><br><span class="line"><span class="built_in">print</span>(recall_at_k(retrieved, relevant, k=<span class="number">5</span>))  <span class="comment"># 2/3 ≈ 0.667</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="MRR（Mean-Reciprocal-Rank）"><a href="#MRR（Mean-Reciprocal-Rank）" class="headerlink" title="MRR（Mean Reciprocal Rank）"></a>MRR（Mean Reciprocal Rank）</h4><p>MRR 关注的是”第一个相关文档出现的位置”。计算方式是对每个查询，取第一个相关文档排名的倒数，然后求平均。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MRR = (1 / Q) * Σ(1 / rank_i)</span><br></pre></td></tr></table></figure>
+
+<p>MRR 对排名敏感，适合对话式检索或单答案场景。比如用户问”怎么给 PostgreSQL 加字段”，第一个结果就是正确文档的体验，远好于第五个结果才出现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">reciprocal_rank</span>(<span class="params">retrieved: <span class="type">List</span>[<span class="built_in">str</span>], relevant: <span class="type">Set</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="keyword">for</span> idx, doc <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved, start=<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">if</span> doc <span class="keyword">in</span> relevant:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.0</span> / idx</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mean_reciprocal_rank</span>(<span class="params">queries_results: <span class="type">List</span>[<span class="built_in">tuple</span>]</span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sum</span>(reciprocal_rank(ret, rel) <span class="keyword">for</span> ret, rel <span class="keyword">in</span> queries_results) / <span class="built_in">len</span>(queries_results)</span><br></pre></td></tr></table></figure>
+
+<h4 id="NDCG（Normalized-Discounted-Cumulative-Gain）"><a href="#NDCG（Normalized-Discounted-Cumulative-Gain）" class="headerlink" title="NDCG（Normalized Discounted Cumulative Gain）"></a>NDCG（Normalized Discounted Cumulative Gain）</h4><p>NDCG 是更精细的指标。它允许你给不同文档打上”相关度分数”，并且越靠前的位置权重越高。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DCG@K = Σ(relevance_i / log2(i + 1))</span><br><span class="line">NDCG@K = DCG@K / IDCG@K</span><br></pre></td></tr></table></figure>
+
+<p>其中 IDCG 是理想排序下的 DCG，用于归一化。NDCG 适合文档相关性有梯度的场景，比如产品文档检索中，官方指南可能比社区问答更相关。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dcg_at_k</span>(<span class="params">relevances: <span class="type">List</span>[<span class="built_in">float</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sum</span>(rel / math.log2(idx + <span class="number">2</span>) <span class="keyword">for</span> idx, rel <span class="keyword">in</span> <span class="built_in">enumerate</span>(relevances[:k]))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">ndcg_at_k</span>(<span class="params">relevances: <span class="type">List</span>[<span class="built_in">float</span>], k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    ideal = <span class="built_in">sorted</span>(relevances, reverse=<span class="literal">True</span>)</span><br><span class="line">    idcg = dcg_at_k(ideal, k)</span><br><span class="line">    <span class="keyword">if</span> idcg == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">return</span> dcg_at_k(relevances, k) / idcg</span><br></pre></td></tr></table></figure>
+
+<p>下面这张表总结了三种指标的适用场景：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>关注什么</th>
+<th>是否需要排序标注</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recall@K</td>
+<td>是否召回所有相关文档</td>
+<td>否</td>
+<td>医疗、法律、合规</td>
+</tr>
+<tr>
+<td>MRR</td>
+<td>第一个相关结果的位置</td>
+<td>是</td>
+<td>单答案问答、对话</td>
+</tr>
+<tr>
+<td>NDCG</td>
+<td>排序质量与相关度梯度</td>
+<td>是</td>
+<td>产品文档、搜索引擎</td>
+</tr>
+</tbody></table>
+<h3 id="2-生成评估：Faithfulness、Answer-Relevance-与-Context-Precision"><a href="#2-生成评估：Faithfulness、Answer-Relevance-与-Context-Precision" class="headerlink" title="2. 生成评估：Faithfulness、Answer Relevance 与 Context Precision"></a>2. 生成评估：Faithfulness、Answer Relevance 与 Context Precision</h3><p>检索对了，不代表生成对了。生成阶段的评估聚焦三个语义维度：</p>
+<h4 id="Faithfulness（忠实度）"><a href="#Faithfulness（忠实度）" class="headerlink" title="Faithfulness（忠实度）"></a>Faithfulness（忠实度）</h4><p>衡量答案中的每个声明是否都能在检索到的上下文中找到支撑。它是幻觉检测的核心指标。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Faithfulness = 有上下⽂支撑的声明数 / 总声明数</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">答案: &quot;PG 的 MVCC 通过多版本链实现，每个元组有 xmin 和 xmax 字段，</span><br><span class="line">       VACUUM 负责清理死元组，PG 14 引入了冻结阈值优化。&quot;</span><br><span class="line"></span><br><span class="line">检索上下文: &quot;PG 的 MVCC 使用多版本链。每个元组包含 xmin 和 xmax。</span><br><span class="line">            VACUUM 进程清理不再可见的死元组。&quot;</span><br><span class="line"></span><br><span class="line">分析:</span><br><span class="line">✅ &quot;多版本链实现&quot; → 有支撑</span><br><span class="line">✅ &quot;xmin 和 xmax 字段&quot; → 有支撑</span><br><span class="line">✅ &quot;VACUUM 清理死元组&quot; → 有支撑</span><br><span class="line">❌ &quot;PG 14 引入冻结阈值优化&quot; → 无支撑 → 幻觉</span><br><span class="line"></span><br><span class="line">Faithfulness = 3/4 = 0.75</span><br></pre></td></tr></table></figure>
+
+<h4 id="Answer-Relevance（答案相关性）"><a href="#Answer-Relevance（答案相关性）" class="headerlink" title="Answer Relevance（答案相关性）"></a>Answer Relevance（答案相关性）</h4><p>衡量最终答案是否真正回答了用户的问题。即使 Faithfulness 很高，答案也可能偏离用户意图。这个指标通常用 LLM 来判断”给定问题，这个答案是否直接相关”。</p>
+<h4 id="Context-Precision（上下文精确度）"><a href="#Context-Precision（上下文精确度）" class="headerlink" title="Context Precision（上下文精确度）"></a>Context Precision（上下文精确度）</h4><p>衡量检索到的上下文中，有多少是真正相关的。它帮助我们判断检索阶段是否带入了过多噪声。公式可以理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Context Precision = 相关上下文片段数 / 检索到的总片段数</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-LLM-as-Judge：RAGAS、Ares-与人工标注的成本-一致性权衡"><a href="#3-LLM-as-Judge：RAGAS、Ares-与人工标注的成本-一致性权衡" class="headerlink" title="3. LLM-as-Judge：RAGAS、Ares 与人工标注的成本-一致性权衡"></a>3. LLM-as-Judge：RAGAS、Ares 与人工标注的成本-一致性权衡</h3><p>手动标注评估数据成本高昂，且难以规模化。LLM-as-Judge 的思路是用另一个 LLM 来替代人工评估员。它不是完美的，但在一致性和成本之间提供了可接受的折中。</p>
+<h4 id="RAGAS"><a href="#RAGAS" class="headerlink" title="RAGAS"></a>RAGAS</h4><p>RAGAS 是目前最流行的 RAG 评估框架之一，提供了一系列无需人工标注即可计算的指标：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> ragas <span class="keyword">import</span> evaluate</span><br><span class="line"><span class="keyword">from</span> ragas.metrics <span class="keyword">import</span> faithfulness, answer_relevancy, context_precision</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line">dataset = Dataset.from_dict(&#123;</span><br><span class="line">    <span class="string">&quot;question&quot;</span>: [<span class="string">&quot;PG 的 MVCC 是什么？&quot;</span>],</span><br><span class="line">    <span class="string">&quot;answer&quot;</span>: [<span class="string">&quot;PG 使用多版本并发控制...&quot;</span>],</span><br><span class="line">    <span class="string">&quot;contexts&quot;</span>: [[<span class="string">&quot;PG 的 MVCC 通过维护多个版本实现并发...&quot;</span>]],</span><br><span class="line">    <span class="string">&quot;ground_truth&quot;</span>: [<span class="string">&quot;PG 使用 MVCC 管理并发访问...&quot;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">result = evaluate(</span><br><span class="line">    dataset=dataset,</span><br><span class="line">    metrics=[faithfulness, answer_relevancy, context_precision]</span><br><span class="line">)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>RAGAS 的核心假设是：LLM 能够根据上下文判断答案是否忠实、是否相关。它的优点是无需 ground truth 即可运行，缺点是对 Judge LLM 的能力敏感，且可能存在系统性偏见。</p>
+<h4 id="Ares"><a href="#Ares" class="headerlink" title="Ares"></a>Ares</h4><p>Ares 是另一种 LLM-as-Judge 方案，强调”合成数据 + 判别模型”。它先用 LLM 生成合成查询-文档-答案三元组，再用轻量级判别模型学习评分。相比直接用 GPT-4 做 Judge，Ares 的成本更低，也更适合私有化部署。</p>
+<h4 id="人工标注-vs-LLM-Judge"><a href="#人工标注-vs-LLM-Judge" class="headerlink" title="人工标注 vs. LLM Judge"></a>人工标注 vs. LLM Judge</h4><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>成本</th>
+<th>一致性</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>人工标注</td>
+<td>高</td>
+<td>受标注者主观影响</td>
+<td>基准测试集构建、关键场景</td>
+</tr>
+<tr>
+<td>LLM Judge（RAGAS）</td>
+<td>中</td>
+<td>高但依赖模型能力</td>
+<td>日常迭代、回归测试</td>
+</tr>
+<tr>
+<td>训练判别模型（Ares）</td>
+<td>前期高、后期低</td>
+<td>可控</td>
+<td>大规模私有化评估</td>
+</tr>
+</tbody></table>
+<p>生产环境中，常见做法是：<strong>用 LLM Judge 做日常快速反馈，用人工标注做定期校准和疑难案例复核</strong>。</p>
+<h3 id="4-端到端-Benchmark：RGB、CRUD-与领域测试集构建策略"><a href="#4-端到端-Benchmark：RGB、CRUD-与领域测试集构建策略" class="headerlink" title="4. 端到端 Benchmark：RGB、CRUD 与领域测试集构建策略"></a>4. 端到端 Benchmark：RGB、CRUD 与领域测试集构建策略</h3><p>除了指标，评估还需要数据集。通用 benchmark 可以帮助我们横向对比模型和策略，但领域测试集才能真正反映业务效果。</p>
+<h4 id="RGB（Retrieval-Augmented-Generation-Benchmark）"><a href="#RGB（Retrieval-Augmented-Generation-Benchmark）" class="headerlink" title="RGB（Retrieval-Augmented Generation Benchmark）"></a>RGB（Retrieval-Augmented Generation Benchmark）</h4><p>RGB 是较早的 RAG 评测基准，覆盖了事实性、反事实鲁棒性、噪声鲁棒性等维度。它适合用于论文复现和算法对比，但数据规模和领域覆盖有限。</p>
+<h4 id="CRUD"><a href="#CRUD" class="headerlink" title="CRUD"></a>CRUD</h4><p>CRUD 是面向中文 RAG 的评测基准，强调检索与生成在中文语境下的联合评估。对于中文 RAG 应用，CRUD 比 RGB 更具参考价值。</p>
+<h4 id="领域测试集构建"><a href="#领域测试集构建" class="headerlink" title="领域测试集构建"></a>领域测试集构建</h4><p>真实的 RAG 系统往往服务于特定领域，通用 benchmark 无法替代业务测试集。构建领域测试集时，可以遵循以下原则：</p>
+<ol>
+<li><strong>覆盖高频查询</strong>：从日志中抽样真实用户问题。</li>
+<li><strong>覆盖边界情况</strong>：包括歧义查询、多跳问题、无答案问题、需要综合多段上下文的问题。</li>
+<li><strong>标注 ground truth</strong>：不仅标注答案，还要标注支撑文档片段，方便分别评估检索和生成。</li>
+<li><strong>保持更新</strong>：业务文档会变化，测试集也需要定期刷新。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 一个最小化的领域测试集示例</span></span><br><span class="line">domain_test_set = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;question&quot;</span>: <span class="string">&quot;如何查看 PG 当前活跃连接数？&quot;</span>,</span><br><span class="line">        <span class="string">&quot;ground_truth_answer&quot;</span>: <span class="string">&quot;使用 pg_stat_activity 视图查询 state = &#x27;active&#x27; 的连接。&quot;</span>,</span><br><span class="line">        <span class="string">&quot;relevant_doc_ids&quot;</span>: [<span class="string">&quot;pg-admin-001&quot;</span>, <span class="string">&quot;pg-monitoring-003&quot;</span>]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;question&quot;</span>: <span class="string">&quot;PG 中 VACUUM 和 ANALYZE 的区别是什么？&quot;</span>,</span><br><span class="line">        <span class="string">&quot;ground_truth_answer&quot;</span>: <span class="string">&quot;VACUUM 清理死元组，ANALYZE 更新统计信息。&quot;</span>,</span><br><span class="line">        <span class="string">&quot;relevant_doc_ids&quot;</span>: [<span class="string">&quot;pg-vacuum-001&quot;</span>, <span class="string">&quot;pg-optimizer-002&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔗-后端桥接（3分钟）"><a href="#🔗-后端桥接（3分钟）" class="headerlink" title="🔗 后端桥接（3分钟）"></a>🔗 后端桥接（3分钟）</h2><p>PostgreSQL 的 <code>pg_stat_statements</code> 是每个后端工程师都熟悉的工具。它记录每条 SQL 的执行次数、总耗时、平均耗时、缓存命中率，让我们能定位慢查询、发现计划回退、验证优化效果。RAG 评估本质上在做同样的事：把不可见的”质量问题”变成可度量的”指标信号”。</p>
+<h3 id="可观测的指标面板"><a href="#可观测的指标面板" class="headerlink" title="可观测的指标面板"></a>可观测的指标面板</h3><p>生产级 RAG 应该有一个类似后端服务监控的指标面板，至少包括：</p>
+<ul>
+<li><strong>检索层</strong>：Recall@K、MRR、Context Precision、平均检索延迟、p99 检索延迟。</li>
+<li><strong>生成层</strong>：Faithfulness、Answer Relevance、平均生成 token 数、生成延迟。</li>
+<li><strong>端到端</strong>：用户满意度、点击率、答案被采纳率、fallback 触发率。</li>
+</ul>
+<h3 id="阈值告警"><a href="#阈值告警" class="headerlink" title="阈值告警"></a>阈值告警</h3><p>和后端服务一样，RAG 也需要阈值告警。例如：</p>
+<ul>
+<li>Faithfulness 连续 1 小时低于 0.8，触发告警。</li>
+<li>检索空结果率超过 5%，检查 Embedding 模型或文档索引。</li>
+<li>p99 延迟超过 2 秒，触发性能告警。</li>
+</ul>
+<h3 id="A-B-测试框架"><a href="#A-B-测试框架" class="headerlink" title="A&#x2F;B 测试框架"></a>A&#x2F;B 测试框架</h3><p>当你想切换 Embedding 模型、调整 Chunk 大小、引入重排序时，不能凭感觉决策。应该像后端服务上线新功能一样，用 A&#x2F;B 测试对比指标：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">对照组：当前策略（Embedding-1 + Chunk-512）</span><br><span class="line">实验组：新策略（Embedding-2 + Chunk-256 + Reranker）</span><br><span class="line"></span><br><span class="line">评估指标：Faithfulness、Answer Relevance、Recall@5、平均延迟</span><br><span class="line">样本量：至少 200 条领域测试查询</span><br><span class="line">显著性：p &lt; 0.05</span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式，RAG 的优化从”玄学”变成了”工程”。</p>
+<hr>
+<h2 id="🛠️-微实战（5分钟）"><a href="#🛠️-微实战（5分钟）" class="headerlink" title="🛠️ 微实战（5分钟）"></a>🛠️ 微实战（5分钟）</h2><p><strong>目标</strong>：用 RAGAS 对一条基于 LangChain + pgvector 的 RAG 链路打分，对比 BM25、稠密检索与混合检索在不同指标上的表现差异。</p>
+<h3 id="步骤-1：准备环境"><a href="#步骤-1：准备环境" class="headerlink" title="步骤 1：准备环境"></a>步骤 1：准备环境</h3><p><strong>做什么</strong>：安装依赖并启动 pgvector。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langchain langchain-openai ragas psycopg2-binary pgvector rank-bm25</span><br></pre></td></tr></table></figure>
+
+<p>确保 PostgreSQL 已启用 pgvector 扩展：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> vector;</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：<code>SELECT * FROM pg_extension WHERE extname = &#39;vector&#39;;</code> 返回一行记录。</p>
+<h3 id="步骤-2：加载文档并构建三种检索器"><a href="#步骤-2：加载文档并构建三种检索器" class="headerlink" title="步骤 2：加载文档并构建三种检索器"></a>步骤 2：加载文档并构建三种检索器</h3><p><strong>做什么</strong>：将同一批文档分别接入 BM25、稠密检索和混合检索。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_community.vectorstores <span class="keyword">import</span> PGVector</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> OpenAIEmbeddings</span><br><span class="line"><span class="keyword">from</span> rank_bm25 <span class="keyword">import</span> BM25Okapi</span><br><span class="line"><span class="keyword">from</span> langchain.schema <span class="keyword">import</span> Document</span><br><span class="line"><span class="keyword">import</span> nltk</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例文档</span></span><br><span class="line">docs = [</span><br><span class="line">    Document(page_content=<span class="string">&quot;PG 的 MVCC 通过多版本链实现并发控制。&quot;</span>),</span><br><span class="line">    Document(page_content=<span class="string">&quot;VACUUM 进程负责清理 PG 中的死元组。&quot;</span>),</span><br><span class="line">    Document(page_content=<span class="string">&quot;pg_stat_statements 用于收集 SQL 执行统计信息。&quot;</span>),</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 稠密检索</span></span><br><span class="line">embeddings = OpenAIEmbeddings()</span><br><span class="line">vectorstore = PGVector.from_documents(</span><br><span class="line">    documents=docs,</span><br><span class="line">    embedding=embeddings,</span><br><span class="line">    connection_string=<span class="string">&quot;postgresql://user:pass@localhost/db&quot;</span>,</span><br><span class="line">    collection_name=<span class="string">&quot;rag_eval&quot;</span></span><br><span class="line">)</span><br><span class="line">dense_retriever = vectorstore.as_retriever(search_kwargs=&#123;<span class="string">&quot;k&quot;</span>: <span class="number">3</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># BM25</span></span><br><span class="line">tokenized = [d.page_content.split() <span class="keyword">for</span> d <span class="keyword">in</span> docs]</span><br><span class="line">bm25 = BM25Okapi(tokenized)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bm25_retriever</span>(<span class="params">query, k=<span class="number">3</span></span>):</span><br><span class="line">    scores = bm25.get_scores(query.split())</span><br><span class="line">    top_indices = <span class="built_in">sorted</span>(<span class="built_in">range</span>(<span class="built_in">len</span>(scores)), key=<span class="keyword">lambda</span> i: scores[i], reverse=<span class="literal">True</span>)[:k]</span><br><span class="line">    <span class="keyword">return</span> [docs[i] <span class="keyword">for</span> i <span class="keyword">in</span> top_indices]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 混合检索：BM25 和稠密检索各取 Top-K，按加权分数合并</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hybrid_retriever</span>(<span class="params">query, k=<span class="number">3</span>, alpha=<span class="number">0.5</span></span>):</span><br><span class="line">    dense_results = dense_retriever.get_relevant_documents(query)</span><br><span class="line">    bm25_results = bm25_retriever(query, k=k)</span><br><span class="line">    <span class="comment"># 简化：去重后取前 k</span></span><br><span class="line">    seen = <span class="built_in">set</span>()</span><br><span class="line">    merged = []</span><br><span class="line">    <span class="keyword">for</span> d <span class="keyword">in</span> dense_results + bm25_results:</span><br><span class="line">        <span class="keyword">if</span> d.page_content <span class="keyword">not</span> <span class="keyword">in</span> seen:</span><br><span class="line">            seen.add(d.page_content)</span><br><span class="line">            merged.append(d)</span><br><span class="line">    <span class="keyword">return</span> merged[:k]</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：三种检索器对同一查询都能返回 3 个文档片段，且混合检索结果包含 BM25 和稠密检索各自的 Top 结果。</p>
+<h3 id="步骤-3：构建-RAG-链路与评估数据集"><a href="#步骤-3：构建-RAG-链路与评估数据集" class="headerlink" title="步骤 3：构建 RAG 链路与评估数据集"></a>步骤 3：构建 RAG 链路与评估数据集</h3><p><strong>做什么</strong>：用 LLM 生成答案，并整理成 RAGAS 可评估的数据集。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain.prompts <span class="keyword">import</span> PromptTemplate</span><br><span class="line"></span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line"></span><br><span class="line">template = <span class="string">&quot;&quot;&quot;基于以下上下文回答问题：</span></span><br><span class="line"><span class="string">&#123;context&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">问题：&#123;question&#125;</span></span><br><span class="line"><span class="string">答案：&quot;&quot;&quot;</span></span><br><span class="line">prompt = PromptTemplate.from_template(template)</span><br><span class="line"></span><br><span class="line">questions = [</span><br><span class="line">    <span class="string">&quot;PG 的 MVCC 是如何实现的？&quot;</span>,</span><br><span class="line">    <span class="string">&quot;pg_stat_statements 的作用是什么？&quot;</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">build_context</span>(<span class="params">retriever, query</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;\n&quot;</span>.join([d.page_content <span class="keyword">for</span> d <span class="keyword">in</span> retriever.get_relevant_documents(query)])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为每种检索策略生成答案</span></span><br><span class="line">results = []</span><br><span class="line"><span class="keyword">for</span> q <span class="keyword">in</span> questions:</span><br><span class="line">    <span class="keyword">for</span> name, retriever <span class="keyword">in</span> [(<span class="string">&quot;dense&quot;</span>, dense_retriever), (<span class="string">&quot;bm25&quot;</span>, <span class="keyword">lambda</span> q: bm25_retriever(q)), (<span class="string">&quot;hybrid&quot;</span>, <span class="keyword">lambda</span> q: hybrid_retriever(q))]:</span><br><span class="line">        context = build_context(retriever, q)</span><br><span class="line">        answer = llm.predict(prompt.<span class="built_in">format</span>(context=context, question=q))</span><br><span class="line">        results.append(&#123;</span><br><span class="line">            <span class="string">&quot;strategy&quot;</span>: name,</span><br><span class="line">            <span class="string">&quot;question&quot;</span>: q,</span><br><span class="line">            <span class="string">&quot;answer&quot;</span>: answer,</span><br><span class="line">            <span class="string">&quot;contexts&quot;</span>: [context]</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：评估数据集包含每种策略对每个问题的答案和上下文。</p>
+<h3 id="步骤-4：运行-RAGAS-评估并对比"><a href="#步骤-4：运行-RAGAS-评估并对比" class="headerlink" title="步骤 4：运行 RAGAS 评估并对比"></a>步骤 4：运行 RAGAS 评估并对比</h3><p><strong>做什么</strong>：用 RAGAS 计算 Faithfulness、Answer Relevancy、Context Precision。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> ragas <span class="keyword">import</span> evaluate</span><br><span class="line"><span class="keyword">from</span> ragas.metrics <span class="keyword">import</span> faithfulness, answer_relevancy, context_precision</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> [<span class="string">&quot;dense&quot;</span>, <span class="string">&quot;bm25&quot;</span>, <span class="string">&quot;hybrid&quot;</span>]:</span><br><span class="line">    subset = [r <span class="keyword">for</span> r <span class="keyword">in</span> results <span class="keyword">if</span> r[<span class="string">&quot;strategy&quot;</span>] == name]</span><br><span class="line">    ds = Dataset.from_dict(&#123;</span><br><span class="line">        <span class="string">&quot;question&quot;</span>: [r[<span class="string">&quot;question&quot;</span>] <span class="keyword">for</span> r <span class="keyword">in</span> subset],</span><br><span class="line">        <span class="string">&quot;answer&quot;</span>: [r[<span class="string">&quot;answer&quot;</span>] <span class="keyword">for</span> r <span class="keyword">in</span> subset],</span><br><span class="line">        <span class="string">&quot;contexts&quot;</span>: [r[<span class="string">&quot;contexts&quot;</span>] <span class="keyword">for</span> r <span class="keyword">in</span> subset]</span><br><span class="line">    &#125;)</span><br><span class="line">    scores = evaluate(ds, metrics=[faithfulness, answer_relevancy, context_precision])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;=== <span class="subst">&#123;name&#125;</span> ===&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(scores)</span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：三种策略在三个指标上都有数值输出，且混合检索在 Context Precision 上通常优于单一策略。</p>
+<h3 id="步骤-5：记录与迭代"><a href="#步骤-5：记录与迭代" class="headerlink" title="步骤 5：记录与迭代"></a>步骤 5：记录与迭代</h3><p><strong>做什么</strong>：将评估结果写入评估日志，作为后续优化的基线。</p>
+<p><strong>怎么做</strong>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;date&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-07-13&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;strategies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;dense&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;faithfulness&quot;</span><span class="punctuation">:</span> <span class="number">0.82</span><span class="punctuation">,</span> <span class="attr">&quot;answer_relevancy&quot;</span><span class="punctuation">:</span> <span class="number">0.88</span><span class="punctuation">,</span> <span class="attr">&quot;context_precision&quot;</span><span class="punctuation">:</span> <span class="number">0.71</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;bm25&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;faithfulness&quot;</span><span class="punctuation">:</span> <span class="number">0.79</span><span class="punctuation">,</span> <span class="attr">&quot;answer_relevancy&quot;</span><span class="punctuation">:</span> <span class="number">0.85</span><span class="punctuation">,</span> <span class="attr">&quot;context_precision&quot;</span><span class="punctuation">:</span> <span class="number">0.74</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;hybrid&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;faithfulness&quot;</span><span class="punctuation">:</span> <span class="number">0.86</span><span class="punctuation">,</span> <span class="attr">&quot;answer_relevancy&quot;</span><span class="punctuation">:</span> <span class="number">0.89</span><span class="punctuation">,</span> <span class="attr">&quot;context_precision&quot;</span><span class="punctuation">:</span> <span class="number">0.81</span><span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>验证标准</strong>：基线数据可用于下次策略调整后的对比，形成持续优化的闭环。</p>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><p>RAG 评估领域正在快速演进，以下几个方向值得关注：</p>
+<p><strong>自动评估 Agent</strong>：不再让单一 LLM 做 Judge，而是让专门的评估 Agent 自动构造测试用例、运行评估、定位薄弱环节。Agent 可以模拟不同角色的用户提问，覆盖更多人机交互场景。</p>
+<p><strong>多维度 Judge Ensemble</strong>：单个 Judge LLM 可能存在偏见，未来趋势是集成多个 Judge（不同模型、不同 Prompt、不同评估维度），通过投票或加权得出更稳定的评分。</p>
+<p><strong>评估驱动的检索优化</strong>：将评估指标直接纳入检索模块的训练目标。例如，通过强化学习让检索器不仅优化向量相似度，还优化下游生成任务的 Faithfulness 和 Answer Relevance。</p>
+<p><strong>偏见与一致性校准</strong>：LLM Judge 可能对某些措辞、格式或立场产生偏好。研究者正在探索校准方法，比如用人工标注残差修正 Judge 的系统性偏差。</p>
+<p><strong>低成本评估流水线</strong>：随着 RAG 应用规模扩大，评估成本可能成为瓶颈。方向包括更小的专用评估模型、离线批量评估、以及基于采样的近似评估技术。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>RAG 评估体系的核心，是把”答案靠不靠谱”这个主观问题，拆解成可度量、可追踪、可优化的工程指标。从检索侧的 Recall@K、MRR、NDCG，到生成侧的 Faithfulness、Answer Relevance、Context Precision，再到用 RAGAS 或 Ares 做自动化评估，每一步都能和后端工程师熟悉的监控、告警、A&#x2F;B 测试思维对应起来。</p>
+<p>当你的 RAG 系统能够持续回答”检索到了什么””生成用了什么””答案是否忠实””是否回答了用户问题”时，它才算从”能跑的 demo”变成了”可信赖的生产服务”。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/13/week-1-day-7-rag-evaluation-system/">https://dive2cloud-bmz.github.io/2026/07/13/week-1-day-7-rag-evaluation-system/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-1/">
+                                    <span class="chip bg-color">Week-1</span>
+                                </a>
+                            
+                                <a href="/tags/RAG/">
+                                    <span class="chip bg-color">RAG</span>
+                                </a>
+                            
+                                <a href="/tags/RAGAS/">
+                                    <span class="chip bg-color">RAGAS</span>
+                                </a>
+                            
+                                <a href="/tags/Evaluation/">
+                                    <span class="chip bg-color">Evaluation</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/07/13/week-1-day-7-rag-evaluation-system/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="RAG评估体系：如何让检索结果&#34;说得清、靠得住&#34;">
+                        
+                        <span class="card-title">RAG评估体系：如何让检索结果&#34;说得清、靠得住&#34;</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-1/">
+                        <span class="chip bg-color">Week-1</span>
+                    </a>
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/RAGAS/">
+                        <span class="chip bg-color">RAGAS</span>
+                    </a>
+                    
+                    <a href="/tags/Evaluation/">
+                        <span class="chip bg-color">Evaluation</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/13/week2-day4-langgraph-basics/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="LangGraph 基础：用状态图把 Agent 工作流工程化">
+                        
+                        <span class="card-title">LangGraph 基础：用状态图把 Agent 工作流工程化</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-2/">
+                        <span class="chip bg-color">Week-2</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Orchestration/">
+                        <span class="chip bg-color">Agent-Orchestration</span>
+                    </a>
+                    
+                    <a href="/tags/State-Machine/">
+                        <span class="chip bg-color">State-Machine</span>
+                    </a>
+                    
+                    <a href="/tags/LangChain/">
+                        <span class="chip bg-color">LangChain</span>
+                    </a>
+                    
+                    <a href="/tags/Workflow-Engine/">
+                        <span class="chip bg-color">Workflow-Engine</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">150.6k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

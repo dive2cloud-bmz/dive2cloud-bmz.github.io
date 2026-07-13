@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-13T03:04:40.492Z</updated>
+  <updated>2026-07-13T13:44:23.152Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>RAG评估体系：如何让检索结果&quot;说得清、靠得住&quot;</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/13/week-1-day-7-rag-evaluation-system/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/13/week-1-day-7-rag-evaluation-system/</id>
+    <published>2026-07-13T13:00:24.000Z</published>
+    <updated>2026-07-13T13:44:23.152Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2分钟）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2分钟）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2分钟）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2分钟）&lt;/h2&gt;&lt;p&gt;如果你维护过 PostgreSQL</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+  </entry>
   
   <entry>
     <title>LangGraph 基础：用状态图把 Agent 工作流工程化</title>
@@ -289,9 +322,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
     <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
     
@@ -622,29 +655,6 @@
     
     
     <category term="sls" scheme="https://dive2cloud-bmz.github.io/tags/sls/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>postgreSql arch summary</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/04/28/postgreSql-arch-summary/</id>
-    <published>2025-04-28T03:39:30.000Z</published>
-    <updated>2025-04-28T06:00:54.932Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;逻辑架构&quot;&gt;&lt;a href=&quot;#逻辑架构&quot; class=&quot;headerlink&quot; title=&quot;逻辑架构&quot;&gt;&lt;/a&gt;逻辑架构&lt;/h2&gt;&lt;p&gt;有什么模块，每个模块干什么用&lt;br&gt;&lt;img</summary>
-        
-      
-    
-    
-    
-    
-    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
     
   </entry>
   
