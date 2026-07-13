@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-10T03:04:12.773Z</updated>
+  <updated>2026-07-13T03:04:40.492Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LangGraph 基础：用状态图把 Agent 工作流工程化</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/13/week2-day4-langgraph-basics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/13/week2-day4-langgraph-basics/</id>
+    <published>2026-07-13T03:00:42.000Z</published>
+    <updated>2026-07-13T03:04:40.492Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;前面三天，我们依次走过了</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="State-Machine" scheme="https://dive2cloud-bmz.github.io/tags/State-Machine/"/>
+    
+    <category term="LangChain" scheme="https://dive2cloud-bmz.github.io/tags/LangChain/"/>
+    
+    <category term="Workflow-Engine" scheme="https://dive2cloud-bmz.github.io/tags/Workflow-Engine/"/>
+    
+  </entry>
   
   <entry>
     <title>Plan-and-Execute 与 Reflection：让 Agent 学会‘先定计划、再复盘纠错’</title>
@@ -43,13 +80,13 @@
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
-    
-    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
-    
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
+    
+    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -252,9 +289,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
     <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
     
@@ -362,8 +399,6 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -371,6 +406,8 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -608,29 +645,6 @@
     
     
     <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>duckDB</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/04/24/duckDB/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/04/24/duckDB/</id>
-    <published>2025-04-24T09:36:00.000Z</published>
-    <updated>2025-04-27T11:30:38.891Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;我作为一个 former bigdata rd，对 OLAP 还是有所了解的。&lt;br&gt;但是我接触的都是分布式的 OLAP</summary>
-        
-      
-    
-    
-    
-    
-    <category term="duckDB" scheme="https://dive2cloud-bmz.github.io/tags/duckDB/"/>
     
   </entry>
   
