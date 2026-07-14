@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-13T13:44:23.152Z</updated>
+  <updated>2026-07-14T03:03:20.333Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从单兵作战到团队协作：Multi-Agent 系统基础与角色分工</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/14/week2-day5-multi-agent-systems-basics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/14/week2-day5-multi-agent-systems-basics/</id>
+    <published>2026-07-14T03:00:26.000Z</published>
+    <updated>2026-07-14T03:03:20.333Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;从单兵作战到团队协作：Multi-Agent-系统基础与角色分工&quot;&gt;&lt;a href=&quot;#从单兵作战到团队协作：Multi-Agent-系统基础与角色分工&quot; class=&quot;headerlink&quot; title=&quot;从单兵作战到团队协作：Multi-Agent</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    
+    <category term="CrewAI" scheme="https://dive2cloud-bmz.github.io/tags/CrewAI/"/>
+    
+  </entry>
   
   <entry>
     <title>RAG评估体系：如何让检索结果&quot;说得清、靠得住&quot;</title>
@@ -115,11 +150,11 @@
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -432,6 +467,8 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -439,8 +476,6 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -632,29 +667,6 @@
     
     
     <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>alibaba cloud sls query language learning</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/08/12/alibaba-cloud-sls-query-language-learning/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/08/12/alibaba-cloud-sls-query-language-learning/</id>
-    <published>2025-08-12T08:10:59.000Z</published>
-    <updated>2025-08-15T12:32:31.308Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在阿里云的这段日子，各种日志都是交给 sls</summary>
-        
-      
-    
-    
-    
-    
-    <category term="sls" scheme="https://dive2cloud-bmz.github.io/tags/sls/"/>
     
   </entry>
   
