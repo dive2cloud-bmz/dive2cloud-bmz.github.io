@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-14T03:03:20.333Z</updated>
+  <updated>2026-07-15T03:02:38.850Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 记忆与持久化：让 LLM 拥有“长期记忆”与“断点续跑”能力</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/15/week2-day6-agent-memory-persistence/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/15/week2-day6-agent-memory-persistence/</id>
+    <published>2026-07-15T03:00:44.000Z</published>
+    <updated>2026-07-15T03:02:38.850Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;p&gt;作为一个 PostgreSQL</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Memory" scheme="https://dive2cloud-bmz.github.io/tags/Memory/"/>
+    
+    <category term="Human-in-the-Loop" scheme="https://dive2cloud-bmz.github.io/tags/Human-in-the-Loop/"/>
+    
+  </entry>
   
   <entry>
     <title>从单兵作战到团队协作：Multi-Agent 系统基础与角色分工</title>
@@ -255,9 +290,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
     <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Similarity" scheme="https://dive2cloud-bmz.github.io/tags/Similarity/"/>
     
@@ -357,9 +392,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
     <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
     
@@ -573,9 +608,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
     <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Vector-Search" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Search/"/>
     
@@ -637,29 +672,6 @@
 &lt;p&gt;老生常谈了，简单说一下&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&quot;事务隔离级别&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>postgreSql pg_basebackup</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/08/15/postgreSql-pg-basebackup/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/08/15/postgreSql-pg-basebackup/</id>
-    <published>2025-08-15T12:33:47.000Z</published>
-    <updated>2025-08-15T13:09:22.828Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;what&quot;&gt;&lt;a href=&quot;#what&quot; class=&quot;headerlink&quot; title=&quot;what&quot;&gt;&lt;/a&gt;what&lt;/h2&gt;&lt;p&gt;基础备份工具，可以直接备份运行中 PG 全部的数据，备份的数据我们可以称之为 “物理快照”&lt;br&gt;备份之后的数据就可以</summary>
         
       
     
