@@ -1,0 +1,1273 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Agent 也会&#34;崩&#34;：错误处理、重试与降级策略实战, BMZ BLOG">
+    <meta name="description" content="Agent 也会”崩”：错误处理、重试与降级策略实战🚀 核心洞察作为从 PostgreSQL 后端转型 AI 应用工程师的开发者，你已经非常熟悉一件事：任何依赖外部服务的系统都不可能在 100% 时间内正常运行。数据库会有连接抖动、网络会">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Agent 也会&#34;崩&#34;：错误处理、重试与降级策略实战 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Agent 也会&#34;崩&#34;：错误处理、重试与降级策略实战</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-2/">
+                                <span class="chip bg-color">Week-2</span>
+                            </a>
+                        
+                            <a href="/tags/Agent/">
+                                <span class="chip bg-color">Agent</span>
+                            </a>
+                        
+                            <a href="/tags/Resilience/">
+                                <span class="chip bg-color">Resilience</span>
+                            </a>
+                        
+                            <a href="/tags/Retry/">
+                                <span class="chip bg-color">Retry</span>
+                            </a>
+                        
+                            <a href="/tags/Fallback/">
+                                <span class="chip bg-color">Fallback</span>
+                            </a>
+                        
+                            <a href="/tags/Circuit-Breaker/">
+                                <span class="chip bg-color">Circuit-Breaker</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-16
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-16
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    18 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Agent-也会”崩”：错误处理、重试与降级策略实战"><a href="#Agent-也会”崩”：错误处理、重试与降级策略实战" class="headerlink" title="Agent 也会”崩”：错误处理、重试与降级策略实战"></a>Agent 也会”崩”：错误处理、重试与降级策略实战</h1><h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>作为从 PostgreSQL 后端转型 AI 应用工程师的开发者，你已经非常熟悉一件事：<strong>任何依赖外部服务的系统都不可能在 100% 时间内正常运行</strong>。数据库会有连接抖动、网络会超时、主库会切换、第三方 API 会限流。我们给后端系统写的每一行生产代码，几乎都包含 <code>try/except</code>、<code>retry</code>、<code>circuit breaker</code>、<code>fallback</code> 这些模式。</p>
+<p>但进入 AI Agent 开发后，很多人会突然忘记这些基本功。原因很微妙：LLM 的返回是”概率性”的，错误不像 HTTP 500 那样黑白分明。模型可能返回一段看起来合理但完全错误的 JSON，可能调用了一个不存在的工具，可能在推理过程中突然陷入循环，也可能因为某个工具调用超时导致整个 Agent 卡住。这些问题如果不在架构层解决，会在生产环境中以极具破坏性的方式爆发。</p>
+<p>今天的主题是 <strong>Agent 的韧性工程（Resilience Engineering）</strong>：当 Agent 的工具调用失败、LLM 解析出错、外部 API 不可用时，我们如何让系统优雅地降级而不是直接崩溃。这和 PostgreSQL 的”高可用架构”是同一个灵魂——承认故障不可避免，用设计来容忍故障。</p>
+<p>学完今天的内容，你应该能够：</p>
+<ul>
+<li>识别 Agent 系统中常见的 5 类错误模式</li>
+<li>为工具调用设计指数退避重试与抖动策略</li>
+<li>实现熔断器避免级联故障</li>
+<li>设计多层降级策略（重试降级 → 简化模型 → 静态答案 → 人工接管）</li>
+<li>在 LangGraph &#x2F; 自研 Agent 框架中落地这些模式</li>
+</ul>
+<hr>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-Agent-系统中的错误光谱"><a href="#1-Agent-系统中的错误光谱" class="headerlink" title="1. Agent 系统中的错误光谱"></a>1. Agent 系统中的错误光谱</h3><p>在后端系统中，我们通常把错误分为”可重试错误”和”不可重试错误”。Agent 系统同样需要这个分类，但它更复杂，因为 LLM 的每个输出都可能是”语义错误”。下面是 Agent 中常见的五类错误：</p>
+<table>
+<thead>
+<tr>
+<th>错误类型</th>
+<th>典型表现</th>
+<th>是否可重试</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>工具调用失败</strong></td>
+<td>API 返回 500&#x2F;503、网络超时、DNS 失败</td>
+<td>是</td>
+<td>指数退避重试 + 熔断</td>
+</tr>
+<tr>
+<td><strong>LLM 调用失败</strong></td>
+<td>Rate limit、context length exceeded、服务不可用</td>
+<td>是</td>
+<td>重试、切换模型、降级到本地模型</td>
+</tr>
+<tr>
+<td><strong>输出解析失败</strong></td>
+<td>JSON 损坏、缺少必填字段、幻觉出非法工具名</td>
+<td>部分可重试</td>
+<td>重试 + 结构化解析器 + fallback</td>
+</tr>
+<tr>
+<td><strong>业务逻辑错误</strong></td>
+<td>工具返回了错误但状态码是 200、检索结果为空</td>
+<td>否</td>
+<td>降级响应、人工接管</td>
+</tr>
+<tr>
+<td><strong>无限循环 &#x2F; 资源耗尽</strong></td>
+<td>Agent 反复调用同一工具、token 消耗失控</td>
+<td>否</td>
+<td>最大步数限制、预算控制、熔断</td>
+</tr>
+</tbody></table>
+<p>这五类错误中，前两类和后端分布式系统几乎一致；后三类是 Agent 特有的。核心区别在于：Agent 的”错误”很多时候不是异常，而是”语义上不符合预期的输出”。这要求我们不能只依赖 try&#x2F;except，还要在<strong>输出验证层</strong>做防御。</p>
+<h3 id="2-重试策略：不是简单-loop"><a href="#2-重试策略：不是简单-loop" class="headerlink" title="2. 重试策略：不是简单 loop"></a>2. 重试策略：不是简单 loop</h3><p>最 naive 的重试是 <code>for i in range(3): try ... except: sleep(1)</code>。这在生产环境中往往适得其反，因为：</p>
+<ul>
+<li>固定间隔会在服务恢复瞬间造成”惊群效应”</li>
+<li>不对错误类型做分类会把 4xx 也重试，浪费资源</li>
+<li>没有熔断会让一个已经过载的服务被持续打爆</li>
+</ul>
+<p>正确的重试策略通常包含以下要素：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> enum <span class="keyword">import</span> Enum</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RetryDecision</span>(<span class="title class_ inherited__">Enum</span>):</span><br><span class="line">    RETRY = <span class="string">&quot;retry&quot;</span></span><br><span class="line">    FAIL = <span class="string">&quot;fail&quot;</span></span><br><span class="line">    FALLBACK = <span class="string">&quot;fallback&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify_error</span>(<span class="params">exception: Exception</span>) -&gt; RetryDecision:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;根据异常类型决定重试、失败还是降级。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, (TimeoutError, ConnectionError)):</span><br><span class="line">        <span class="keyword">return</span> RetryDecision.RETRY</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, ValueError):  <span class="comment"># 例如 JSON 解析失败</span></span><br><span class="line">        <span class="keyword">return</span> RetryDecision.RETRY</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, PermissionError):  <span class="comment"># 权限错误重试无意义</span></span><br><span class="line">        <span class="keyword">return</span> RetryDecision.FAIL</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, RuntimeError):  <span class="comment"># 业务已知的可降级场景</span></span><br><span class="line">        <span class="keyword">return</span> RetryDecision.FALLBACK</span><br><span class="line">    <span class="keyword">return</span> RetryDecision.FAIL</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exponential_backoff</span>(<span class="params">attempt: <span class="built_in">int</span>, base: <span class="built_in">float</span> = <span class="number">1.0</span>, max_wait: <span class="built_in">float</span> = <span class="number">60.0</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;指数退避 + 全抖动（full jitter）。&quot;&quot;&quot;</span></span><br><span class="line">    wait = <span class="built_in">min</span>(base * (<span class="number">2</span> ** attempt), max_wait)</span><br><span class="line">    <span class="keyword">return</span> random.uniform(<span class="number">0</span>, wait)</span><br></pre></td></tr></table></figure>
+
+<p><strong>全抖动（full jitter）</strong> 的意义在于：如果多个 Agent 实例同时遇到同一服务故障，固定退避会让它们在同一时刻重试，形成请求尖峰；而抖动可以把重试时间打散。AWS 的这篇经典博客《Exponential Backoff and Jitter》已经证明，full jitter 在恢复场景下的性能优于固定退避。</p>
+<h3 id="3-熔断器：防止情感依赖演变成系统灾难"><a href="#3-熔断器：防止情感依赖演变成系统灾难" class="headerlink" title="3. 熔断器：防止情感依赖演变成系统灾难"></a>3. 熔断器：防止情感依赖演变成系统灾难</h3><p>熔断器（Circuit Breaker）在后端微服务中非常常见。它的核心思想是：如果某个依赖的失败率达到阈值，就暂时停止调用它，避免把故障扩散到整个系统。</p>
+<p>在 Agent 中，熔断器特别适用于以下场景：</p>
+<ul>
+<li>某个外部工具 API 连续失败</li>
+<li>某个 LLM 模型频繁超时</li>
+<li>某个检索服务响应极慢</li>
+</ul>
+<p>一个最小化的三态熔断器实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stateDiagram-v2</span><br><span class="line">    [*] --&gt; Closed</span><br><span class="line">    Closed --&gt; Open : 失败率 &gt; threshold</span><br><span class="line">    Open --&gt; HalfOpen : timeout 后</span><br><span class="line">    HalfOpen --&gt; Closed : 探测成功</span><br><span class="line">    HalfOpen --&gt; Open : 探测失败</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> enum <span class="keyword">import</span> Enum, auto</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CircuitState</span>(<span class="title class_ inherited__">Enum</span>):</span><br><span class="line">    CLOSED = auto()      <span class="comment"># 正常调用</span></span><br><span class="line">    OPEN = auto()        <span class="comment"># 熔断，直接失败/降级</span></span><br><span class="line">    HALF_OPEN = auto()   <span class="comment"># 允许试探调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CircuitBreaker</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, failure_threshold=<span class="number">5</span>, recovery_timeout=<span class="number">30.0</span>, half_open_max_calls=<span class="number">1</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.failure_threshold = failure_threshold</span><br><span class="line">        <span class="variable language_">self</span>.recovery_timeout = recovery_timeout</span><br><span class="line">        <span class="variable language_">self</span>.half_open_max_calls = half_open_max_calls</span><br><span class="line">        <span class="variable language_">self</span>.state = CircuitState.CLOSED</span><br><span class="line">        <span class="variable language_">self</span>.failures = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.last_failure_time = <span class="literal">None</span></span><br><span class="line">        <span class="variable language_">self</span>.half_open_calls = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">can_execute</span>(<span class="params">self</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.CLOSED:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.OPEN:</span><br><span class="line">            <span class="keyword">if</span> <span class="variable language_">self</span>._timeout_elapsed():</span><br><span class="line">                <span class="variable language_">self</span>.state = CircuitState.HALF_OPEN</span><br><span class="line">                <span class="variable language_">self</span>.half_open_calls = <span class="number">0</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="comment"># HALF_OPEN</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.half_open_calls &lt; <span class="variable language_">self</span>.half_open_max_calls</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_success</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.HALF_OPEN:</span><br><span class="line">            <span class="variable language_">self</span>.state = CircuitState.CLOSED</span><br><span class="line">            <span class="variable language_">self</span>.failures = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="variable language_">self</span>.failures = <span class="built_in">max</span>(<span class="number">0</span>, <span class="variable language_">self</span>.failures - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_failure</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.failures += <span class="number">1</span></span><br><span class="line">        <span class="variable language_">self</span>.last_failure_time = datetime.utcnow()</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.HALF_OPEN:</span><br><span class="line">            <span class="variable language_">self</span>.state = CircuitState.OPEN</span><br><span class="line">        <span class="keyword">elif</span> <span class="variable language_">self</span>.failures &gt;= <span class="variable language_">self</span>.failure_threshold:</span><br><span class="line">            <span class="variable language_">self</span>.state = CircuitState.OPEN</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_timeout_elapsed</span>(<span class="params">self</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.last_failure_time:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">return</span> (datetime.utcnow() - <span class="variable language_">self</span>.last_failure_time).total_seconds() &gt;= <span class="variable language_">self</span>.recovery_timeout</span><br></pre></td></tr></table></figure>
+
+<p>注意：熔断器不是为了让 Agent”永远不失败”，而是为了<strong>把不可控的外部故障转换为可控的内部降级</strong>。当熔断器打开时，Agent 应该立即走 fallback 路径，而不是让用户空等。</p>
+<h3 id="4-降级策略金字塔"><a href="#4-降级策略金字塔" class="headerlink" title="4. 降级策略金字塔"></a>4. 降级策略金字塔</h3><p>重试和熔断解决的是”调用是否执行”的问题，降级解决的是”调用失败后给用户什么”的问题。一个好的降级策略应该是分层的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    A[用户请求] --&gt; B&#123;主模型 + 主工具&#125;</span><br><span class="line">    B --&gt;|成功| C[正常响应]</span><br><span class="line">    B --&gt;|失败| D&#123;重试?&#125;</span><br><span class="line">    D --&gt;|成功| C</span><br><span class="line">    D --&gt;|仍失败| E&#123;切换备用模型?&#125;</span><br><span class="line">    E --&gt;|成功| C</span><br><span class="line">    E --&gt;|失败| F&#123;简化工具 / 静态答案?&#125;</span><br><span class="line">    F --&gt;|成功| G[降级响应]</span><br><span class="line">    F --&gt;|失败| H[人工接管 / 道歉 + 记录]</span><br></pre></td></tr></table></figure>
+
+<p>各层含义：</p>
+<ol>
+<li><strong>重试层</strong>：对瞬态故障（网络抖动、限流）最有效。</li>
+<li><strong>模型切换层</strong>：如果 GPT-4 因为上下文过长失败，可以降级到支持更长上下文的模型，或切换到更快更便宜的模型给出简化答案。</li>
+<li><strong>工具简化层</strong>：如果复杂工具（如数据库查询、代码执行器）失败，可以改用更简单的工具，例如直接返回 FAQ 或预计算的摘要。</li>
+<li><strong>静态 fallback 层</strong>：返回一个预先准备好的安全答案，例如”这个问题我需要进一步确认，请稍后重试”。</li>
+<li><strong>人工接管层</strong>：把对话交给人类客服或记录到工单系统。</li>
+</ol>
+<p>每一层都比上一层”损失信息”，但都比直接崩溃好。设计的艺术在于：<strong>让系统在最短的时间内回到一个对用户有用的状态</strong>。</p>
+<h3 id="5-输出验证：Agent-的”schema-约束”"><a href="#5-输出验证：Agent-的”schema-约束”" class="headerlink" title="5. 输出验证：Agent 的”schema 约束”"></a>5. 输出验证：Agent 的”schema 约束”</h3><p>后端的 API 会校验请求体是否符合 JSON Schema，Agent 的 LLM 输出同样需要校验。LangChain 的 <code>PydanticOutputParser</code>、OpenAI 的 <code>response_format=&#123;&quot;type&quot;: &quot;json_object&quot;&#125;</code>、 Instructor 库，都是解决这个问题的工具。</p>
+<p>核心思路是：不要让 LLM 的原始输出直接进入下游逻辑。先经过一个验证层，把”语义错误”转换为”可处理的异常”，再进入重试或降级路径。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, ValidationError</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToolCall</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    tool_name: <span class="built_in">str</span></span><br><span class="line">    arguments: <span class="built_in">dict</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">safe_parse_tool_call</span>(<span class="params">raw: <span class="built_in">str</span>, valid_tools: <span class="built_in">set</span>[<span class="built_in">str</span>]</span>) -&gt; ToolCall:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;把 LLM 输出解析为 ToolCall，失败则抛出可重试异常。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        data = json.loads(raw)</span><br><span class="line">        call = ToolCall(**data)</span><br><span class="line">    <span class="keyword">except</span> (json.JSONDecodeError, ValidationError) <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">f&quot;Invalid tool call format: <span class="subst">&#123;e&#125;</span>&quot;</span>) <span class="keyword">from</span> e</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> call.tool_name <span class="keyword">not</span> <span class="keyword">in</span> valid_tools:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">f&quot;Unknown tool: <span class="subst">&#123;call.tool_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> call</span><br></pre></td></tr></table></figure>
+
+<p>验证层是重试和降级的”入口”：如果解析失败，可以把这个信息反馈给 LLM，让它重新生成（Self-Correction）；如果多次失败，则进入 fallback。</p>
+<hr>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><p>如果你熟悉 PostgreSQL 和后端微服务，Agent 的韧性模式可以和这些概念一一映射。</p>
+<h3 id="1-重试-≈-数据库连接池的自动重连"><a href="#1-重试-≈-数据库连接池的自动重连" class="headerlink" title="1. 重试 ≈ 数据库连接池的自动重连"></a>1. 重试 ≈ 数据库连接池的自动重连</h3><p>PostgreSQL 的连接池（如 PgBouncer、HikariCP）在连接断开时会自动重试建立新连接。它不会立刻把异常抛给应用层，而是尝试恢复。Agent 对 LLM 或工具的重试，本质上就是”连接池级别的自我修复”。</p>
+<p>不同点在于：数据库重试通常针对低层网络异常；Agent 重试还要覆盖”语义异常”（如输出格式错误）。</p>
+<h3 id="2-熔断器-≈-数据库主从切换-只读降级"><a href="#2-熔断器-≈-数据库主从切换-只读降级" class="headerlink" title="2. 熔断器 ≈ 数据库主从切换 &#x2F; 只读降级"></a>2. 熔断器 ≈ 数据库主从切换 &#x2F; 只读降级</h3><p>当 PostgreSQL 主库不可用时，系统可以切换到只读副本，保证查询可用但禁止写入。这就是一种”熔断 + 降级”的组合：主库的”电路”打开，应用层自动把写请求放入队列或返回”当前只读”。</p>
+<p>Agent 中的熔断器也是一样：当某个工具连续失败，系统停止调用它，切换到备用工具或静态响应。</p>
+<h3 id="3-降级响应-≈-缓存命中（Cache-Hit）"><a href="#3-降级响应-≈-缓存命中（Cache-Hit）" class="headerlink" title="3. 降级响应 ≈ 缓存命中（Cache Hit）"></a>3. 降级响应 ≈ 缓存命中（Cache Hit）</h3><p>后端系统在高负载或依赖故障时，会优先返回缓存中的数据，而不是去查数据库。Agent 的 fallback 响应就是”语义缓存”：用一个预置的安全答案替代实时生成的答案。</p>
+<p>你可以把常见失败场景的 fallback 答案预先写入向量数据库，需要时直接检索最相似的。</p>
+<h3 id="4-死信队列-≈-PostgreSQL-WAL-审计日志"><a href="#4-死信队列-≈-PostgreSQL-WAL-审计日志" class="headerlink" title="4. 死信队列 ≈ PostgreSQL WAL &#x2F; 审计日志"></a>4. 死信队列 ≈ PostgreSQL WAL &#x2F; 审计日志</h3><p>后端的失败请求会被写入死信队列（DLQ）或日志，供后续分析。Agent 的失败轨迹同样需要记录：用户输入、Agent 思考过程、工具调用记录、错误类型、最终降级路径。</p>
+<p>LangGraph 的 checkpointing 机制天然适合做这件事——它把整个状态图持久化，你可以像回放 WAL 一样回放 Agent 的执行路径。</p>
+<h3 id="5-超时与预算控制-≈-查询超时（statement-timeout）"><a href="#5-超时与预算控制-≈-查询超时（statement-timeout）" class="headerlink" title="5. 超时与预算控制 ≈ 查询超时（statement_timeout）"></a>5. 超时与预算控制 ≈ 查询超时（statement_timeout）</h3><p>PostgreSQL 有 <code>statement_timeout</code> 防止慢查询拖垮实例。Agent 需要类似的”token 预算”和”步数限制”，防止模型在循环中无限消耗资源。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MAX_STEPS = <span class="number">15</span></span><br><span class="line">MAX_TOKENS = <span class="number">4000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> step_count &gt; MAX_STEPS <span class="keyword">or</span> total_tokens &gt; MAX_TOKENS:</span><br><span class="line">    <span class="keyword">raise</span> ResourceExhaustedError(<span class="string">&quot;Agent exceeded safety budget, fallback triggered.&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🛠️-微实战"><a href="#🛠️-微实战" class="headerlink" title="🛠️ 微实战"></a>🛠️ 微实战</h2><p>下面是一个完整的、可独立运行的 Python 示例。它实现了一个带有<strong>重试、熔断、降级</strong>三层保护的 Agent 工具调用框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">week2-day7-mini-lab.py</span></span><br><span class="line"><span class="string">Agent 错误处理、重试与降级策略最小可运行示例。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"><span class="keyword">from</span> enum <span class="keyword">import</span> Enum, auto</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Callable</span>, <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============ 1. 基础设施：错误分类与重试 ============</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RetryDecision</span>(<span class="title class_ inherited__">Enum</span>):</span><br><span class="line">    RETRY = <span class="string">&quot;retry&quot;</span></span><br><span class="line">    FAIL = <span class="string">&quot;fail&quot;</span></span><br><span class="line">    FALLBACK = <span class="string">&quot;fallback&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify_error</span>(<span class="params">exception: Exception</span>) -&gt; RetryDecision:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, (TimeoutError, ConnectionError)):</span><br><span class="line">        <span class="keyword">return</span> RetryDecision.RETRY</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, ValueError):</span><br><span class="line">        <span class="keyword">return</span> RetryDecision.RETRY</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, PermissionError):</span><br><span class="line">        <span class="keyword">return</span> RetryDecision.FAIL</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(exception, RuntimeError):</span><br><span class="line">        <span class="keyword">return</span> RetryDecision.FALLBACK</span><br><span class="line">    <span class="keyword">return</span> RetryDecision.FAIL</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">exponential_backoff_with_jitter</span>(<span class="params">attempt: <span class="built_in">int</span>, base: <span class="built_in">float</span> = <span class="number">1.0</span>, max_wait: <span class="built_in">float</span> = <span class="number">10.0</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    wait = <span class="built_in">min</span>(base * (<span class="number">2</span> ** attempt), max_wait)</span><br><span class="line">    <span class="keyword">return</span> random.uniform(<span class="number">0</span>, wait)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retry_with_policy</span>(<span class="params"></span></span><br><span class="line"><span class="params">    fn: <span class="type">Callable</span>[[], <span class="type">Any</span>],</span></span><br><span class="line"><span class="params">    max_attempts: <span class="built_in">int</span> = <span class="number">3</span>,</span></span><br><span class="line"><span class="params">    base_delay: <span class="built_in">float</span> = <span class="number">1.0</span>,</span></span><br><span class="line"><span class="params">    on_fallback: <span class="type">Callable</span>[[Exception], <span class="type">Any</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="type">Any</span>:</span><br><span class="line">    last_exception = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">for</span> attempt <span class="keyword">in</span> <span class="built_in">range</span>(max_attempts):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> fn()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            last_exception = e</span><br><span class="line">            decision = classify_error(e)</span><br><span class="line">            <span class="keyword">if</span> decision == RetryDecision.FAIL:</span><br><span class="line">                <span class="keyword">raise</span></span><br><span class="line">            <span class="keyword">if</span> decision == RetryDecision.FALLBACK <span class="keyword">and</span> on_fallback:</span><br><span class="line">                <span class="keyword">return</span> on_fallback(e)</span><br><span class="line">            <span class="keyword">if</span> attempt &lt; max_attempts - <span class="number">1</span>:</span><br><span class="line">                sleep_for = exponential_backoff_with_jitter(attempt, base_delay)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  [retry] attempt <span class="subst">&#123;attempt + <span class="number">1</span>&#125;</span> failed: <span class="subst">&#123;e&#125;</span>, sleeping <span class="subst">&#123;sleep_for:<span class="number">.2</span>f&#125;</span>s&quot;</span>)</span><br><span class="line">                time.sleep(sleep_for)</span><br><span class="line">    <span class="keyword">raise</span> last_exception</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============ 2. 熔断器 ============</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CircuitState</span>(<span class="title class_ inherited__">Enum</span>):</span><br><span class="line">    CLOSED = auto()</span><br><span class="line">    OPEN = auto()</span><br><span class="line">    HALF_OPEN = auto()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CircuitBreaker</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, failure_threshold=<span class="number">3</span>, recovery_timeout=<span class="number">10.0</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.failure_threshold = failure_threshold</span><br><span class="line">        <span class="variable language_">self</span>.recovery_timeout = recovery_timeout</span><br><span class="line">        <span class="variable language_">self</span>.state = CircuitState.CLOSED</span><br><span class="line">        <span class="variable language_">self</span>.failures = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.last_failure_time = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, fn: <span class="type">Callable</span>[[], <span class="type">Any</span>], fallback: <span class="type">Callable</span>[[], <span class="type">Any</span>] = <span class="literal">None</span></span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.OPEN:</span><br><span class="line">            <span class="keyword">if</span> <span class="variable language_">self</span>._timeout_elapsed():</span><br><span class="line">                <span class="variable language_">self</span>.state = CircuitState.HALF_OPEN</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;  [circuit] OPEN -&gt; using fallback&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span> fallback() <span class="keyword">if</span> fallback <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            result = fn()</span><br><span class="line">            <span class="variable language_">self</span>.record_success()</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="variable language_">self</span>.record_failure()</span><br><span class="line">            <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.OPEN <span class="keyword">and</span> fallback:</span><br><span class="line">                <span class="keyword">return</span> fallback()</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_success</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.state == CircuitState.HALF_OPEN:</span><br><span class="line">            <span class="variable language_">self</span>.state = CircuitState.CLOSED</span><br><span class="line">        <span class="variable language_">self</span>.failures = <span class="built_in">max</span>(<span class="number">0</span>, <span class="variable language_">self</span>.failures - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_failure</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.failures += <span class="number">1</span></span><br><span class="line">        <span class="variable language_">self</span>.last_failure_time = datetime.utcnow()</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.failures &gt;= <span class="variable language_">self</span>.failure_threshold:</span><br><span class="line">            <span class="variable language_">self</span>.state = CircuitState.OPEN</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_timeout_elapsed</span>(<span class="params">self</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.last_failure_time:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">return</span> (datetime.utcnow() - <span class="variable language_">self</span>.last_failure_time).total_seconds() &gt;= <span class="variable language_">self</span>.recovery_timeout</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============ 3. 模拟工具与 Agent ============</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FakeSearchTool</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟一个会随机失败的搜索工具。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.call_count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="variable language_">self</span>.call_count += <span class="number">1</span></span><br><span class="line">        <span class="comment"># 前 4 次调用模拟不稳定：超时、网络错误、偶尔成功</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.call_count &lt;= <span class="number">4</span>:</span><br><span class="line">            r = random.random()</span><br><span class="line">            <span class="keyword">if</span> r &lt; <span class="number">0.4</span>:</span><br><span class="line">                <span class="keyword">raise</span> TimeoutError(<span class="string">&quot;search API timeout&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span> r &lt; <span class="number">0.7</span>:</span><br><span class="line">                <span class="keyword">raise</span> ConnectionError(<span class="string">&quot;search API connection reset&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">f&quot;search results for &#x27;<span class="subst">&#123;query&#125;</span>&#x27; (call #<span class="subst">&#123;self.call_count&#125;</span>)&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Agent</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.search_tool = FakeSearchTool()</span><br><span class="line">        <span class="variable language_">self</span>.search_breaker = CircuitBreaker(failure_threshold=<span class="number">3</span>, recovery_timeout=<span class="number">5.0</span>)</span><br><span class="line">        <span class="variable language_">self</span>.fallback_answers = &#123;</span><br><span class="line">            <span class="string">&quot;pg vacuum&quot;</span>: <span class="string">&quot;PostgreSQL VACUUM 用于回收死元组占用的存储空间，防止事务 ID 回卷。&quot;</span>,</span><br><span class="line">            <span class="string">&quot;rag&quot;</span>: <span class="string">&quot;RAG（检索增强生成）通过外部检索为 LLM 提供上下文，降低幻觉。&quot;</span>,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        <span class="comment"># 第一层：工具调用（带熔断）</span></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">do_search</span>():</span><br><span class="line">            <span class="keyword">return</span> retry_with_policy(</span><br><span class="line">                <span class="keyword">lambda</span>: <span class="variable language_">self</span>.search_tool.search(query),</span><br><span class="line">                max_attempts=<span class="number">3</span>,</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">search_fallback</span>():</span><br><span class="line">            <span class="comment"># 第二层：静态知识降级</span></span><br><span class="line">            <span class="keyword">for</span> keyword, answer <span class="keyword">in</span> <span class="variable language_">self</span>.fallback_answers.items():</span><br><span class="line">                <span class="keyword">if</span> keyword <span class="keyword">in</span> query.lower():</span><br><span class="line">                    <span class="keyword">return</span> answer</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;暂时无法获取实时信息，我已记录该问题，请稍后重试。&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            tool_result = <span class="variable language_">self</span>.search_breaker.call(do_search, search_fallback)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            tool_result = <span class="string">f&quot;最终失败：<span class="subst">&#123;e&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第三层：构建最终答案（这里简化，直接返回）</span></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;query&quot;</span>: query,</span><br><span class="line">            <span class="string">&quot;tool_result&quot;</span>: tool_result,</span><br><span class="line">            <span class="string">&quot;circuit_state&quot;</span>: <span class="variable language_">self</span>.search_breaker.state.name,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============ 4. 运行演示 ============</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    random.seed(<span class="number">42</span>)  <span class="comment"># 为了演示可复现，实际生产不要固定种子</span></span><br><span class="line">    agent = Agent()</span><br><span class="line"></span><br><span class="line">    queries = [</span><br><span class="line">        <span class="string">&quot;pg vacuum&quot;</span>,</span><br><span class="line">        <span class="string">&quot;what is rag&quot;</span>,</span><br><span class="line">        <span class="string">&quot;pg vacuum&quot;</span>,</span><br><span class="line">        <span class="string">&quot;pg vacuum&quot;</span>,</span><br><span class="line">        <span class="string">&quot;pg vacuum&quot;</span>,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> q <span class="keyword">in</span> queries:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n&gt;&gt;&gt; User: <span class="subst">&#123;q&#125;</span>&quot;</span>)</span><br><span class="line">        result = agent.run(q)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;&lt;&lt;&lt; Agent: <span class="subst">&#123;result[<span class="string">&#x27;tool_result&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;    Circuit state: <span class="subst">&#123;result[<span class="string">&#x27;circuit_state&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">        time.sleep(<span class="number">0.5</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行效果说明"><a href="#运行效果说明" class="headerlink" title="运行效果说明"></a>运行效果说明</h3><ul>
+<li>前几次查询可能因为模拟的 API 不稳定而触发重试和抖动。</li>
+<li>当连续失败达到阈值，熔断器会打开，后续查询直接走 fallback。</li>
+<li>fallback 会先查静态知识库，找不到再返回通用道歉语。</li>
+</ul>
+<h3 id="如何扩展"><a href="#如何扩展" class="headerlink" title="如何扩展"></a>如何扩展</h3><ol>
+<li><strong>接入真实 LLM</strong>：把 <code>Agent.run</code> 中的工具结果传给 OpenAI &#x2F; Claude，让模型生成最终回复。</li>
+<li><strong>接入 LangGraph</strong>：把重试、熔断、fallback 封装成节点，通过边连接，形成可观测的状态机。</li>
+<li><strong>加入 Pydantic 验证</strong>：对 LLM 输出做 schema 校验，解析失败时进入 Self-Correction 循环。</li>
+</ol>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><h3 id="1-LangGraph-v0-2-的持久化与容错增强"><a href="#1-LangGraph-v0-2-的持久化与容错增强" class="headerlink" title="1. LangGraph v0.2+ 的持久化与容错增强"></a>1. LangGraph v0.2+ 的持久化与容错增强</h3><p>LangGraph 最近的版本大幅强化了 checkpointing 能力，支持把 Agent 状态持久化到 PostgreSQL、Redis、SQLite 等后端。这意味着你可以：</p>
+<ul>
+<li>在节点崩溃后从上一个 checkpoint 恢复</li>
+<li>实现”人工介入”节点，让人类在循环中批准或修正 Agent 行为</li>
+<li>通过持久化状态实现幂等重试</li>
+</ul>
+<p>对后端工程师来说，这就像给 Agent 加了 WAL（Write-Ahead Log）。</p>
+<h3 id="2-OpenAI-Structured-Outputs"><a href="#2-OpenAI-Structured-Outputs" class="headerlink" title="2. OpenAI Structured Outputs"></a>2. OpenAI Structured Outputs</h3><p>OpenAI 推出的 Structured Outputs 允许开发者强制 GPT-4o 输出严格符合 JSON Schema 的结果。这显著降低了输出解析失败率，减少了重试次数。对需要稳定工具调用的 Agent 来说，这是基础设施级别的改进。</p>
+<h3 id="3-开源韧性库：Tenacity、Resilience4j、Opossum"><a href="#3-开源韧性库：Tenacity、Resilience4j、Opossum" class="headerlink" title="3. 开源韧性库：Tenacity、Resilience4j、Opossum"></a>3. 开源韧性库：Tenacity、Resilience4j、Opossum</h3><ul>
+<li><strong>Tenacity</strong>（Python）：最通用的重试库，支持多种退避策略、熔断条件、自定义重试判定。</li>
+<li><strong>Resilience4j</strong>（Java）：如果你同时维护 Java 后端和 Python Agent，可以用一致的设计语言。</li>
+<li><strong>Opossum</strong>（Node.js）：轻量级熔断器，适合前端或 Node 全栈场景。</li>
+</ul>
+<p>在多语言微服务架构中，建议把重试&#x2F;熔断策略作为 SRE 规范统一，而不是每个 Agent 各自实现。</p>
+<h3 id="4-AI-可观测性：Langfuse、Phoenix、OpenTelemetry"><a href="#4-AI-可观测性：Langfuse、Phoenix、OpenTelemetry" class="headerlink" title="4. AI 可观测性：Langfuse、Phoenix、OpenTelemetry"></a>4. AI 可观测性：Langfuse、Phoenix、OpenTelemetry</h3><p>韧性策略不能脱离观测。最新的趋势是把 LLM 调用、工具调用、重试次数、降级路径全部通过 OpenTelemetry 语义约定导出。这样你可以在 Grafana &#x2F; Datadog 中看到 Agent 的”健康度”，而不仅是延迟和 token 数。</p>
+<h3 id="5-论文推荐"><a href="#5-论文推荐" class="headerlink" title="5. 论文推荐"></a>5. 论文推荐</h3><ul>
+<li><strong>“Reliable and Efficient Software Systems with LLMs”</strong>（Google, 2025）：系统讨论了 LLM 系统的错误处理、测试和监控。</li>
+<li><strong>“Chain-of-Verification Reduces Hallucination in Large Language Models”</strong>：通过自我验证减少需要重试的语义错误。</li>
+</ul>
+<hr>
+<h2 id="今日小结"><a href="#今日小结" class="headerlink" title="今日小结"></a>今日小结</h2><p>Agent 不是魔法，它是运行在不稳定基础设施上的软件系统。作为后端工程师，你已经有了一整套应对不稳定的工具箱：重试、熔断、降级、超时、限流、日志。今天只是把这套思维模式迁移到了 Agent 上。</p>
+<p>记住三个关键点：</p>
+<ol>
+<li><strong>先分类错误</strong>，再决定是重试、降级还是直接失败。</li>
+<li><strong>重试必须带抖动和熔断</strong>，否则会把小故障放大。</li>
+<li><strong>降级不是失败</strong>，而是系统设计的一部分。</li>
+</ol>
+<p>明天我们将进入 Week 3，主题是 <strong>RAG 高级检索策略（Hybrid Search、Query Expansion、ColBERT）</strong>，继续把后端思维注入 AI 架构。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/">https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-2/">
+                                    <span class="chip bg-color">Week-2</span>
+                                </a>
+                            
+                                <a href="/tags/Agent/">
+                                    <span class="chip bg-color">Agent</span>
+                                </a>
+                            
+                                <a href="/tags/Resilience/">
+                                    <span class="chip bg-color">Resilience</span>
+                                </a>
+                            
+                                <a href="/tags/Retry/">
+                                    <span class="chip bg-color">Retry</span>
+                                </a>
+                            
+                                <a href="/tags/Fallback/">
+                                    <span class="chip bg-color">Fallback</span>
+                                </a>
+                            
+                                <a href="/tags/Circuit-Breaker/">
+                                    <span class="chip bg-color">Circuit-Breaker</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="Agent 也会&#34;崩&#34;：错误处理、重试与降级策略实战">
+                        
+                        <span class="card-title">Agent 也会&#34;崩&#34;：错误处理、重试与降级策略实战</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-16
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-2/">
+                        <span class="chip bg-color">Week-2</span>
+                    </a>
+                    
+                    <a href="/tags/Agent/">
+                        <span class="chip bg-color">Agent</span>
+                    </a>
+                    
+                    <a href="/tags/Resilience/">
+                        <span class="chip bg-color">Resilience</span>
+                    </a>
+                    
+                    <a href="/tags/Retry/">
+                        <span class="chip bg-color">Retry</span>
+                    </a>
+                    
+                    <a href="/tags/Fallback/">
+                        <span class="chip bg-color">Fallback</span>
+                    </a>
+                    
+                    <a href="/tags/Circuit-Breaker/">
+                        <span class="chip bg-color">Circuit-Breaker</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/15/week2-day6-agent-memory-persistence/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="Agent 记忆与持久化：让 LLM 拥有“长期记忆”与“断点续跑”能力">
+                        
+                        <span class="card-title">Agent 记忆与持久化：让 LLM 拥有“长期记忆”与“断点续跑”能力</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-15
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-2/">
+                        <span class="chip bg-color">Week-2</span>
+                    </a>
+                    
+                    <a href="/tags/Agent/">
+                        <span class="chip bg-color">Agent</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Memory/">
+                        <span class="chip bg-color">Memory</span>
+                    </a>
+                    
+                    <a href="/tags/Human-in-the-Loop/">
+                        <span class="chip bg-color">Human-in-the-Loop</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">162.5k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

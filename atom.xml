@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-15T03:02:38.850Z</updated>
+  <updated>2026-07-16T03:02:51.547Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 也会&quot;崩&quot;：错误处理、重试与降级策略实战</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/</id>
+    <published>2026-07-16T03:00:47.000Z</published>
+    <updated>2026-07-16T03:02:51.547Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Agent-也会”崩”：错误处理、重试与降级策略实战&quot;&gt;&lt;a href=&quot;#Agent-也会”崩”：错误处理、重试与降级策略实战&quot; class=&quot;headerlink&quot; title=&quot;Agent 也会”崩”：错误处理、重试与降级策略实战&quot;&gt;&lt;/a&gt;Agent</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="Resilience" scheme="https://dive2cloud-bmz.github.io/tags/Resilience/"/>
+    
+    <category term="Retry" scheme="https://dive2cloud-bmz.github.io/tags/Retry/"/>
+    
+    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
+    
+    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 记忆与持久化：让 LLM 拥有“长期记忆”与“断点续跑”能力</title>
@@ -113,9 +150,9 @@
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
     <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
   </entry>
   
@@ -183,11 +220,11 @@
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
@@ -220,11 +257,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
     
   </entry>
   
@@ -290,9 +327,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
     
     <category term="Similarity" scheme="https://dive2cloud-bmz.github.io/tags/Similarity/"/>
     
@@ -392,9 +429,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
     <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
     
@@ -502,8 +539,6 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -511,6 +546,8 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -608,9 +645,9 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
     
     <category term="Vector-Search" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Search/"/>
     
@@ -653,32 +690,6 @@
     <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
     
     <category term="translation" scheme="https://dive2cloud-bmz.github.io/tags/translation/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>postgreSql mvcc</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/08/28/postgreSql-mvcc/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/08/28/postgreSql-mvcc/</id>
-    <published>2025-08-28T06:11:48.000Z</published>
-    <updated>2025-08-28T09:16:41.757Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;MVCC&quot;&gt;&lt;a href=&quot;#MVCC&quot; class=&quot;headerlink&quot; title=&quot;MVCC&quot;&gt;&lt;/a&gt;MVCC&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;老生常谈了，简单说一下&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;事务隔离级别&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
     
   </entry>
   
