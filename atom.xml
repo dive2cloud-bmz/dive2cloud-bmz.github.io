@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-16T03:02:51.547Z</updated>
+  <updated>2026-07-17T03:04:46.029Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,42 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从 SQL 注入到 Prompt 注入：AI Agent 安全第一课</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/</id>
+    <published>2026-07-17T03:01:55.000Z</published>
+    <updated>2026-07-17T03:04:46.029Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;今日一句话：把 LLM 看成一个执行自然语言 SQL 的数据库，Prompt 注入就是绕过参数化查询、直接改写执行计划的攻击。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;🚀-核心洞察（2-min）&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
+    
+    <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
+    
+    <category term="LLM-Safety" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Safety/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 也会&quot;崩&quot;：错误处理、重试与降级策略实战</title>
@@ -115,9 +151,9 @@
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
     <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="CrewAI" scheme="https://dive2cloud-bmz.github.io/tags/CrewAI/"/>
     
@@ -150,9 +186,9 @@
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
   </entry>
   
@@ -218,13 +254,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
@@ -257,11 +293,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
     
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
-    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
   </entry>
   
@@ -290,13 +326,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
     
@@ -393,11 +429,11 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
     <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
     
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
@@ -665,31 +701,6 @@
     
     
     <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>bigdata is dead</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/12/01/bigdata-is-dead/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/12/01/bigdata-is-dead/</id>
-    <published>2025-12-01T03:17:19.000Z</published>
-    <updated>2025-12-01T03:46:02.090Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在阿里云 RDS 的这段时间，接触了不少 DUCKDB</summary>
-        
-      
-    
-    
-    
-    
-    <category term="bigdata" scheme="https://dive2cloud-bmz.github.io/tags/bigdata/"/>
-    
-    <category term="translation" scheme="https://dive2cloud-bmz.github.io/tags/translation/"/>
     
   </entry>
   
