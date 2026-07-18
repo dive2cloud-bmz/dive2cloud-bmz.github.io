@@ -55,6 +55,43 @@
   </entry>
   
   <entry>
+    <title>RAG 分块不是切字符串，而是切语义边界</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/18/week-2-day-2-rag-chunking-semantic-boundaries/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/18/week-2-day-2-rag-chunking-semantic-boundaries/</id>
+    <published>2026-07-18T01:00:00.000Z</published>
+    <updated>2026-07-18T13:32:22.204Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本周话题：分块策略与语义边界。对从 PG&amp;#x2F;Backend 转 AI 的工程师来说，RAG  pipeline 里最值得先吃透的往往不是模型选型，而是“怎么切文档”。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+  </entry>
+  
+  <entry>
     <title>从 SQL 注入到 Prompt 注入：AI Agent 安全第一课</title>
     <link href="https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/"/>
     <id>https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/</id>
@@ -296,11 +333,11 @@
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -613,8 +650,6 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -622,6 +657,8 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
+    
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -690,40 +727,6 @@
     <category term="Model-Selection" scheme="https://dive2cloud-bmz.github.io/tags/Model-Selection/"/>
     
     <category term="Chinese-NLP" scheme="https://dive2cloud-bmz.github.io/tags/Chinese-NLP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>从 PG 到 RAG：一个数据库工程师的 AI 转型第一课</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/06/08/week1-day1-rag-basics/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/06/08/week1-day1-rag-basics/</id>
-    <published>2026-06-08T10:30:00.000Z</published>
-    <updated>2026-06-23T08:21:50.055Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
-    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
-    
-    <category term="Vector-Search" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Search/"/>
     
   </entry>
   
