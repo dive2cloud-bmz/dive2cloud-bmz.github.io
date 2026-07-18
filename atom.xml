@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-17T03:04:46.029Z</updated>
+  <updated>2026-07-18T03:04:34.140Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 输出安全与工具调用白名单架构：把 LLM 装进最小权限沙箱</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/18/week3-day2-agent-output-safety-tool-whitelist-architecture/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/18/week3-day2-agent-output-safety-tool-whitelist-architecture/</id>
+    <published>2026-07-18T03:01:24.000Z</published>
+    <updated>2026-07-18T03:04:34.140Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;今日一句话：LLM 的输出不是静态文本，而是可能被执行的代码；Agent 的工具不是函数，而是权限。后端工程师设计 API 时怎么防注入和越权，设计 Agent 时就要用同样的思路做白名单与校验。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
+    
+    <category term="Tool-Whitelist" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Whitelist/"/>
+    
+    <category term="Output-Safety" scheme="https://dive2cloud-bmz.github.io/tags/Output-Safety/"/>
+    
+    <category term="LLM-Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Guardrails/"/>
+    
+  </entry>
   
   <entry>
     <title>从 SQL 注入到 Prompt 注入：AI Agent 安全第一课</title>
@@ -151,9 +189,9 @@
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="CrewAI" scheme="https://dive2cloud-bmz.github.io/tags/CrewAI/"/>
     
@@ -254,13 +292,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
-    
-    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
+    
+    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
@@ -326,13 +364,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
     
@@ -429,11 +467,11 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
     <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
     
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
@@ -575,6 +613,8 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -582,8 +622,6 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -686,21 +724,6 @@
     <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
     
     <category term="Vector-Search" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Search/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>pg replication slot</title>
-    <link href="https://dive2cloud-bmz.github.io/2025/12/16/pg-replication-slot/"/>
-    <id>https://dive2cloud-bmz.github.io/2025/12/16/pg-replication-slot/</id>
-    <published>2025-12-16T07:54:20.000Z</published>
-    <updated>2025-12-16T07:54:48.618Z</updated>
-    
-    
-    
-    
-    
-    <category term="pgsql" scheme="https://dive2cloud-bmz.github.io/tags/pgsql/"/>
     
   </entry>
   
