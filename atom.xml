@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-18T03:04:34.140Z</updated>
+  <updated>2026-07-19T03:02:39.946Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/19/week3-day3-agent-observability-audit-logging/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/19/week3-day3-agent-observability-audit-logging/</id>
+    <published>2026-07-19T03:00:35.000Z</published>
+    <updated>2026-07-19T03:02:39.946Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;今日一句话：Agent 的每一次思考、每一次工具调用、每一次 token 消耗，都是一次分布式事务；如果你不能追踪它，就不能优化它，更不能在出问题时复盘它。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;🚀-核心洞察（2-min）&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="Agent-Observability" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Observability/"/>
+    
+    <category term="Audit-Logging" scheme="https://dive2cloud-bmz.github.io/tags/Audit-Logging/"/>
+    
+    <category term="LLM-Tracing" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Tracing/"/>
+    
+    <category term="OpenTelemetry" scheme="https://dive2cloud-bmz.github.io/tags/OpenTelemetry/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 输出安全与工具调用白名单架构：把 LLM 装进最小权限沙箱</title>
@@ -261,9 +299,9 @@
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
     <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
   </entry>
   
@@ -331,13 +369,13 @@
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -368,11 +406,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
     
   </entry>
   
@@ -650,6 +688,8 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
+    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
+    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -657,8 +697,6 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
@@ -693,40 +731,6 @@
     <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
     
     <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Embedding 深度剖析：为你的数据选对嵌入模型</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/06/09/week1-day2-embedding-deep-dive/</id>
-    <published>2026-06-09T13:00:00.000Z</published>
-    <updated>2026-06-09T13:05:42.389Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="Embeddings" scheme="https://dive2cloud-bmz.github.io/tags/Embeddings/"/>
-    
-    <category term="Model-Selection" scheme="https://dive2cloud-bmz.github.io/tags/Model-Selection/"/>
-    
-    <category term="Chinese-NLP" scheme="https://dive2cloud-bmz.github.io/tags/Chinese-NLP/"/>
     
   </entry>
   

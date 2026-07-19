@@ -1,0 +1,1358 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用, BMZ BLOG">
+    <meta name="description" content="
+今日一句话：Agent 的每一次思考、每一次工具调用、每一次 token 消耗，都是一次分布式事务；如果你不能追踪它，就不能优化它，更不能在出问题时复盘它。
+
+🚀 核心洞察（2 min）过去两周，我们从 RAG 的检索与重排走到了 Ag">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-3/">
+                                <span class="chip bg-color">Week-3</span>
+                            </a>
+                        
+                            <a href="/tags/Agent-Observability/">
+                                <span class="chip bg-color">Agent-Observability</span>
+                            </a>
+                        
+                            <a href="/tags/Audit-Logging/">
+                                <span class="chip bg-color">Audit-Logging</span>
+                            </a>
+                        
+                            <a href="/tags/LLM-Tracing/">
+                                <span class="chip bg-color">LLM-Tracing</span>
+                            </a>
+                        
+                            <a href="/tags/OpenTelemetry/">
+                                <span class="chip bg-color">OpenTelemetry</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-19
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-19
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.1k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    18 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>今日一句话：Agent 的每一次思考、每一次工具调用、每一次 token 消耗，都是一次分布式事务；如果你不能追踪它，就不能优化它，更不能在出问题时复盘它。</p>
+</blockquote>
+<h2 id="🚀-核心洞察（2-min）"><a href="#🚀-核心洞察（2-min）" class="headerlink" title="🚀 核心洞察（2 min）"></a>🚀 核心洞察（2 min）</h2><p>过去两周，我们从 RAG 的检索与重排走到了 Agent 的工具调用、ReAct 推理、多智能体协作与安全护栏。但一个 Agent 系统真正从 demo 走向生产，差的不只是准确率和 prompt 技巧，而是<strong>可观测性（Observability）与审计能力</strong>。</p>
+<p>作为 RDS PostgreSQL 后端工程师，你对以下场景应该非常熟悉：</p>
+<ul>
+<li>线上出现慢查询，你需要 <code>pg_stat_statements</code> 定位执行计划、耗时分布、调用频次。</li>
+<li>某个应用账号越权访问，你需要 <code>pgAudit</code> 或审计表还原完整 SQL 链路。</li>
+<li>一次事务异常回滚，你需要日志中的 <code>transaction_id</code>、<code>query_id</code>、<code>session_id</code> 把多个服务的日志串起来。</li>
+</ul>
+<p>Agent 系统同样需要这三样东西：</p>
+<ol>
+<li><strong>Metrics（指标）</strong>：每次 LLM 调用的延迟、token 数、成本、成功率，就像监控 SQL 的 QPS、RT、rows fetched。</li>
+<li><strong>Traces（追踪）</strong>：一次用户请求如何在 Planner、LLM、Tool、Memory、Reranker 之间流转，就像一次 HTTP 请求经过网关、服务、数据库的 trace。</li>
+<li><strong>Logs（日志 &#x2F; 审计）</strong>：完整的 prompt、response、tool_call、tool_result、调用者身份、时间戳，就像 <code>pgAudit</code> 记录每条 SQL 和参数。</li>
+</ol>
+<p>今天的目标就是建立一套<strong>面向 Agent 的可观测性与审计日志架构</strong>，让你能像监控慢查询一样监控 LLM 调用，像审计数据库访问一样审计 Agent 行为。</p>
+<hr>
+<h2 id="🧠-核心概念（10-min）"><a href="#🧠-核心概念（10-min）" class="headerlink" title="🧠 核心概念（10 min）"></a>🧠 核心概念（10 min）</h2><h3 id="1-为什么-Agent-的可观测性比传统微服务更难"><a href="#1-为什么-Agent-的可观测性比传统微服务更难" class="headerlink" title="1. 为什么 Agent 的可观测性比传统微服务更难"></a>1. 为什么 Agent 的可观测性比传统微服务更难</h3><p>传统微服务的可观测性面临的问题是<strong>结构化、可预测的</strong>：</p>
+<ul>
+<li>HTTP 请求有明确的 path、method、status code、header。</li>
+<li>RPC 调用有 service、endpoint、request&#x2F;response schema。</li>
+<li>数据库操作有 SQL、plan、lock、duration。</li>
+</ul>
+<p>但 Agent 系统引入了三个新的黑盒：</p>
+<table>
+<thead>
+<tr>
+<th>黑盒</th>
+<th>具体表现</th>
+<th>可观测性挑战</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LLM 推理过程</strong></td>
+<td>模型内部如何生成 thought、选择工具、组织语言，对调用者不可见</td>
+<td>需要记录 prompt、completion、tool_calls、reasoning_content</td>
+</tr>
+<tr>
+<td><strong>动态工具链</strong></td>
+<td>每次请求可调用的工具集合可能不同，工具由模型自主决策</td>
+<td>需要记录可用工具列表、模型选中的工具、实际执行参数</td>
+</tr>
+<tr>
+<td><strong>状态ful 会话</strong></td>
+<td>Agent 依赖 memory、上下文窗口、多轮对话，单次输出无法解释行为</td>
+<td>需要跨轮次 trace，把 history、retrieved docs、action 关联起来</td>
+</tr>
+</tbody></table>
+<p>因此，Agent 的可观测性必须在传统三大支柱之上，额外关注 <strong>LLM-specific signals</strong>：prompt token、completion token、latency（TTFT &#x2F; TBT &#x2F; total）、模型版本、温度参数、function call 结果、retry 次数、幻觉信号、安全触发次数等。</p>
+<h4 id="Agent-请求的生命周期与可观测性信号"><a href="#Agent-请求的生命周期与可观测性信号" class="headerlink" title="Agent 请求的生命周期与可观测性信号"></a>Agent 请求的生命周期与可观测性信号</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">    A[用户请求] --&gt; B[输入 Guardrails]</span><br><span class="line">    B --&gt; C[Memory / Context 加载]</span><br><span class="line">    C --&gt; D[检索 / RAG]</span><br><span class="line">    D --&gt; E[LLM 调用]</span><br><span class="line">    E --&gt; F&#123;是否触发工具&#125;</span><br><span class="line">    F --&gt;|是| G[工具执行]</span><br><span class="line">    G --&gt; H[结果回传 LLM]</span><br><span class="line">    H --&gt; E</span><br><span class="line">    F --&gt;|否| I[输出 Guardrails]</span><br><span class="line">    I --&gt; J[响应用户]</span><br><span class="line"></span><br><span class="line">    style E fill:#f9f,stroke:#333</span><br><span class="line">    style G fill:#bbf,stroke:#333</span><br></pre></td></tr></table></figure>
+
+<p>在这张图里，<strong>LLM 调用（E）和工具执行（G）是两个最关键的观测点</strong>。前者决定了成本和延迟，后者决定了安全边界和副作用。</p>
+<h3 id="2-LLM-Tracing：把单次调用变成可还原的链路"><a href="#2-LLM-Tracing：把单次调用变成可还原的链路" class="headerlink" title="2. LLM Tracing：把单次调用变成可还原的链路"></a>2. LLM Tracing：把单次调用变成可还原的链路</h3><p>LLM Tracing 的核心思想是：把一次 Agent 运行拆成一棵树或 DAG，每个节点是一个 span，记录输入、输出、耗时和元数据。</p>
+<p>一个典型的 trace 结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">flowchart TD</span><br><span class="line">    Root[trace_id: user-ask-001] --&gt; S1[span: route_intent]</span><br><span class="line">    Root --&gt; S2[span: retrieve_knowledge]</span><br><span class="line">    S2 --&gt; S3[span: embedding]</span><br><span class="line">    S2 --&gt; S4[span: vector_search]</span><br><span class="line">    Root --&gt; S5[span: llm_plan]</span><br><span class="line">    S5 --&gt; S6[span: tool_call.get_user_balance]</span><br><span class="line">    S6 --&gt; S7[span: postgres_query]</span><br><span class="line">    S5 --&gt; S8[span: tool_call.send_email]</span><br><span class="line">    S8 --&gt; S9[span: smtp_send]</span><br><span class="line">    Root --&gt; S10[span: final_response]</span><br></pre></td></tr></table></figure>
+
+<p>每个 span 应包含的关键字段：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>span_id</code></td>
+<td>当前节点 ID</td>
+<td><code>span-7a8b9c</code></td>
+</tr>
+<tr>
+<td><code>parent_id</code></td>
+<td>父节点 ID</td>
+<td><code>span-1a2b3c</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>span 名称</td>
+<td><code>llm.chat.completions</code></td>
+</tr>
+<tr>
+<td><code>start_time</code> &#x2F; <code>end_time</code></td>
+<td>起止时间</td>
+<td>ISO-8601</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td>结构化元数据</td>
+<td>model、temperature、token 数、tool 名</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td>离散事件</td>
+<td>prompt 发送、tool 被调用、exception 发生</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>成功&#x2F;失败</td>
+<td>OK &#x2F; ERROR</td>
+</tr>
+</tbody></table>
+<p>OpenTelemetry 的语义约定（Semantic Conventions）已经为 LLM 定义了标准属性，例如 <code>gen_ai.system</code>、<code>gen_ai.request.model</code>、<code>gen_ai.usage.input_tokens</code>、<code>gen_ai.response.model</code> 等。尽量使用这些标准字段，而不是自己发明字段名。</p>
+<h3 id="3-审计日志：面向合规与安全的不可变记录"><a href="#3-审计日志：面向合规与安全的不可变记录" class="headerlink" title="3. 审计日志：面向合规与安全的不可变记录"></a>3. 审计日志：面向合规与安全的不可变记录</h3><p>Tracing 面向的是<strong>工程排查</strong>，审计日志面向的是<strong>合规、风控、安全取证</strong>。两者可以共享底层数据，但设计目标不同。</p>
+<p>审计日志必须回答五个问题：</p>
+<ol>
+<li><strong>Who</strong>：谁发起了这次交互？用户 ID、会话 ID、设备指纹、IP。</li>
+<li><strong>When</strong>：精确到毫秒的时间戳，包含时区。</li>
+<li><strong>What</strong>：完整的输入输出，包括 system prompt、user prompt、assistant response、tool_calls、tool_results。</li>
+<li><strong>Which</strong>：使用了哪些模型、哪些工具、哪些知识库、哪些参数。</li>
+<li><strong>Why</strong>：模型为什么做出这个决策？记录推理链（chain-of-thought）或工具选择理由。</li>
+</ol>
+<p>审计日志的设计原则：</p>
+<table>
+<thead>
+<tr>
+<th>原则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>不可抵赖</strong></td>
+<td>每条日志包含调用者身份签名或会话令牌，防止伪造</td>
+</tr>
+<tr>
+<td><strong>不可变存储</strong></td>
+<td>审计日志写入后不能被修改，支持 WORM（Write Once Read Many）存储或只读副本</td>
+</tr>
+<tr>
+<td><strong>分级留存</strong></td>
+<td>热数据保留 7-30 天用于排查，冷数据归档 1-7 年用于合规</td>
+</tr>
+<tr>
+<td><strong>敏感字段脱敏</strong></td>
+<td>PII、密码、密钥、信用卡号必须脱敏或加密后再落盘</td>
+</tr>
+<tr>
+<td><strong>可追溯关联</strong></td>
+<td>通过 <code>trace_id</code> 把审计日志与业务日志、数据库日志、网关日志串起来</td>
+</tr>
+</tbody></table>
+<h3 id="4-成本与性能监控：Agent-的”慢查询”在哪里"><a href="#4-成本与性能监控：Agent-的”慢查询”在哪里" class="headerlink" title="4. 成本与性能监控：Agent 的”慢查询”在哪里"></a>4. 成本与性能监控：Agent 的”慢查询”在哪里</h3><p>PostgreSQL 有 <code>pg_stat_statements</code> 帮我们找到最耗时的 SQL。Agent 系统也需要类似的”慢调用”监控：</p>
+<ul>
+<li><strong>按模型维度</strong>：GPT-4o 的平均延迟、GPT-3.5 的平均延迟、本地模型的失败率。</li>
+<li><strong>按工具维度</strong>：哪个工具调用最频繁？哪个工具失败率最高？哪个工具平均耗时最长？</li>
+<li><strong>按 prompt 维度</strong>：哪些 prompt 导致输出 token 过多？哪些 prompt 触发大量 retry？</li>
+<li><strong>按用户维度</strong>：哪些用户会话 token 消耗异常？是否存在滥用或攻击？</li>
+</ul>
+<p>这些指标应该进入 Prometheus &#x2F; Grafana 或你的云监控体系，并设置告警阈值，例如：</p>
+<ul>
+<li>单次 LLM 调用 P99 延迟 &gt; 5s</li>
+<li>工具调用失败率 &gt; 1%</li>
+<li>单日 token 消耗环比增长 &gt; 50%</li>
+<li>敏感工具（如 send_email、delete_user）调用次数异常</li>
+</ul>
+<hr>
+<h2 id="🔗-后端桥接（3-min）"><a href="#🔗-后端桥接（3-min）" class="headerlink" title="🔗 后端桥接（3 min）"></a>🔗 后端桥接（3 min）</h2><p>作为 PostgreSQL 后端工程师，理解 Agent 可观测性最快的办法是把它和数据库领域的成熟概念一一对应。</p>
+<table>
+<thead>
+<tr>
+<th>Agent 概念</th>
+<th>PostgreSQL &#x2F; 后端类比</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LLM 调用</strong></td>
+<td>一次 SQL 查询</td>
+<td>有输入（prompt）、输出（completion）、执行计划（reasoning）、耗时、成本</td>
+</tr>
+<tr>
+<td><strong>Trace &#x2F; Span</strong></td>
+<td><code>pg_stat_statements</code> 中的 <code>queryid</code> + <code>calls</code></td>
+<td>把多次调用聚合起来，看到耗时分布和调用频次</td>
+</tr>
+<tr>
+<td><strong>Tool 调用</strong></td>
+<td>调用存储过程或外部函数</td>
+<td>需要参数校验、权限控制、执行日志</td>
+</tr>
+<tr>
+<td><strong>审计日志</strong></td>
+<td><code>pgAudit</code> 或自研审计表</td>
+<td>记录谁、什么时候、执行了什么、结果如何</td>
+</tr>
+<tr>
+<td><strong>Prompt 注入检测</strong></td>
+<td>SQL 注入防火墙 &#x2F; prepared statement</td>
+<td>输入先过 guardrails，再进入模型</td>
+</tr>
+<tr>
+<td><strong>Context 窗口</strong></td>
+<td><code>work_mem</code> &#x2F; <code>shared_buffers</code></td>
+<td>容量有限，超了会 spill（退化为 RAG 或 summary）</td>
+</tr>
+<tr>
+<td><strong>Retry 与 Fallback</strong></td>
+<td>连接池 failover &#x2F; 只读副本降级</td>
+<td>主模型失败时切到备用模型或缓存</td>
+</tr>
+<tr>
+<td><strong>Token 成本</strong></td>
+<td>查询扫描行数 × I&#x2F;O 单位成本</td>
+<td>需要按用户&#x2F;会话&#x2F;模型维度做成本分摊</td>
+</tr>
+</tbody></table>
+<p>特别值得强调的是 <strong>Trace ID 的贯穿性</strong>。在数据库运维中，一次慢查询可能涉及应用层 SQL、连接池、执行计划、锁等待、I&#x2F;O 多个环节。没有统一的 <code>request_id</code> 或 <code>query_id</code>，你很难把各个环节的日志串起来。Agent 系统同理：用户的一次提问可能经过 intent 路由、RAG 检索、多次 LLM 调用、多次工具调用、记忆读写。如果每个环节各自记日志却没有统一的 <code>trace_id</code>，出了问题就是大海捞针。</p>
+<p>因此，<strong>在网关层或 Agent 入口生成 trace_id，并把它注入到所有下游调用（包括数据库查询、缓存访问、LLM API、工具执行）</strong>，是 Agent 可观测性的第一步。</p>
+<hr>
+<h2 id="🛠️-微实战（5-min）"><a href="#🛠️-微实战（5-min）" class="headerlink" title="🛠️ 微实战（5 min）"></a>🛠️ 微实战（5 min）</h2><h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>用 Python + OpenTelemetry + SQLite 构建一个最小可运行的 Agent 可观测性与审计日志 demo：</p>
+<ol>
+<li>一个简单 Agent，支持一次 LLM 调用和一次工具调用。</li>
+<li>每次运行自动生成 trace，包含 span、token 使用、延迟、工具调用结果。</li>
+<li>把审计日志写入 SQLite，支持按 <code>trace_id</code> 查询完整交互记录。</li>
+</ol>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># agent_observability_demo.py</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> sqlite3</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timezone</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> opentelemetry <span class="keyword">import</span> trace</span><br><span class="line"><span class="keyword">from</span> opentelemetry.sdk.trace <span class="keyword">import</span> TracerProvider</span><br><span class="line"><span class="keyword">from</span> opentelemetry.sdk.trace.export <span class="keyword">import</span> BatchSpanProcessor, ConsoleSpanExporter</span><br><span class="line"><span class="keyword">from</span> opentelemetry.trace <span class="keyword">import</span> Status, StatusCode</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 1. 初始化 OpenTelemetry Tracer ==========</span></span><br><span class="line">provider = TracerProvider()</span><br><span class="line">processor = BatchSpanProcessor(ConsoleSpanExporter())</span><br><span class="line">provider.add_span_processor(processor)</span><br><span class="line">trace.set_tracer_provider(provider)</span><br><span class="line">tracer = trace.get_tracer(<span class="string">&quot;agent.observability.demo&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 2. 初始化审计日志 SQLite ==========</span></span><br><span class="line">DB_PATH = <span class="string">&quot;agent_audit.db&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">init_audit_db</span>():</span><br><span class="line">    conn = sqlite3.connect(DB_PATH)</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        CREATE TABLE IF NOT EXISTS audit_logs (</span></span><br><span class="line"><span class="string">            id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span><br><span class="line"><span class="string">            trace_id TEXT NOT NULL,</span></span><br><span class="line"><span class="string">            span_id TEXT,</span></span><br><span class="line"><span class="string">            timestamp TEXT NOT NULL,</span></span><br><span class="line"><span class="string">            actor TEXT,</span></span><br><span class="line"><span class="string">            event_type TEXT NOT NULL,</span></span><br><span class="line"><span class="string">            model TEXT,</span></span><br><span class="line"><span class="string">            input TEXT,</span></span><br><span class="line"><span class="string">            output TEXT,</span></span><br><span class="line"><span class="string">            tool_name TEXT,</span></span><br><span class="line"><span class="string">            tool_args TEXT,</span></span><br><span class="line"><span class="string">            tool_result TEXT,</span></span><br><span class="line"><span class="string">            input_tokens INTEGER,</span></span><br><span class="line"><span class="string">            output_tokens INTEGER,</span></span><br><span class="line"><span class="string">            latency_ms REAL,</span></span><br><span class="line"><span class="string">            metadata TEXT</span></span><br><span class="line"><span class="string">        )</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">    )</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;CREATE INDEX IF NOT EXISTS idx_trace_id ON audit_logs(trace_id)&quot;</span></span><br><span class="line">    )</span><br><span class="line">    conn.commit()</span><br><span class="line">    conn.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write_audit</span>(<span class="params">record: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]</span>):</span><br><span class="line">    conn = sqlite3.connect(DB_PATH)</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        INSERT INTO audit_logs (</span></span><br><span class="line"><span class="string">            trace_id, span_id, timestamp, actor, event_type, model,</span></span><br><span class="line"><span class="string">            input, output, tool_name, tool_args, tool_result,</span></span><br><span class="line"><span class="string">            input_tokens, output_tokens, latency_ms, metadata</span></span><br><span class="line"><span class="string">        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>,</span><br><span class="line">        (</span><br><span class="line">            record.get(<span class="string">&quot;trace_id&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;span_id&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;timestamp&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;actor&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;event_type&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;model&quot;</span>),</span><br><span class="line">            json.dumps(record.get(<span class="string">&quot;input&quot;</span>), ensure_ascii=<span class="literal">False</span>)</span><br><span class="line">            <span class="keyword">if</span> record.get(<span class="string">&quot;input&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span>,</span><br><span class="line">            json.dumps(record.get(<span class="string">&quot;output&quot;</span>), ensure_ascii=<span class="literal">False</span>)</span><br><span class="line">            <span class="keyword">if</span> record.get(<span class="string">&quot;output&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span>,</span><br><span class="line">            record.get(<span class="string">&quot;tool_name&quot;</span>),</span><br><span class="line">            json.dumps(record.get(<span class="string">&quot;tool_args&quot;</span>), ensure_ascii=<span class="literal">False</span>)</span><br><span class="line">            <span class="keyword">if</span> record.get(<span class="string">&quot;tool_args&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span>,</span><br><span class="line">            json.dumps(record.get(<span class="string">&quot;tool_result&quot;</span>), ensure_ascii=<span class="literal">False</span>)</span><br><span class="line">            <span class="keyword">if</span> record.get(<span class="string">&quot;tool_result&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span>,</span><br><span class="line">            record.get(<span class="string">&quot;input_tokens&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;output_tokens&quot;</span>),</span><br><span class="line">            record.get(<span class="string">&quot;latency_ms&quot;</span>),</span><br><span class="line">            json.dumps(record.get(<span class="string">&quot;metadata&quot;</span>), ensure_ascii=<span class="literal">False</span>)</span><br><span class="line">            <span class="keyword">if</span> record.get(<span class="string">&quot;metadata&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span>,</span><br><span class="line">        ),</span><br><span class="line">    )</span><br><span class="line">    conn.commit()</span><br><span class="line">    conn.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 3. 模拟工具与 LLM ==========</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_weather</span>(<span class="params">city: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟天气工具。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">with</span> tracer.start_as_current_span(<span class="string">&quot;tool.get_weather&quot;</span>) <span class="keyword">as</span> span:</span><br><span class="line">        span.set_attribute(<span class="string">&quot;tool.name&quot;</span>, <span class="string">&quot;get_weather&quot;</span>)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;tool.args.city&quot;</span>, city)</span><br><span class="line">        time.sleep(<span class="number">0.05</span>)  <span class="comment"># 模拟网络延迟</span></span><br><span class="line">        result = &#123;<span class="string">&quot;city&quot;</span>: city, <span class="string">&quot;temperature&quot;</span>: <span class="number">26</span>, <span class="string">&quot;condition&quot;</span>: <span class="string">&quot;sunny&quot;</span>&#125;</span><br><span class="line">        span.set_attribute(<span class="string">&quot;tool.result&quot;</span>, json.dumps(result))</span><br><span class="line">        span.set_status(Status(StatusCode.OK))</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mock_llm_call</span>(<span class="params">prompt: <span class="built_in">str</span>, model: <span class="built_in">str</span> = <span class="string">&quot;gpt-4o-mini&quot;</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟 LLM 调用，返回 thought + tool_call。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">with</span> tracer.start_as_current_span(<span class="string">&quot;llm.call&quot;</span>) <span class="keyword">as</span> span:</span><br><span class="line">        start = time.perf_counter()</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.request.model&quot;</span>, model)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.system&quot;</span>, <span class="string">&quot;openai&quot;</span>)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.usage.input_tokens&quot;</span>, <span class="built_in">len</span>(prompt.split()))</span><br><span class="line"></span><br><span class="line">        time.sleep(<span class="number">0.2</span>)  <span class="comment"># 模拟 LLM 延迟</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 简单规则：如果 prompt 包含天气，就调用天气工具</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;天气&quot;</span> <span class="keyword">in</span> prompt:</span><br><span class="line">            city = <span class="string">&quot;北京&quot;</span> <span class="keyword">if</span> <span class="string">&quot;北京&quot;</span> <span class="keyword">in</span> prompt <span class="keyword">else</span> <span class="string">&quot;上海&quot;</span></span><br><span class="line">            response = &#123;</span><br><span class="line">                <span class="string">&quot;thought&quot;</span>: <span class="string">f&quot;用户询问 <span class="subst">&#123;city&#125;</span> 天气，我需要调用 get_weather 工具。&quot;</span>,</span><br><span class="line">                <span class="string">&quot;tool_calls&quot;</span>: [</span><br><span class="line">                    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;get_weather&quot;</span>, <span class="string">&quot;arguments&quot;</span>: &#123;<span class="string">&quot;city&quot;</span>: city&#125;&#125;</span><br><span class="line">                ],</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: <span class="literal">None</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            response = &#123;</span><br><span class="line">                <span class="string">&quot;thought&quot;</span>: <span class="string">&quot;用户只是打招呼，我直接回复。&quot;</span>,</span><br><span class="line">                <span class="string">&quot;tool_calls&quot;</span>: [],</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: <span class="string">&quot;你好！有什么可以帮你的？&quot;</span>,</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        output_tokens = <span class="built_in">len</span>(json.dumps(response).split())</span><br><span class="line">        latency_ms = (time.perf_counter() - start) * <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.response.model&quot;</span>, model)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.usage.output_tokens&quot;</span>, output_tokens)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.usage.total_tokens&quot;</span>, <span class="built_in">len</span>(prompt.split()) + output_tokens)</span><br><span class="line">        span.set_attribute(<span class="string">&quot;gen_ai.response.latency_ms&quot;</span>, latency_ms)</span><br><span class="line">        span.set_status(Status(StatusCode.OK))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;model&quot;</span>: model,</span><br><span class="line">            <span class="string">&quot;response&quot;</span>: response,</span><br><span class="line">            <span class="string">&quot;input_tokens&quot;</span>: <span class="built_in">len</span>(prompt.split()),</span><br><span class="line">            <span class="string">&quot;output_tokens&quot;</span>: output_tokens,</span><br><span class="line">            <span class="string">&quot;latency_ms&quot;</span>: latency_ms,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 4. Agent 主流程 ==========</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_agent</span>(<span class="params">user_id: <span class="built_in">str</span>, prompt: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]:</span><br><span class="line">    trace_id = <span class="string">f&quot;trace-<span class="subst">&#123;uuid.uuid4().<span class="built_in">hex</span>[:<span class="number">12</span>]&#125;</span>&quot;</span></span><br><span class="line">    now = datetime.now(timezone.utc).isoformat()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tracer.start_as_current_span(<span class="string">&quot;agent.run&quot;</span>) <span class="keyword">as</span> root_span:</span><br><span class="line">        root_span.set_attribute(<span class="string">&quot;user.id&quot;</span>, user_id)</span><br><span class="line">        root_span.set_attribute(<span class="string">&quot;trace.id&quot;</span>, trace_id)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 记录用户输入审计</span></span><br><span class="line">        write_audit(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;trace_id&quot;</span>: trace_id,</span><br><span class="line">                <span class="string">&quot;span_id&quot;</span>: <span class="built_in">format</span>(root_span.get_span_context().span_id, <span class="string">&quot;016x&quot;</span>),</span><br><span class="line">                <span class="string">&quot;timestamp&quot;</span>: now,</span><br><span class="line">                <span class="string">&quot;actor&quot;</span>: user_id,</span><br><span class="line">                <span class="string">&quot;event_type&quot;</span>: <span class="string">&quot;USER_INPUT&quot;</span>,</span><br><span class="line">                <span class="string">&quot;input&quot;</span>: &#123;<span class="string">&quot;prompt&quot;</span>: prompt&#125;,</span><br><span class="line">                <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;web_chat&quot;</span>&#125;,</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># LLM 规划</span></span><br><span class="line">        llm_result = mock_llm_call(prompt)</span><br><span class="line">        llm_span = trace.get_current_span()</span><br><span class="line">        span_id = <span class="built_in">format</span>(llm_span.get_span_context().span_id, <span class="string">&quot;016x&quot;</span>) <span class="keyword">if</span> llm_span <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        write_audit(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;trace_id&quot;</span>: trace_id,</span><br><span class="line">                <span class="string">&quot;span_id&quot;</span>: span_id,</span><br><span class="line">                <span class="string">&quot;timestamp&quot;</span>: datetime.now(timezone.utc).isoformat(),</span><br><span class="line">                <span class="string">&quot;actor&quot;</span>: <span class="string">&quot;llm&quot;</span>,</span><br><span class="line">                <span class="string">&quot;event_type&quot;</span>: <span class="string">&quot;LLM_CALL&quot;</span>,</span><br><span class="line">                <span class="string">&quot;model&quot;</span>: llm_result[<span class="string">&quot;model&quot;</span>],</span><br><span class="line">                <span class="string">&quot;input&quot;</span>: &#123;<span class="string">&quot;prompt&quot;</span>: prompt&#125;,</span><br><span class="line">                <span class="string">&quot;output&quot;</span>: llm_result[<span class="string">&quot;response&quot;</span>],</span><br><span class="line">                <span class="string">&quot;input_tokens&quot;</span>: llm_result[<span class="string">&quot;input_tokens&quot;</span>],</span><br><span class="line">                <span class="string">&quot;output_tokens&quot;</span>: llm_result[<span class="string">&quot;output_tokens&quot;</span>],</span><br><span class="line">                <span class="string">&quot;latency_ms&quot;</span>: llm_result[<span class="string">&quot;latency_ms&quot;</span>],</span><br><span class="line">                <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;temperature&quot;</span>: <span class="number">0.7</span>&#125;,</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 执行工具</span></span><br><span class="line">        tool_results = []</span><br><span class="line">        <span class="keyword">for</span> tc <span class="keyword">in</span> llm_result[<span class="string">&quot;response&quot;</span>].get(<span class="string">&quot;tool_calls&quot;</span>, []):</span><br><span class="line">            <span class="keyword">if</span> tc[<span class="string">&quot;name&quot;</span>] == <span class="string">&quot;get_weather&quot;</span>:</span><br><span class="line">                result = get_weather(**tc[<span class="string">&quot;arguments&quot;</span>])</span><br><span class="line">                tool_results.append(result)</span><br><span class="line">                write_audit(</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;trace_id&quot;</span>: trace_id,</span><br><span class="line">                        <span class="string">&quot;span_id&quot;</span>: span_id,</span><br><span class="line">                        <span class="string">&quot;timestamp&quot;</span>: datetime.now(timezone.utc).isoformat(),</span><br><span class="line">                        <span class="string">&quot;actor&quot;</span>: <span class="string">&quot;tool&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;event_type&quot;</span>: <span class="string">&quot;TOOL_CALL&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;tool_name&quot;</span>: tc[<span class="string">&quot;name&quot;</span>],</span><br><span class="line">                        <span class="string">&quot;tool_args&quot;</span>: tc[<span class="string">&quot;arguments&quot;</span>],</span><br><span class="line">                        <span class="string">&quot;tool_result&quot;</span>: result,</span><br><span class="line">                        <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;allowed&quot;</span>: <span class="literal">True</span>&#125;,</span><br><span class="line">                    &#125;</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 最终回复（简化：直接把工具结果返回）</span></span><br><span class="line">        final_content = (</span><br><span class="line">            tool_results[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">if</span> tool_results</span><br><span class="line">            <span class="keyword">else</span> llm_result[<span class="string">&quot;response&quot;</span>][<span class="string">&quot;content&quot;</span>]</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        write_audit(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;trace_id&quot;</span>: trace_id,</span><br><span class="line">                <span class="string">&quot;span_id&quot;</span>: span_id,</span><br><span class="line">                <span class="string">&quot;timestamp&quot;</span>: datetime.now(timezone.utc).isoformat(),</span><br><span class="line">                <span class="string">&quot;actor&quot;</span>: <span class="string">&quot;agent&quot;</span>,</span><br><span class="line">                <span class="string">&quot;event_type&quot;</span>: <span class="string">&quot;FINAL_RESPONSE&quot;</span>,</span><br><span class="line">                <span class="string">&quot;output&quot;</span>: final_content,</span><br><span class="line">                <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;tool_count&quot;</span>: <span class="built_in">len</span>(tool_results)&#125;,</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;trace_id&quot;</span>: trace_id, <span class="string">&quot;response&quot;</span>: final_content&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 5. 查询审计日志 ==========</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">query_audit</span>(<span class="params">trace_id: <span class="built_in">str</span></span>):</span><br><span class="line">    conn = sqlite3.connect(DB_PATH)</span><br><span class="line">    conn.row_factory = sqlite3.Row</span><br><span class="line">    rows = conn.execute(</span><br><span class="line">        <span class="string">&quot;SELECT * FROM audit_logs WHERE trace_id = ? ORDER BY timestamp&quot;</span>,</span><br><span class="line">        (trace_id,),</span><br><span class="line">    ).fetchall()</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">dict</span>(row) <span class="keyword">for</span> row <span class="keyword">in</span> rows]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    init_audit_db()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=== 第一次运行：询问天气 ===&quot;</span>)</span><br><span class="line">    result1 = run_agent(user_id=<span class="string">&quot;user-42&quot;</span>, prompt=<span class="string">&quot;北京今天天气怎么样？&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;trace_id: <span class="subst">&#123;result1[<span class="string">&#x27;trace_id&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(json.dumps(result1[<span class="string">&quot;response&quot;</span>], ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== 查询该 trace 的审计日志 ===&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> log <span class="keyword">in</span> query_audit(result1[<span class="string">&quot;trace_id&quot;</span>]):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;log[<span class="string">&#x27;event_type&#x27;</span>]&#125;</span>] <span class="subst">&#123;log[<span class="string">&#x27;tool_name&#x27;</span>] <span class="keyword">or</span> log[<span class="string">&#x27;model&#x27;</span>] <span class="keyword">or</span> <span class="string">&#x27;&#x27;</span>&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== 第二次运行：普通对话 ===&quot;</span>)</span><br><span class="line">    result2 = run_agent(user_id=<span class="string">&quot;user-42&quot;</span>, prompt=<span class="string">&quot;你好&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;trace_id: <span class="subst">&#123;result2[<span class="string">&#x27;trace_id&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(json.dumps(result2[<span class="string">&quot;response&quot;</span>], ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行依赖"><a href="#运行依赖" class="headerlink" title="运行依赖"></a>运行依赖</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install opentelemetry-api opentelemetry-sdk</span><br><span class="line">python agent_observability_demo.py</span><br></pre></td></tr></table></figure>
+
+<h3 id="生产化思考"><a href="#生产化思考" class="headerlink" title="生产化思考"></a>生产化思考</h3><p>这个 demo 用 SQLite 做审计存储只是为了可运行。生产环境中，建议：</p>
+<ul>
+<li><strong>Trace 后端</strong>：Jaeger、Zipkin、Grafana Tempo，或云厂商 APM（AWS X-Ray、GCP Cloud Trace、阿里云 ARMS）。</li>
+<li><strong>审计日志后端</strong>：ClickHouse、BigQuery、Elasticsearch、S3 + Athena，或专门的审计数据库。</li>
+<li><strong>指标</strong>：OpenTelemetry Metrics → Prometheus → Grafana。</li>
+<li><strong>日志脱敏</strong>：写入前用正则或 NLP 模型识别并脱敏 PII。</li>
+<li><strong>不可变性</strong>：审计表只授予 INSERT 权限，定期归档到对象存储。</li>
+</ul>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ol>
+<li><p><strong>OpenTelemetry GenAI Semantic Conventions 进入稳定版倒计时</strong>：2024 年以来，OTel 社区持续完善 LLM 的语义约定，预计 2025 年内发布稳定版，统一 <code>gen_ai.*</code> 属性命名。如果你是 Agent 可观测性的早期采用者，现在就应该按新规范埋点，避免未来重构。</p>
+</li>
+<li><p><strong>LangSmith &#x2F; Langfuse &#x2F; AgentOps 三足鼎立</strong>：LangSmith 适合 LangChain 生态，Langfuse 开源且对模型无关，AgentOps 聚焦 Agent 会话级别的可观测性。选型时重点看：是否支持自定义 trace、成本分摊、多租户、审计合规。</p>
+</li>
+<li><p><strong>OpenAI 推出实时 API 的流式 trace 标准</strong>：实时语音&#x2F;流式 Agent 的 trace 和传统 request&#x2F;response 不同，需要考虑音频 chunk、interruption、function call mid-stream 等新信号，相关工具链正在快速演进。</p>
+</li>
+<li><p><strong>欧盟 AI Act 对高风险 AI 系统的审计要求生效</strong>：任何用于招聘、信贷、医疗、教育等领域的 AI 系统都需要保留完整审计日志，包括训练数据、模型版本、输入输出、人工干预记录。Agent 系统的设计必须提前考虑合规留存周期。</p>
+</li>
+<li><p><strong>PGVector 与 pgAudit 结合做 RAG 审计的新趋势</strong>：在 PostgreSQL 中同时存储向量数据、业务数据和审计日志，可以通过统一的 <code>trace_id</code> 把检索结果、LLM 调用、业务操作串在一张数据库里，这对后端工程师是一个天然优势。</p>
+</li>
+</ol>
+<hr>
+<blockquote>
+<p>明日预告：我们将进入<strong>延迟优化与成本治理</strong>，学习如何把 Agent 的 P99 延迟降下来，把 token 账单管起来。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/19/week3-day3-agent-observability-audit-logging/">https://dive2cloud-bmz.github.io/2026/07/19/week3-day3-agent-observability-audit-logging/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-3/">
+                                    <span class="chip bg-color">Week-3</span>
+                                </a>
+                            
+                                <a href="/tags/Agent-Observability/">
+                                    <span class="chip bg-color">Agent-Observability</span>
+                                </a>
+                            
+                                <a href="/tags/Audit-Logging/">
+                                    <span class="chip bg-color">Audit-Logging</span>
+                                </a>
+                            
+                                <a href="/tags/LLM-Tracing/">
+                                    <span class="chip bg-color">LLM-Tracing</span>
+                                </a>
+                            
+                                <a href="/tags/OpenTelemetry/">
+                                    <span class="chip bg-color">OpenTelemetry</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/07/19/week3-day3-agent-observability-audit-logging/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用">
+                        
+                        <span class="card-title">Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-19
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-3/">
+                        <span class="chip bg-color">Week-3</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Observability/">
+                        <span class="chip bg-color">Agent-Observability</span>
+                    </a>
+                    
+                    <a href="/tags/Audit-Logging/">
+                        <span class="chip bg-color">Audit-Logging</span>
+                    </a>
+                    
+                    <a href="/tags/LLM-Tracing/">
+                        <span class="chip bg-color">LLM-Tracing</span>
+                    </a>
+                    
+                    <a href="/tags/OpenTelemetry/">
+                        <span class="chip bg-color">OpenTelemetry</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/18/week3-day2-agent-output-safety-tool-whitelist-architecture/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Agent 输出安全与工具调用白名单架构：把 LLM 装进最小权限沙箱">
+                        
+                        <span class="card-title">Agent 输出安全与工具调用白名单架构：把 LLM 装进最小权限沙箱</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-18
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-3/">
+                        <span class="chip bg-color">Week-3</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Security/">
+                        <span class="chip bg-color">Agent-Security</span>
+                    </a>
+                    
+                    <a href="/tags/Tool-Whitelist/">
+                        <span class="chip bg-color">Tool-Whitelist</span>
+                    </a>
+                    
+                    <a href="/tags/Output-Safety/">
+                        <span class="chip bg-color">Output-Safety</span>
+                    </a>
+                    
+                    <a href="/tags/LLM-Guardrails/">
+                        <span class="chip bg-color">LLM-Guardrails</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">180.6k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
