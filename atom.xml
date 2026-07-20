@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-19T03:02:39.946Z</updated>
+  <updated>2026-07-20T03:04:20.516Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,42 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LLM 延迟优化与成本治理：像优化慢查询一样优化 Token 消耗</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/20/week3-day4-llm-latency-cost-optimization/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/20/week3-day4-llm-latency-cost-optimization/</id>
+    <published>2026-07-20T03:00:00.000Z</published>
+    <updated>2026-07-20T03:04:20.516Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;今日一句话：LLM 调用不是黑魔法，而是分布在全球数据中心的”远程存储过程”；每一个 token 都是一次 IO，每一次模型选择都是一次执行计划决策。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;🚀-核心洞察（2-min）&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="LLM-Latency" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Latency/"/>
+    
+    <category term="Cost-Optimization" scheme="https://dive2cloud-bmz.github.io/tags/Cost-Optimization/"/>
+    
+    <category term="Production-Engineering" scheme="https://dive2cloud-bmz.github.io/tags/Production-Engineering/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 可观测性与审计日志架构：像监控慢查询一样监控 LLM 调用</title>
@@ -299,9 +335,9 @@
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
   </entry>
   
@@ -369,11 +405,11 @@
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
-    
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
@@ -406,11 +442,11 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
     
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
-    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
   </entry>
   
@@ -688,8 +724,6 @@
     
     <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
     
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
-    
     <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
     
     <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
@@ -697,38 +731,6 @@
     <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
     
     <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Chunking 策略深度指南：从固定切分到语义感知切分</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/06/12/week1-day3-chunking-strategies/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/06/12/week1-day3-chunking-strategies/</id>
-    <published>2026-06-12T13:06:00.000Z</published>
-    <updated>2026-06-12T14:52:48.195Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
-    
-    <category term="Text-Splitting" scheme="https://dive2cloud-bmz.github.io/tags/Text-Splitting/"/>
     
     <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
