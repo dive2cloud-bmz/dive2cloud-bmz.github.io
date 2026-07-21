@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-20T03:04:20.516Z</updated>
+  <updated>2026-07-21T03:03:31.452Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>生产级 LLM 网关：当模型服务雪崩时，谁是你的最后一根稻草？</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/21/week3-day5-llm-gateway-and-multi-model-fallback/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/21/week3-day5-llm-gateway-and-multi-model-fallback/</id>
+    <published>2026-07-21T03:04:30.000Z</published>
+    <updated>2026-07-21T03:03:31.452Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;生产级-LLM-网关：当模型服务雪崩时，谁是你的最后一根稻草？&quot;&gt;&lt;a href=&quot;#生产级-LLM-网关：当模型服务雪崩时，谁是你的最后一根稻草？&quot; class=&quot;headerlink&quot; title=&quot;生产级 LLM</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
+    
+    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="LLM-Gateway" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Gateway/"/>
+    
+    <category term="Reliability" scheme="https://dive2cloud-bmz.github.io/tags/Reliability/"/>
+    
+  </entry>
   
   <entry>
     <title>LLM 延迟优化与成本治理：像优化慢查询一样优化 Token 消耗</title>
@@ -405,11 +440,11 @@
     
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
@@ -695,44 +730,6 @@
     <category term="BM25" scheme="https://dive2cloud-bmz.github.io/tags/BM25/"/>
     
     <category term="Hybrid-Search" scheme="https://dive2cloud-bmz.github.io/tags/Hybrid-Search/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>向量数据库选型实战：pgvector vs 专用向量库，PG 工程师该怎么选？</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/06/15/week1-day4-vector-databases/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/06/15/week1-day4-vector-databases/</id>
-    <published>2026-06-15T13:00:00.000Z</published>
-    <updated>2026-06-15T13:02:54.786Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
-    
-    <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
-    
-    <category term="Milvus" scheme="https://dive2cloud-bmz.github.io/tags/Milvus/"/>
-    
-    <category term="Qdrant" scheme="https://dive2cloud-bmz.github.io/tags/Qdrant/"/>
-    
-    <category term="RAG-Pipeline" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Pipeline/"/>
     
   </entry>
   
