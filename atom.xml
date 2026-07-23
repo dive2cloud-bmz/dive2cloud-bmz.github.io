@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-22T03:06:07.208Z</updated>
+  <updated>2026-07-23T03:04:44.777Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从单脚本到可观测服务：生产级 LLM 应用架构与部署决策</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/23/week3-day7-production-llm-architecture-deployment/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/23/week3-day7-production-llm-architecture-deployment/</id>
+    <published>2026-07-23T03:01:31.000Z</published>
+    <updated>2026-07-23T03:04:44.777Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;从单脚本到可观测服务：生产级-LLM-应用架构与部署决策&quot;&gt;&lt;a href=&quot;#从单脚本到可观测服务：生产级-LLM-应用架构与部署决策&quot; class=&quot;headerlink&quot; title=&quot;从单脚本到可观测服务：生产级 LLM</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="LLM-Architecture" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Architecture/"/>
+    
+    <category term="Deployment" scheme="https://dive2cloud-bmz.github.io/tags/Deployment/"/>
+    
+    <category term="Production" scheme="https://dive2cloud-bmz.github.io/tags/Production/"/>
+    
+    <category term="FastAPI" scheme="https://dive2cloud-bmz.github.io/tags/FastAPI/"/>
+    
+  </entry>
   
   <entry>
     <title>给大模型戴上紧箍咒：LLM Guardrails 与结构化输出校验框架</title>
@@ -368,11 +403,11 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="CrewAI" scheme="https://dive2cloud-bmz.github.io/tags/CrewAI/"/>
     
@@ -436,9 +471,9 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="State-Machine" scheme="https://dive2cloud-bmz.github.io/tags/State-Machine/"/>
     
@@ -477,11 +512,11 @@
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -689,44 +724,6 @@
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>RAG 评估体系：你怎么知道你的 RAG 没有&quot;一本正经地胡说八道&quot;？</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/06/24/week1-day6-rag-evaluation/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/06/24/week1-day6-rag-evaluation/</id>
-    <published>2026-06-24T13:00:00.000Z</published>
-    <updated>2026-06-26T07:47:38.503Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a href=&quot;#🚀-核心洞察&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察&quot;&gt;&lt;/a&gt;🚀 核心洞察&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;预计阅读 2</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
-    <category term="RAG-Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Evaluation/"/>
-    
-    <category term="RAG-Triad" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Triad/"/>
-    
-    <category term="LLM-as-Judge" scheme="https://dive2cloud-bmz.github.io/tags/LLM-as-Judge/"/>
-    
-    <category term="Faithfulness" scheme="https://dive2cloud-bmz.github.io/tags/Faithfulness/"/>
     
   </entry>
   
