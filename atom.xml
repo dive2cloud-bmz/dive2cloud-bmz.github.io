@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-23T03:04:44.777Z</updated>
+  <updated>2026-07-24T03:04:47.218Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>模型迭代也需要 DevOps：LLM 应用 CI/CD、A/B 测试与版本管理实战</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/24/week3-day8-llm-cicd-ab-testing-model-versioning/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/24/week3-day8-llm-cicd-ab-testing-model-versioning/</id>
+    <published>2026-07-24T03:01:39.000Z</published>
+    <updated>2026-07-24T03:04:47.218Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;模型迭代也需要-DevOps：LLM-应用-CI-CD、A-B-测试与版本管理实战&quot;&gt;&lt;a href=&quot;#模型迭代也需要-DevOps：LLM-应用-CI-CD、A-B-测试与版本管理实战&quot; class=&quot;headerlink&quot; title=&quot;模型迭代也需要</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="CI-CD" scheme="https://dive2cloud-bmz.github.io/tags/CI-CD/"/>
+    
+    <category term="AB-Testing" scheme="https://dive2cloud-bmz.github.io/tags/AB-Testing/"/>
+    
+    <category term="Model-Versioning" scheme="https://dive2cloud-bmz.github.io/tags/Model-Versioning/"/>
+    
+    <category term="MLOps" scheme="https://dive2cloud-bmz.github.io/tags/MLOps/"/>
+    
+  </entry>
   
   <entry>
     <title>从单脚本到可观测服务：生产级 LLM 应用架构与部署决策</title>
@@ -260,11 +295,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
@@ -512,11 +547,11 @@
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
     <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
     
     <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
     
@@ -580,15 +615,15 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
   </entry>
   
@@ -683,47 +718,13 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
-    
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
-  </entry>
-  
-  <entry>
-    <title>W1D1 初识Embedding：让AI读懂语义的向量密码</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/06/week-1-day-1-embedding/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/06/week-1-day-1-embedding/</id>
-    <published>2026-07-06T13:14:13.000Z</published>
-    <updated>2026-07-06T13:55:59.106Z</updated>
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;🚀 核心洞察（2分钟）&lt;/p&gt;
-&lt;p&gt;如果你做了多年 PostgreSQL 或后端开发，想必对”索引”这个词有肌肉记忆：B-tree 让等值查询从 O(n) 降到 O(log n)，GIN 让全文检索变得可用，BRIN 让时序数据 Scan 成本骤降。大模型时代的</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
-    <category term="向量检索" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/"/>
+    <category term="AI-Agent" scheme="https://dive2cloud-bmz.github.io/tags/AI-Agent/"/>
     
   </entry>
   
