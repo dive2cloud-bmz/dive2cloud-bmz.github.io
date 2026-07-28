@@ -1,0 +1,1232 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？, BMZ BLOG">
+    <meta name="description" content="从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？🚀 核心洞察作为一个写了多年 PostgreSQL 后端的人，我第一次调 OpenAI API 时，第一反应是：这不就是一个更贵、更慢、更不稳定的 HTTP 服务吗">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？ | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Agent-Memory/">
+                                <span class="chip bg-color">Agent-Memory</span>
+                            </a>
+                        
+                            <a href="/tags/LLM/">
+                                <span class="chip bg-color">LLM</span>
+                            </a>
+                        
+                            <a href="/tags/%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86/">
+                                <span class="chip bg-color">长期记忆</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-27
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-27
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    12 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="从零认识-Agent-记忆（一）：为什么无状态的-LLM，走不通真实业务？"><a href="#从零认识-Agent-记忆（一）：为什么无状态的-LLM，走不通真实业务？" class="headerlink" title="从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？"></a>从零认识 Agent 记忆（一）：为什么无状态的 LLM，走不通真实业务？</h1><h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>作为一个写了多年 PostgreSQL 后端的人，我第一次调 OpenAI API 时，第一反应是：<strong>这不就是一个更贵、更慢、更不稳定的 HTTP 服务吗？</strong></p>
+<p>这句半玩笑的话背后其实藏着一个非常严肃的工程事实——大语言模型（LLM）的原生调用是<strong>彻底无状态的</strong>。它不认识你昨天问过什么，不知道你上一句话是啥，甚至同一个会话里第 5 轮和第 6 轮之间，如果你不主动把历史塞回去，它也一无所知。</p>
+<p>后端工程师听到”无状态”三个字通常是感到欣慰的，因为无状态意味着可以水平扩展。但在 Agent 场景下，无状态意味着”没有记忆”。而一个没有记忆的智能体，永远只能是一个高级的翻译机、一个功能更花哨的搜索框，绝对成不了”真正能替你干活的助理”。</p>
+<p>Agent 记忆（Agent Memory），就是把 LLM 从”无状态请求响应”改造成”有历史、有偏好、有经验积累的持续实体”的那层关键工程。从今天起，这个博客系列会用大约 9 篇文章，把 Agent 记忆这件事讲透：从它是什么、有哪些方向，一路挖到长期记忆的发展史、当下主流方案和未来演进。</p>
+<p>今天是全景篇第 1 篇，先解决一个最根本的问题——<strong>为什么 Agent 需要记忆？</strong></p>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-无状态-LLM-的三大痛点"><a href="#1-无状态-LLM-的三大痛点" class="headerlink" title="1. 无状态 LLM 的三大痛点"></a>1. 无状态 LLM 的三大痛点</h3><p>要理解 Agent 记忆的价值，最好先看清”没有记忆”到底会出什么问题。总结下来是三大痛点：</p>
+<p><strong>痛点一：上下文窗口是硬物理上限，”塞得进”不等于”用得好”</strong></p>
+<p>LLM 的上下文窗口是有限的。截至 2026 年年中，主流模型的官方上下文窗口大致是这样：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>官方上下文窗口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GPT-4o</td>
+<td>128K tokens</td>
+</tr>
+<tr>
+<td>Claude Sonnet 4.5</td>
+<td>200K tokens</td>
+</tr>
+<tr>
+<td>Claude Sonnet 5 &#x2F; 4.6</td>
+<td>1M tokens（默认，无需 beta header）</td>
+</tr>
+<tr>
+<td>Gemini 1.5 Pro</td>
+<td>1M tokens（发布时）→ 后扩展到 2M</td>
+</tr>
+</tbody></table>
+<p>数字很漂亮，但两个问题绕不开：其一是<strong>成本和延迟</strong>——每次都把几十万 token 塞进去，token 计费和响应时间都会失控；其二是<strong>质量</strong>——2023 年斯坦福 Nelson F. Liu 等人的经典论文 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.03172"><em>Lost in the Middle: How Language Models Use Long Contexts</em></a> 证明了一个反直觉但重要的现象：即便上下文放得下，模型对<strong>开头和结尾</strong>的信息利用率显著高于<strong>中间</strong>部分，长上下文里”塞进去”和”用得上”完全是两回事。</p>
+<p>换句话说，把所有历史一股脑塞进 prompt 从来不是长久之计。</p>
+<p><strong>痛点二：跨会话遗忘——每次都是”你好，请问您是？”</strong></p>
+<p>即使在同一次会话内可以把历史全部塞进上下文，一旦会话结束、进程重启、或者用户换设备重新打开对话框，模型就把之前的一切彻底忘光。这意味着一个用户告诉过 AI”我对花生过敏、我是纯素食者”，第二天再问它推荐食谱，它仍然可能给你端上一盘花生鸡丁。</p>
+<p>在真正的产品里，这种”金鱼式失忆”是不可接受的。</p>
+<p><strong>痛点三：无法积累经验——同一个错误犯一百遍</strong></p>
+<p>一个真正智能的 Agent 应该能从失败中学习。比如它调工具报错、被用户纠正、被审核拒绝，下一次遇到类似场景应该改进而不是复读。但无状态 LLM 没有任何机制把”上次踩坑的教训”沉淀下来，除非你手动把这些教训重新塞进 prompt。</p>
+<h3 id="2-Agent-记忆的定义"><a href="#2-Agent-记忆的定义" class="headerlink" title="2. Agent 记忆的定义"></a>2. Agent 记忆的定义</h3><p>综上，我给”Agent 记忆”下这样一个工程视角的定义：</p>
+<blockquote>
+<p><strong>Agent 记忆是围绕 LLM 构建的一整套外部状态管理机制，用于在有限的上下文窗口之外，持久化、组织、检索和更新对当前决策有用的信息，使 Agent 具备跨轮次、跨会话、跨任务的一致性和学习能力。</strong></p>
+</blockquote>
+<p>关键词有四个：<strong>外部状态</strong>、<strong>有限窗口之外</strong>、<strong>持久化组织检索更新</strong>、<strong>跨轮次会话任务</strong>。它同时对应了系统设计中的四种能力：存储、结构化、召回、演化。</p>
+<h3 id="3-Agent-记忆的三层视角"><a href="#3-Agent-记忆的三层视角" class="headerlink" title="3. Agent 记忆的三层视角"></a>3. Agent 记忆的三层视角</h3><p>在正式进入分类之前，先给出一个覆盖全系列的三层视角图，后面每一篇都会挂在这张图上：</p>
+<p><img src="/medias/images/agent-memory-tree.png" alt="Agent 记忆三层视角：时间跨度 &#x2F; 认知类型 &#x2F; 生命周期"></p>
+<p>这个分类的学术基础来自 Sumers、Yao 等人在 2023 年提出的 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.02427"><em>Cognitive Architectures for Language Agents (CoALA)</em></a>（TMLR 2024）。CoALA 把认知科学中经典的”工作记忆 &#x2F; 语义记忆 &#x2F; 情景记忆 &#x2F; 程序记忆”框架移植到语言 Agent 上，成为如今讨论 Agent 记忆时最常引用的理论骨架。</p>
+<p>今天先不展开各个维度，明天的 Day 2 会详细拆。你只需要记住：<strong>记忆不是一个东西，而是一组正交维度组合出的一片空间</strong>。</p>
+<h3 id="4-“有记忆”能带来什么？——一个具体的对照"><a href="#4-“有记忆”能带来什么？——一个具体的对照" class="headerlink" title="4. “有记忆”能带来什么？——一个具体的对照"></a>4. “有记忆”能带来什么？——一个具体的对照</h3><p>抽象说了这么多，来看一个具体对比。同一个用户，第一次会话说过”我叫小明，我对花生过敏”。</p>
+<p>无记忆 Agent 的第二次会话：</p>
+<blockquote>
+<p>用户：给我推荐一份晚餐。<br>Agent：好的，可以试试宫保鸡丁，主要食材有鸡肉、花生……</p>
+</blockquote>
+<p>有记忆 Agent 的第二次会话：</p>
+<blockquote>
+<p>用户：给我推荐一份晚餐。<br>Agent：小明你好，考虑到你对花生过敏，我建议试试清炒虾仁配西兰花，不含任何坚果类食材……</p>
+</blockquote>
+<p>差别不在模型能力，而在于<strong>记忆层是否被工程化地建立起来</strong>。这也是为什么 2024–2026 年，MemGPT &#x2F; Letta、Mem0、Zep、LangMem 这些”专门做 Agent 记忆层”的项目会集中涌现——市场需求非常明确，而底层 LLM 并不打算自己解决这个问题。</p>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><p>对后端工程师来说，Agent 记忆的很多概念其实似曾相识。下面这张类比表可以直接迁移直觉：</p>
+<table>
+<thead>
+<tr>
+<th>后端概念</th>
+<th>Agent 记忆中的对应</th>
+<th>迁移直觉</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTP 无状态请求</td>
+<td>原生 LLM 调用</td>
+<td>每次请求都是独立的，服务器不认识客户端</td>
+</tr>
+<tr>
+<td>Session &#x2F; Cookie</td>
+<td>会话内的短期记忆</td>
+<td>用外部标识符把多次请求串成一个”会话”</td>
+</tr>
+<tr>
+<td>Redis &#x2F; PostgreSQL 会话表</td>
+<td>长期记忆存储</td>
+<td>跨进程、跨机器、跨时间的持久化状态</td>
+</tr>
+<tr>
+<td>连接池</td>
+<td>上下文窗口预算管理</td>
+<td>都是一种”有限资源的复用与调度”</td>
+</tr>
+<tr>
+<td>数据库范式化 vs 反范式化</td>
+<td>结构化记忆 vs 向量化记忆</td>
+<td>结构化便于精确查询，向量化便于语义检索</td>
+</tr>
+<tr>
+<td>缓存过期策略（LRU&#x2F;TTL）</td>
+<td>记忆的遗忘机制</td>
+<td>都要决定”什么信息该被清除、什么该保留”</td>
+</tr>
+<tr>
+<td>WAL &#x2F; Binlog</td>
+<td>Agent 行为日志与情景记忆</td>
+<td>事件级的完整历史，可回放、可审计</td>
+</tr>
+<tr>
+<td>主键 &#x2F; 外键</td>
+<td>记忆之间的关联关系</td>
+<td>让离散的记忆条目形成图结构</td>
+</tr>
+</tbody></table>
+<p>一个特别值得注意的类比是<strong>上下文窗口 ≈ 内存，长期记忆 ≈ 磁盘</strong>。这正是 MemGPT 论文 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.08560"><em>MemGPT: Towards LLMs as Operating Systems</em></a>（Packer et al., 2023）的核心思想：把 LLM 当作 OS，用<strong>分层存储</strong>和<strong>分页调度</strong>来管理有限的”内存”（上下文）与更大的”磁盘”（外部记忆）。系列后续 Day 6 会详细拆这套架构。</p>
+<p>如果你熟悉 PostgreSQL 的 shared_buffers &#x2F; OS page cache 层级，那么 MemGPT 的设计几乎是同构的思路——不是”扩大内存”，而是”更聪明地在内存和磁盘之间搬运数据”。</p>
+<h2 id="🛠️-微实战：一个-30-行代码的”有记忆-vs-无记忆”对比-Demo"><a href="#🛠️-微实战：一个-30-行代码的”有记忆-vs-无记忆”对比-Demo" class="headerlink" title="🛠️ 微实战：一个 30 行代码的”有记忆 vs 无记忆”对比 Demo"></a>🛠️ 微实战：一个 30 行代码的”有记忆 vs 无记忆”对比 Demo</h2><p>下面是一个可以直接跑的最小例子。它用一个字典模拟”外部长期记忆”，展示”有记忆”是如何在<strong>不改动模型本身</strong>的前提下，把一个无状态调用改造成有连续性的对话。为了跑起来无需真实 API Key，<code>llm_call</code> 用 Mock 实现，你只要替换成真实 SDK 调用就是生产骨架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># memory_demo.py</span></span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Dict</span>, <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 1. Mock LLM，模拟一个只根据传入 prompt 回答的无状态模型 ----------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">llm_call</span>(<span class="params">prompt: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;在真实场景里替换为 openai / anthropic SDK。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;过敏&quot;</span> <span class="keyword">in</span> prompt <span class="keyword">and</span> <span class="string">&quot;花生&quot;</span> <span class="keyword">in</span> prompt:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;考虑到你对花生过敏，推荐清炒虾仁配西兰花。&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;推荐&quot;</span> <span class="keyword">in</span> prompt <span class="keyword">or</span> <span class="string">&quot;晚餐&quot;</span> <span class="keyword">in</span> prompt:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;推荐宫保鸡丁，主料是鸡肉和花生。&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;叫&quot;</span> <span class="keyword">in</span> prompt <span class="keyword">or</span> <span class="string">&quot;过敏&quot;</span> <span class="keyword">in</span> prompt:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;好的，我已经记下了。&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;（模型回复）&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 2. 一个极简的&quot;长期记忆&quot;存储 ----------</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LongTermMemory</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.store: <span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">List</span>[<span class="built_in">str</span>]] = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">self, user_id: <span class="built_in">str</span>, fact: <span class="built_in">str</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.store.setdefault(user_id, []).append(fact)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">read</span>(<span class="params">self, user_id: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        facts = <span class="variable language_">self</span>.store.get(user_id, [])</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;; &quot;</span>.join(facts)</span><br><span class="line"></span><br><span class="line">memory = LongTermMemory()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 3. 无记忆 Agent ----------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">agent_without_memory</span>(<span class="params">user_id: <span class="built_in">str</span>, user_input: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">return</span> llm_call(user_input)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 4. 有记忆 Agent：把用户画像拼到 prompt 前 ----------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">agent_with_memory</span>(<span class="params">user_id: <span class="built_in">str</span>, user_input: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    profile = memory.read(user_id)</span><br><span class="line">    prompt = <span class="string">f&quot;[用户画像: <span class="subst">&#123;profile&#125;</span>]\n用户说: <span class="subst">&#123;user_input&#125;</span>&quot;</span> <span class="keyword">if</span> profile <span class="keyword">else</span> user_input</span><br><span class="line">    <span class="keyword">return</span> llm_call(prompt)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 5. 演示 ----------</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    uid = <span class="string">&quot;xiaoming&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 第 1 次会话：用户主动告知信息，Agent 写入长期记忆</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;== Session 1 ==&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;用户: 我叫小明，我对花生过敏。&quot;</span>)</span><br><span class="line">    memory.write(uid, <span class="string">&quot;用户叫小明，对花生过敏&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Agent:&quot;</span>, agent_with_memory(uid, <span class="string">&quot;我叫小明，我对花生过敏。&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 第 2 次会话（模拟隔天，进程重启后依然记得）</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n== Session 2（次日）==&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;用户: 给我推荐一份晚餐。&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;无记忆 Agent:&quot;</span>, agent_without_memory(uid, <span class="string">&quot;给我推荐一份晚餐。&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;有记忆 Agent:&quot;</span>, agent_with_memory(uid, <span class="string">&quot;给我推荐一份晚餐。&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行输出（示意）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">== Session 1 ==</span><br><span class="line">用户: 我叫小明，我对花生过敏。</span><br><span class="line">Agent: 好的，我已经记下了。</span><br><span class="line"></span><br><span class="line">== Session 2（次日）==</span><br><span class="line">用户: 给我推荐一份晚餐。</span><br><span class="line">无记忆 Agent: 推荐宫保鸡丁，主料是鸡肉和花生。</span><br><span class="line">有记忆 Agent: 考虑到你对花生过敏，推荐清炒虾仁配西兰花。</span><br></pre></td></tr></table></figure>
+
+<p>这个例子刻意简单，但已经足够揭示一个本质：<strong>“有记忆” ≠ “更聪明的模型”，而是”多了一层负责状态管理的工程组件”</strong>。真实生产中，<code>LongTermMemory</code> 会被替换成 pgvector、Redis、知识图谱、或者 Mem0&#x2F;Zep 这样的专门记忆服务；写入策略会从”用户明说”进化到”自动抽取事实”；检索策略会从”整段拼接”进化到”按相关性 top-k 召回”。这些正是接下来 Day 2 到 Day 9 会一步步展开的内容。</p>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><p>Agent 记忆是过去 18 个月里 AI 工程领域最热门的方向之一。几个必须留意的动态：</p>
+<ul>
+<li><strong>CoALA 框架成为共同语言（2023，TMLR 2024）</strong>：Sumers、Yao、Narasimhan、Griffiths 的 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.02427"><em>Cognitive Architectures for Language Agents</em></a> 用认知科学的四类记忆重塑了 Agent 讨论范式，如今几乎所有严肃的记忆框架论文都会引用它。</li>
+<li><strong>MemGPT &#x2F; Letta 把”OS 隐喻”带进 LLM（2023）</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.08560"><em>MemGPT</em></a> 提出”虚拟上下文管理”，用分层存储 + function calling 让模型自己决定”哪些信息从磁盘搬进内存”。项目后来演进为 Letta，成为开源 Agent 记忆基础设施代表。</li>
+<li><strong>Mem0 带着基准数据登场（2025.04）</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2504.19413"><em>Mem0 论文</em></a> 在 LOCOMO 对话记忆基准上给出了硬指标——相比 OpenAI 原生方案在 LLM-as-Judge 上有 <strong>26% 相对提升</strong>，相比”全上下文塞入”方案 <strong>p95 延迟降低约 91%</strong>、<strong>token 成本节省 90%+</strong>。这是”记忆层带来的量化收益”第一次被讲得比较清楚。</li>
+<li><strong>Long Context 与 Memory 之争</strong>：Claude Sonnet 4.6&#x2F;5 默认 1M、Gemini 1.5 Pro 上到 2M。上下文越大，是否就不需要记忆层？<em>Lost in the Middle</em> 早给出否定回答——<strong>大窗口和好记忆是互补关系，不是替代</strong>。</li>
+<li><strong>“记忆即服务”生态成型</strong>：Mem0、Zep、LangMem、Cognee、MemVid 等项目并行发展，各有侧重（图谱化、时序更新、开源可控、多模态），后续 Day 3、Day 6、Day 7 会做横向对比。</li>
+</ul>
+<hr>
+<p><strong>下一篇预告（Day 2）</strong>：Agent 记忆分类地图。会详细拆开 CoALA 的四类记忆（工作 &#x2F; 语义 &#x2F; 情景 &#x2F; 程序），并叠加”时间跨度”与”生命周期”两个正交维度，形成整个系列后续都会挂靠的地图。</p>
+<p>Sources:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.03172">Lost in the Middle: How Language Models Use Long Contexts (arXiv:2307.03172)</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.08560">MemGPT: Towards LLMs as Operating Systems (arXiv:2310.08560)</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.02427">Cognitive Architectures for Language Agents &#x2F; CoALA (arXiv:2309.02427)</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2504.19413">Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory (arXiv:2504.19413)</a></li>
+<li><a target="_blank" rel="noopener" href="https://platform.claude.com/docs/en/build-with-claude/context-windows">Anthropic – Context windows official docs</a></li>
+</ul>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/27/week4-day1-agent-memory-why-stateless-llm-fails/">https://dive2cloud-bmz.github.io/2026/07/27/week4-day1-agent-memory-why-stateless-llm-fails/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Agent-Memory/">
+                                    <span class="chip bg-color">Agent-Memory</span>
+                                </a>
+                            
+                                <a href="/tags/LLM/">
+                                    <span class="chip bg-color">LLM</span>
+                                </a>
+                            
+                                <a href="/tags/%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86/">
+                                    <span class="chip bg-color">长期记忆</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2026/07/27/week4-day2-agent-memory-taxonomy-map/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="从零认识 Agent 记忆（二）：一张分类地图，看懂记忆的三个正交维度">
+                        
+                        <span class="card-title">从零认识 Agent 记忆（二）：一张分类地图，看懂记忆的三个正交维度</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-27
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Memory/">
+                        <span class="chip bg-color">Agent-Memory</span>
+                    </a>
+                    
+                    <a href="/tags/CoALA/">
+                        <span class="chip bg-color">CoALA</span>
+                    </a>
+                    
+                    <a href="/tags/%E8%AE%B0%E5%BF%86%E5%88%86%E7%B1%BB/">
+                        <span class="chip bg-color">记忆分类</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/24/week3-day8-llm-cicd-ab-testing-model-versioning/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="模型迭代也需要 DevOps：LLM 应用 CI/CD、A/B 测试与版本管理实战">
+                        
+                        <span class="card-title">模型迭代也需要 DevOps：LLM 应用 CI/CD、A/B 测试与版本管理实战</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-24
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-3/">
+                        <span class="chip bg-color">Week-3</span>
+                    </a>
+                    
+                    <a href="/tags/CI-CD/">
+                        <span class="chip bg-color">CI-CD</span>
+                    </a>
+                    
+                    <a href="/tags/AB-Testing/">
+                        <span class="chip bg-color">AB-Testing</span>
+                    </a>
+                    
+                    <a href="/tags/Model-Versioning/">
+                        <span class="chip bg-color">Model-Versioning</span>
+                    </a>
+                    
+                    <a href="/tags/MLOps/">
+                        <span class="chip bg-color">MLOps</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">215.2k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
