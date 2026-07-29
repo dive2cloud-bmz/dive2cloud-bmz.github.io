@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-28T03:05:22.437Z</updated>
+  <updated>2026-07-29T03:07:06.173Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,111 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/29/week4-day6-agent-memory-write-and-retrieval-strategy/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/29/week4-day6-agent-memory-write-and-retrieval-strategy/</id>
+    <published>2026-07-29T03:02:01.000Z</published>
+    <updated>2026-07-29T03:07:06.173Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Agent-记忆的写入与检索策略：像设计数据库索引一样设计记忆系统&quot;&gt;&lt;a href=&quot;#Agent-记忆的写入与检索策略：像设计数据库索引一样设计记忆系统&quot; class=&quot;headerlink&quot; title=&quot;Agent</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
+    
+    <category term="Memory-Architecture" scheme="https://dive2cloud-bmz.github.io/tags/Memory-Architecture/"/>
+    
+    <category term="Recall-Optimization" scheme="https://dive2cloud-bmz.github.io/tags/Recall-Optimization/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Agent Memory 技术雷达：从 CoALA 论文到产业落地的三年演进史</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/28/week4-day5-agent-memory-tech-radar/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/28/week4-day5-agent-memory-tech-radar/</id>
+    <published>2026-07-28T14:00:00.000Z</published>
+    <updated>2026-07-28T07:18:14.144Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Agent-Memory-技术雷达：从-CoALA-到产业落地的三年演进史&quot;&gt;&lt;a href=&quot;#Agent-Memory-技术雷达：从-CoALA-到产业落地的三年演进史&quot; class=&quot;headerlink&quot; title=&quot;Agent Memory</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
+    
+    <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
+    
+    <category term="技术雷达" scheme="https://dive2cloud-bmz.github.io/tags/%E6%8A%80%E6%9C%AF%E9%9B%B7%E8%BE%BE/"/>
+    
+    <category term="mem0" scheme="https://dive2cloud-bmz.github.io/tags/mem0/"/>
+    
+    <category term="Zep" scheme="https://dive2cloud-bmz.github.io/tags/Zep/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>精读 CoALA：用认知科学给语言智能体画一张「记忆—动作—决策」地图</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/28/week4-day4-coala-paper-close-reading/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/28/week4-day4-coala-paper-close-reading/</id>
+    <published>2026-07-28T13:30:00.000Z</published>
+    <updated>2026-07-28T07:18:13.976Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;当语言模型遇上认知科学：一篇论文精读-CoALA&quot;&gt;&lt;a href=&quot;#当语言模型遇上认知科学：一篇论文精读-CoALA&quot; class=&quot;headerlink&quot; title=&quot;当语言模型遇上认知科学：一篇论文精读</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
+    
+    <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
+    
+    <category term="认知架构" scheme="https://dive2cloud-bmz.github.io/tags/%E8%AE%A4%E7%9F%A5%E6%9E%B6%E6%9E%84/"/>
+    
+  </entry>
   
   <entry>
     <title>智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图</title>
@@ -396,13 +501,13 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
   </entry>
   
@@ -504,9 +609,9 @@
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
     
     <category term="Memory" scheme="https://dive2cloud-bmz.github.io/tags/Memory/"/>
     
@@ -541,9 +646,9 @@
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="CrewAI" scheme="https://dive2cloud-bmz.github.io/tags/CrewAI/"/>
     
@@ -576,9 +681,9 @@
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
   </entry>
   
@@ -616,115 +721,6 @@
     <category term="LangChain" scheme="https://dive2cloud-bmz.github.io/tags/LangChain/"/>
     
     <category term="Workflow-Engine" scheme="https://dive2cloud-bmz.github.io/tags/Workflow-Engine/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Plan-and-Execute 与 Reflection：让 Agent 学会‘先定计划、再复盘纠错’</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/10/week2-day3-plan-and-execute-reflection/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/10/week2-day3-plan-and-execute-reflection/</id>
-    <published>2026-07-10T03:05:00.000Z</published>
-    <updated>2026-07-10T03:04:12.773Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;前两天的学习中，我们见证了</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
-    
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
-    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
-    
-    <category term="Reflection" scheme="https://dive2cloud-bmz.github.io/tags/Reflection/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Self-Correction" scheme="https://dive2cloud-bmz.github.io/tags/Self-Correction/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>从Recall到RAGAS：RAG系统评估全景</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/09/week-1-day-5-rag-evaluation-metrics/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/09/week-1-day-5-rag-evaluation-metrics/</id>
-    <published>2026-07-09T13:00:21.000Z</published>
-    <updated>2026-07-09T13:33:21.617Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察（2分钟）&quot;&gt;&lt;a href=&quot;#🚀-核心洞察（2分钟）&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察（2分钟）&quot;&gt;&lt;/a&gt;🚀 核心洞察（2分钟）&lt;/h2&gt;&lt;p&gt;如果你维护过 PostgreSQL</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-1" scheme="https://dive2cloud-bmz.github.io/tags/Week-1/"/>
-    
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
-    <category term="RAG-Eval" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Eval/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>ReAct 深度解析：当 LLM 学会“先想后做”</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/08/week2-day2-react-deep-dive-reasoning-acting/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/08/week2-day2-react-deep-dive-reasoning-acting/</id>
-    <published>2026-07-08T03:00:32.000Z</published>
-    <updated>2026-07-08T03:06:00.277Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;核心洞察（2-分钟速览）&quot;&gt;&lt;a href=&quot;#核心洞察（2-分钟速览）&quot; class=&quot;headerlink&quot; title=&quot;核心洞察（2 分钟速览）&quot;&gt;&lt;/a&gt;核心洞察（2 分钟速览）&lt;/h2&gt;&lt;p&gt;昨天我们聊到了 &lt;strong&gt;Function</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
-    
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
-    <category term="Reasoning" scheme="https://dive2cloud-bmz.github.io/tags/Reasoning/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
-    
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
   </entry>
   
