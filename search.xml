@@ -333,11 +333,11 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Week-3 </tag>
-            
             <tag> Fallback </tag>
             
             <tag> Circuit-Breaker </tag>
+            
+            <tag> Week-3 </tag>
             
             <tag> LLM-Gateway </tag>
             
@@ -996,8 +996,6 @@
             
             <tag> Week-1 </tag>
             
-            <tag> RAG-Pipeline </tag>
-            
             <tag> Retrieval </tag>
             
             <tag> Reranking </tag>
@@ -1005,6 +1003,8 @@
             <tag> BM25 </tag>
             
             <tag> Hybrid-Search </tag>
+            
+            <tag> RAG-Pipeline </tag>
             
         </tags>
       
@@ -1427,9 +1427,9 @@
       
         <tags>
             
-            <tag> 分布式 </tag>
-            
             <tag> 3PC </tag>
+            
+            <tag> 分布式 </tag>
             
         </tags>
       
@@ -1486,9 +1486,9 @@
       
         <tags>
             
-            <tag> 2PC </tag>
-            
             <tag> 分布式 </tag>
+            
+            <tag> 2PC </tag>
             
         </tags>
       

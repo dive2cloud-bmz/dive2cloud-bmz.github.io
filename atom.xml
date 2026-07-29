@@ -350,11 +350,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
-    
     <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
     
     <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
     <category term="LLM-Gateway" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Gateway/"/>
     
