@@ -1,0 +1,1393 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍, BMZ BLOG">
+    <meta name="description" content="今日主题ANN 索引调优与工程选型。
+
+
+
+🚀 核心洞察（2 分钟）如果你是从 PostgreSQL、Backend 转过来的工程师，看到向量检索里的 HNSW、IVF、PQ、SQ 这些名词时，第一反应很可能是：这不就是数据库索引选型吗？">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/RAG/">
+                                <span class="chip bg-color">RAG</span>
+                            </a>
+                        
+                            <a href="/tags/Week-2/">
+                                <span class="chip bg-color">Week-2</span>
+                            </a>
+                        
+                            <a href="/tags/ANN/">
+                                <span class="chip bg-color">ANN</span>
+                            </a>
+                        
+                            <a href="/tags/HNSW/">
+                                <span class="chip bg-color">HNSW</span>
+                            </a>
+                        
+                            <a href="/tags/IVF/">
+                                <span class="chip bg-color">IVF</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/">
+                                <span class="chip bg-color">向量量化</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-30
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-30
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.7k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    14 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="今日主题"><a href="#今日主题" class="headerlink" title="今日主题"></a>今日主题</h2><p>ANN 索引调优与工程选型。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="🚀-核心洞察（2-分钟）"><a href="#🚀-核心洞察（2-分钟）" class="headerlink" title="🚀 核心洞察（2 分钟）"></a>🚀 核心洞察（2 分钟）</h2><p>如果你是从 PostgreSQL、Backend 转过来的工程师，看到向量检索里的 HNSW、IVF、PQ、SQ 这些名词时，第一反应很可能是：这不就是数据库索引选型吗？确实如此。</p>
+<p>ANN（Approximate Nearest Neighbor，近似最近邻）索引的本质与 B-Tree、GiST、GIN、BRIN 一样，都是用<strong>空间换时间</strong>的辅助数据结构。不同的是，传统数据库索引处理的是精确匹配或范围查询，而 ANN 索引面对的是高维连续向量，必须在**召回率（recall）、查询延迟（latency）、内存占用（memory）**之间做取舍。接受多大的近似误差，决定了你能把系统做到多快、多省、多准。</p>
+<p>从后端视角看，做 ANN 选型不是跑一遍 benchmark 就定案，而是要先回答三个问题：</p>
+<ol>
+<li><strong>业务能接受的 recall 下限是多少？</strong> 例如 RAG 检索通常要求 recall@10 ≥ 0.9，而推荐去重可能 0.85 就够。</li>
+<li><strong>数据是静态还是动态？</strong> 静态数据适合 IVF 类索引，动态增量场景 HNSW 更自然。</li>
+<li><strong>查询是否需要带过滤条件？</strong> metadata filtering 会严重干扰图索引和倒排索引的局部性，需要专门的预处理或 filtered index。</li>
+</ol>
+<p>业务可接受的召回率会决定参数组合与成本预算。高 recall 需要更大的 ef_search、更多的候选扫描、更高的内存；低延迟则要求更小的 M、更粗的量化、更少的 nprobe。三者不可兼得，工程的任务是找到<strong>满足业务指标前提下的最廉价配置</strong>。</p>
+<hr>
+<h2 id="🧠-核心概念（10-分钟）"><a href="#🧠-核心概念（10-分钟）" class="headerlink" title="🧠 核心概念（10 分钟）"></a>🧠 核心概念（10 分钟）</h2><h3 id="1-HNSW：分层导航小世界图"><a href="#1-HNSW：分层导航小世界图" class="headerlink" title="1. HNSW：分层导航小世界图"></a>1. HNSW：分层导航小世界图</h3><p>HNSW（Hierarchical Navigable Small World）是目前工业界最常用的图索引，pgvector、Faiss、Milvus、Weaviate 都支持。它的核心思想是构建一个多层图：底层保存所有节点的密集连接，上层是稀疏的“高速公路”，查询时从顶层快速定位到目标区域，再向底层下沉做精细搜索。</p>
+<h4 id="三个关键参数"><a href="#三个关键参数" class="headerlink" title="三个关键参数"></a>三个关键参数</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+<th>对 recall 的影响</th>
+<th>对 latency 的影响</th>
+<th>对 memory 的影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>M</code></td>
+<td>每层每个节点的最大出度</td>
+<td>M 越大，图越稠密，召回越高</td>
+<td>搜索时需遍历更多边，延迟增加</td>
+<td>边数线性增长，内存增加</td>
+</tr>
+<tr>
+<td><code>ef_construction</code></td>
+<td>建图时候选邻居列表长度</td>
+<td>越大，建图质量越高，召回上限越高</td>
+<td>仅影响建图时间</td>
+<td>索引大小略增</td>
+</tr>
+<tr>
+<td><code>ef_search</code></td>
+<td>查询时动态候选池大小</td>
+<td>越大，搜索越充分，召回越高</td>
+<td>距离计算次数增加，延迟显著增加</td>
+<td>运行时临时内存增加</td>
+</tr>
+</tbody></table>
+<p>用一个后端熟悉的比喻：<code>M</code> 像是 B-Tree 的阶数（fanout），<code>ef_search</code> 像是查询时允许的 page read 上限。<code>ef_construction</code> 则类似于建索引时的 <code>fillfactor</code> 或排序缓冲区大小，只影响构建质量，不影响在线查询。</p>
+<h4 id="代码示例：用-Faiss-建-HNSW-索引"><a href="#代码示例：用-Faiss-建-HNSW-索引" class="headerlink" title="代码示例：用 Faiss 建 HNSW 索引"></a>代码示例：用 Faiss 建 HNSW 索引</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> faiss</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">dim = <span class="number">768</span></span><br><span class="line">n_data = <span class="number">100_000</span></span><br><span class="line">xb = np.random.random((n_data, dim)).astype(<span class="string">&#x27;float32&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># HNSW 128 维示例</span></span><br><span class="line">index = faiss.IndexHNSWFlat(dim, M=<span class="number">32</span>)</span><br><span class="line">index.hnsw.efConstruction = <span class="number">200</span></span><br><span class="line">index.add(xb)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询时调整 ef_search</span></span><br><span class="line">index.hnsw.efSearch = <span class="number">128</span></span><br><span class="line">D, I = index.search(xb[:<span class="number">5</span>], k=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>M=32</code> 是经验起点，768 维 embedding 常见取 16–32。<code>efConstruction=200</code> 保证建图质量，<code>efSearch=128</code> 控制在线延迟。要提升 recall，优先增大 <code>efSearch</code>，因为它只影响查询；要提升整体召回上限或改善建图质量，再调 <code>efConstruction</code> 和 <code>M</code>。</p>
+<h4 id="参数调优口诀"><a href="#参数调优口诀" class="headerlink" title="参数调优口诀"></a>参数调优口诀</h4><ul>
+<li><strong>固定 recall 目标，调 ef_search 到刚刚达标，不要再大。</strong></li>
+<li><strong>延迟仍然超标时，降低 M 或加量化。</strong></li>
+<li><strong>数据量巨大且 recall 要求高时，用 M&#x3D;48&#x2F;64 + efConstruction&#x3D;400+。</strong></li>
+</ul>
+<hr>
+<h3 id="2-IVF：倒排文件索引"><a href="#2-IVF：倒排文件索引" class="headerlink" title="2. IVF：倒排文件索引"></a>2. IVF：倒排文件索引</h3><p>IVF（Inverted File Index）把向量空间划分成 <code>nlist</code> 个聚类中心（通常用 k-means），每个向量归属到最近的中心。查询时只在 <code>nprobe</code> 个最近的聚类中搜索。</p>
+<h4 id="两个关键参数"><a href="#两个关键参数" class="headerlink" title="两个关键参数"></a>两个关键参数</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+<th>对 recall 的影响</th>
+<th>对 latency 的影响</th>
+<th>对 memory 的影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nlist</code></td>
+<td>聚类桶数量</td>
+<td>nlist 越多，桶越细，召回越稳</td>
+<td>桶本身内存增加，但搜索单桶数据减少</td>
+<td>较小</td>
+</tr>
+<tr>
+<td><code>nprobe</code></td>
+<td>查询时扫描的桶数</td>
+<td>nprobe 越大，召回越高</td>
+<td>扫描向量数线性增加，延迟增加</td>
+<td>运行时临时内存增加</td>
+</tr>
+</tbody></table>
+<p>IVF 的优点是<strong>构建和查询都简单、内存友好</strong>，尤其适合静态大数据集。缺点是<strong>增量更新困难</strong>：新向量插入可能改变聚类中心，需要重新训练或做大量中心调整；删除向量也会留下空洞。</p>
+<h4 id="代码示例：Faiss-IVF-Flat"><a href="#代码示例：Faiss-IVF-Flat" class="headerlink" title="代码示例：Faiss IVF-Flat"></a>代码示例：Faiss IVF-Flat</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">nlist = <span class="number">1024</span></span><br><span class="line">quantizer = faiss.IndexFlatIP(dim)  <span class="comment"># 或 IndexFlatL2</span></span><br><span class="line">index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)</span><br><span class="line"></span><br><span class="line">index.train(xb)      <span class="comment"># 必须先训练</span></span><br><span class="line">index.add(xb)</span><br><span class="line"></span><br><span class="line">index.nprobe = <span class="number">16</span>    <span class="comment"># 查询时扫描 16 个桶</span></span><br><span class="line">D, I = index.search(xb[:<span class="number">5</span>], k=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<p>选择 <code>nlist</code> 的经验公式：<code>nlist ≈ 4 × sqrt(N)</code>，其中 N 是数据量。例如 100 万数据取 4096，1000 万取 16384。<code>nprobe</code> 通常从 8 或 16 开始，根据 recall 需求向上调。</p>
+<hr>
+<h3 id="3-量化压缩：PQ-SQ-OPQ"><a href="#3-量化压缩：PQ-SQ-OPQ" class="headerlink" title="3. 量化压缩：PQ &#x2F; SQ &#x2F; OPQ"></a>3. 量化压缩：PQ &#x2F; SQ &#x2F; OPQ</h3><p>高维 float32 向量非常占内存。768 维 × 4 字节 ≈ 3 KB&#x2F;向量，1 亿向量就是 300 GB。量化把向量压缩成低 bit 表示，常见三种：</p>
+<h4 id="Scalar-Quantization（SQ）"><a href="#Scalar-Quantization（SQ）" class="headerlink" title="Scalar Quantization（SQ）"></a>Scalar Quantization（SQ）</h4><p>把每个维度从 float32 量化成 int8，直接压缩 4 倍。实现简单，但对高维向量的误差累积不可忽略。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Faiss SQ8</span></span><br><span class="line">index = faiss.IndexScalarQuantizer(dim, faiss.ScalarQuantizer.QT_8bit)</span><br><span class="line">index.add(xb)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Product-Quantization（PQ）"><a href="#Product-Quantization（PQ）" class="headerlink" title="Product Quantization（PQ）"></a>Product Quantization（PQ）</h4><p>把向量切分成 <code>m</code> 段子向量，每段独立 k-means 量化到 8 bit（256 个中心）。768 维切成 96 段，每段 8 bit，共 96 字节，压缩比约 32:1。PQ 的核心是<strong>用码本索引近似表示向量</strong>，距离计算在压缩域完成。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">m = <span class="number">96</span>  <span class="comment"># 子段数，需整除 dim</span></span><br><span class="line">nbits = <span class="number">8</span></span><br><span class="line">index = faiss.IndexPQ(dim, m, nbits)</span><br><span class="line">index.train(xb)</span><br><span class="line">index.add(xb)</span><br></pre></td></tr></table></figure>
+
+<p>PQ 参数影响：</p>
+<ul>
+<li><code>m</code> 越大，量化越精细，recall 越高，但内存和计算也增加。</li>
+<li><code>nbits</code> 通常是 8（256 中心）或 12（4096 中心）。</li>
+</ul>
+<h4 id="Optimized-Product-Quantization（OPQ）"><a href="#Optimized-Product-Quantization（OPQ）" class="headerlink" title="Optimized Product Quantization（OPQ）"></a>Optimized Product Quantization（OPQ）</h4><p>PQ 假设各子段独立，但真实向量各维度往往相关。OPQ 先做一个旋转矩阵，把相关性打散，再 PQ，通常能显著提升 recall。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">index = faiss.IndexPreTransform(</span><br><span class="line">    faiss.OPQMatrix(dim, m),</span><br><span class="line">    faiss.IndexPQ(dim, m, nbits)</span><br><span class="line">)</span><br><span class="line">index.train(xb)</span><br><span class="line">index.add(xb)</span><br></pre></td></tr></table></figure>
+
+<h4 id="量化的取舍"><a href="#量化的取舍" class="headerlink" title="量化的取舍"></a>量化的取舍</h4><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>压缩比</th>
+<th>recall 损失</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SQ8</td>
+<td>4×</td>
+<td>小</td>
+<td>对内存敏感但不愿损失太多精度</td>
+</tr>
+<tr>
+<td>PQ m&#x3D;96</td>
+<td>32×</td>
+<td>中</td>
+<td>亿级向量，离线静态索引</td>
+</tr>
+<tr>
+<td>OPQ</td>
+<td>32×</td>
+<td>较小</td>
+<td>维度高、维度间相关性强</td>
+</tr>
+<tr>
+<td>IVF + PQ</td>
+<td>更大</td>
+<td>中</td>
+<td>超大规模，先粗筛再精排</td>
+</tr>
+</tbody></table>
+<p>量化误差会叠加在 ANN 本身的近似误差之上。PG 工程师可以把它类比为<strong>列式存储中的字典编码 + 位图索引</strong>：省空间、加速扫描，但聚合计算会有精度损失。</p>
+<hr>
+<h3 id="4-增量与过滤"><a href="#4-增量与过滤" class="headerlink" title="4. 增量与过滤"></a>4. 增量与过滤</h3><h4 id="增量插入"><a href="#增量插入" class="headerlink" title="增量插入"></a>增量插入</h4><p>HNSW 天然支持增量 <code>add</code>，时间复杂度接近 O(log N)。IVF 也可以增量 <code>add</code>，但新数据必须落入现有聚类桶，数据分布漂移后 recall 会下降，需要周期性 <code>train</code> + <code>add</code> 重建。</p>
+<p>实践中一个常见模式是：</p>
+<ul>
+<li>用 HNSW 做在线实时索引，接受持续写入。</li>
+<li>用 IVF-PQ 做离线大索引，周期性全量重建。</li>
+<li>通过双 Buffer 切换，实现“在线无感重建”。</li>
+</ul>
+<h4 id="Metadata-Filtering"><a href="#Metadata-Filtering" class="headerlink" title="Metadata Filtering"></a>Metadata Filtering</h4><p>RAG 系统经常需要带过滤条件的向量检索，例如 <code>tenant_id = 42 AND doc_type = &#39;pdf&#39;</code>。直接在向量索引里做后过滤会破坏索引效率：索引返回的 Top-K 可能大部分被过滤掉，导致有效召回极低。</p>
+<p>主流解决思路：</p>
+<ol>
+<li><strong>Pre-filtering（预过滤）</strong>：先按 metadata 过滤出候选集，再在候选集上做暴力搜索。候选集小时可用，候选集大时退化成全表扫描。</li>
+<li><strong>Post-filtering（后过滤）</strong>：先 ANN 检索，再过滤，可能漏召。适合过滤条件宽松的场景。</li>
+<li><strong>Filtered index（过滤索引）</strong>：为每个常见过滤组合建独立索引。适合过滤值基数小的场景。</li>
+<li><strong>Composite index（组合索引）</strong>：如 pgvector 的 <code>WITH (m = 16, ef_construction = 64)</code> + B-Tree on metadata，让 planner 选择最优路径。</li>
+</ol>
+<p>pgvector 从 0.5.0 开始支持 <code>jsonb</code> &#x2F; <code>text</code> 等过滤条件与 HNSW 的协同，但优化器仍可能选择错误计划。建议用 <code>EXPLAIN ANALYZE</code> 观察实际扫描行数和 recall。</p>
+<hr>
+<h2 id="🔗-后端桥接（3-分钟）"><a href="#🔗-后端桥接（3-分钟）" class="headerlink" title="🔗 后端桥接（3 分钟）"></a>🔗 后端桥接（3 分钟）</h2><p>作为 PG &#x2F; Backend 背景工程师，理解 ANN 索引最快的方式是把它映射到熟悉的数据库概念：</p>
+<table>
+<thead>
+<tr>
+<th>数据库概念</th>
+<th>ANN 对应物</th>
+<th>取舍点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B-Tree 精确索引</td>
+<td>Brute-Force &#x2F; Flat</td>
+<td>100% recall，但 O(N) 扫描，无法扩展</td>
+</tr>
+<tr>
+<td>索引扫描 vs 顺序扫描</td>
+<td>HNSW vs IVF</td>
+<td>HNSW 像随机 IO 多但局部性好的索引扫描；IVF 像先按分区剪枝再顺序扫描</td>
+</tr>
+<tr>
+<td>索引 fillfactor &#x2F; 建表参数</td>
+<td>ef_construction &#x2F; M</td>
+<td>建图质量 vs 建索引时间</td>
+</tr>
+<tr>
+<td>查询 LIMIT + ORDER BY</td>
+<td>ef_search &#x2F; top_k</td>
+<td>候选池越大，结果越准，但越慢</td>
+</tr>
+<tr>
+<td>分区表（Partitioning）</td>
+<td>IVF 的 nlist</td>
+<td>桶越细，剪枝越狠，但训练和管理成本越高</td>
+</tr>
+<tr>
+<td>列式压缩（TOAST &#x2F; 字典编码）</td>
+<td>PQ &#x2F; SQ</td>
+<td>空间换时间，读出后需解码</td>
+</tr>
+<tr>
+<td>复合索引</td>
+<td>Filtered ANN index</td>
+<td>条件选择性与索引局部性共同决定效率</td>
+</tr>
+</tbody></table>
+<p>一个特别像 PostgreSQL 的场景是：<strong>pgvector 的 HNSW 索引创建语句</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX <span class="keyword">ON</span> items <span class="keyword">USING</span> hnsw (embedding vector_cosine_ops)</span><br><span class="line"><span class="keyword">WITH</span> (m <span class="operator">=</span> <span class="number">16</span>, ef_construction <span class="operator">=</span> <span class="number">64</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> hnsw.ef_search <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> items</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> $<span class="number">1</span></span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>m</code> 和 <code>ef_construction</code> 是索引级参数，<code>ef_search</code> 是会话级参数。非常像 PostgreSQL 里 <code>shared_buffers</code>、<code>work_mem</code>、<code>effective_cache_size</code> 这套“全局 + 会话 + 查询提示”的分层调参体系。</p>
+<p><strong>关键结论</strong>：不要指望一种 ANN 索引包打天下。就像你不会在所有表上都建 B-Tree 一样，你要根据查询模式、数据分布、写入频率来选择 HNSW、IVF 或量化组合。</p>
+<hr>
+<h2 id="🛠️-微实战（5-分钟）"><a href="#🛠️-微实战（5-分钟）" class="headerlink" title="🛠️ 微实战（5 分钟）"></a>🛠️ 微实战（5 分钟）</h2><h3 id="任务：在-Faiss-中对比-HNSW、IVF-Flat、IVF-PQ-的-recall-10-与-latency"><a href="#任务：在-Faiss-中对比-HNSW、IVF-Flat、IVF-PQ-的-recall-10-与-latency" class="headerlink" title="任务：在 Faiss 中对比 HNSW、IVF-Flat、IVF-PQ 的 recall@10 与 latency"></a>任务：在 Faiss 中对比 HNSW、IVF-Flat、IVF-PQ 的 recall@10 与 latency</h3><h4 id="做什么"><a href="#做什么" class="headerlink" title="做什么"></a>做什么</h4><p>生成 10 万条 128 维向量，分别用三种索引建库，测量在相同 top_k&#x3D;10 下的 recall@10 和单次查询延迟。</p>
+<h4 id="怎么做"><a href="#怎么做" class="headerlink" title="怎么做"></a>怎么做</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> faiss</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">dim = <span class="number">128</span></span><br><span class="line">N = <span class="number">100_000</span></span><br><span class="line">Nq = <span class="number">1000</span></span><br><span class="line">k = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line">xb = np.random.random((N, dim)).astype(<span class="string">&#x27;float32&#x27;</span>)</span><br><span class="line">xq = np.random.random((Nq, dim)).astype(<span class="string">&#x27;float32&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ground truth：暴力精确搜索</span></span><br><span class="line">gt_index = faiss.IndexFlatL2(dim)</span><br><span class="line">gt_index.add(xb)</span><br><span class="line">_, gt_I = gt_index.search(xq, k)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">benchmark</span>(<span class="params">index, name, ef_search=<span class="literal">None</span>, nprobe=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">if</span> ef_search:</span><br><span class="line">        index.hnsw.efSearch = ef_search</span><br><span class="line">    <span class="keyword">if</span> nprobe:</span><br><span class="line">        index.nprobe = nprobe</span><br><span class="line"></span><br><span class="line">    t0 = time.time()</span><br><span class="line">    _, I = index.search(xq, k)</span><br><span class="line">    latency_ms = (time.time() - t0) / Nq * <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">    recalls = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(Nq):</span><br><span class="line">        hits = <span class="built_in">len</span>(<span class="built_in">set</span>(I[i]) &amp; <span class="built_in">set</span>(gt_I[i]))</span><br><span class="line">        recalls.append(hits / k)</span><br><span class="line">    recall = np.mean(recalls)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;name:20s&#125;</span> recall@10=<span class="subst">&#123;recall:<span class="number">.3</span>f&#125;</span>  latency=<span class="subst">&#123;latency_ms:<span class="number">.3</span>f&#125;</span>ms&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># HNSW</span></span><br><span class="line">hnsw = faiss.IndexHNSWFlat(dim, <span class="number">32</span>)</span><br><span class="line">hnsw.hnsw.efConstruction = <span class="number">200</span></span><br><span class="line">hnsw.add(xb)</span><br><span class="line">benchmark(hnsw, <span class="string">&quot;HNSW(M=32)&quot;</span>, ef_search=<span class="number">64</span>)</span><br><span class="line">benchmark(hnsw, <span class="string">&quot;HNSW(M=32)&quot;</span>, ef_search=<span class="number">256</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># IVF-Flat</span></span><br><span class="line">nlist = <span class="number">2048</span></span><br><span class="line">quantizer = faiss.IndexFlatL2(dim)</span><br><span class="line">ivf_flat = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_L2)</span><br><span class="line">ivf_flat.train(xb)</span><br><span class="line">ivf_flat.add(xb)</span><br><span class="line">benchmark(ivf_flat, <span class="string">&quot;IVF-Flat&quot;</span>, nprobe=<span class="number">16</span>)</span><br><span class="line">benchmark(ivf_flat, <span class="string">&quot;IVF-Flat&quot;</span>, nprobe=<span class="number">64</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># IVF-PQ</span></span><br><span class="line">m = <span class="number">16</span>  <span class="comment"># 128 可被 16 整除</span></span><br><span class="line">ivf_pq = faiss.IndexIVFPQ(quantizer, dim, nlist, m, <span class="number">8</span>)</span><br><span class="line">ivf_pq.train(xb)</span><br><span class="line">ivf_pq.add(xb)</span><br><span class="line">benchmark(ivf_pq, <span class="string">&quot;IVF-PQ&quot;</span>, nprobe=<span class="number">32</span>)</span><br><span class="line">benchmark(ivf_pq, <span class="string">&quot;IVF-PQ&quot;</span>, nprobe=<span class="number">128</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="验证标准"><a href="#验证标准" class="headerlink" title="验证标准"></a>验证标准</h4><ol>
+<li>HNSW(M&#x3D;32, ef&#x3D;256) 的 recall@10 应 ≥ 0.98。</li>
+<li>IVF-Flat(nprobe&#x3D;64) 的 recall@10 应 ≥ 0.95。</li>
+<li>IVF-PQ(nprobe&#x3D;128) 的 recall@10 可能降至 0.85 左右，但内存和延迟应显著优于前两者。</li>
+<li>输出中应能清晰看到 <strong>recall 提升伴随延迟增长</strong> 的三角关系。</li>
+</ol>
+<hr>
+<h3 id="任务：给定-recall-与内存上限，反推最优参数组合"><a href="#任务：给定-recall-与内存上限，反推最优参数组合" class="headerlink" title="任务：给定 recall 与内存上限，反推最优参数组合"></a>任务：给定 recall 与内存上限，反推最优参数组合</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><ul>
+<li>数据量 N &#x3D; 500 万，dim &#x3D; 768。</li>
+<li>目标：recall@10 ≥ 0.92，单查询 P99 latency ≤ 5 ms。</li>
+<li>内存上限：索引 + 向量 ≤ 32 GB。</li>
+</ul>
+<h4 id="反推思路"><a href="#反推思路" class="headerlink" title="反推思路"></a>反推思路</h4><ol>
+<li><strong>原始 float32 占用</strong>：5M × 768 × 4 B ≈ 15.4 GB。如果用 Flat 索引，光向量就占 15 GB，剩余给索引的内存很紧张。</li>
+<li><strong>引入 SQ8</strong>：向量压缩到 3.84 GB，但 SQ8 单独做 ANN 误差大，通常配合 HNSW。</li>
+<li><strong>HNSW + SQ8</strong>：pgvector 支持 <code>vector_cosine_ops</code> 的 HNSW，若底层用 float16 或量化实现，内存可大幅下降。</li>
+<li><strong>在 Faiss 中可尝试 <code>IndexHNSWSQ</code></strong>：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">index = faiss.IndexHNSWSQ(dim, faiss.ScalarQuantizer.QT_8bit, <span class="number">32</span>)</span><br><span class="line">index.hnsw.efConstruction = <span class="number">200</span></span><br><span class="line">index.train(xb)</span><br><span class="line">index.add(xb)</span><br><span class="line">index.hnsw.efSearch = <span class="number">128</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>如果内存仍然吃紧，改用 IVF-PQ</strong>：<ul>
+<li>nlist ≈ 4 × sqrt(5M) ≈ 8944，取 8192 或 16384。</li>
+<li>m &#x3D; 96，nbits &#x3D; 8，每向量 96 B，共 480 MB。</li>
+<li>聚类中心和码本额外几百 MB。</li>
+<li>nprobe 从 16 开始递增，直到 recall 达标或延迟超标。</li>
+</ul>
+</li>
+</ol>
+<h4 id="验证标准-1"><a href="#验证标准-1" class="headerlink" title="验证标准"></a>验证标准</h4><ol>
+<li>在测试集上跑 benchmark，确认 recall@10 ≥ 0.92。</li>
+<li>压测 QPS，确认 P99 latency ≤ 5 ms。</li>
+<li>用 <code>faiss.write_index</code> 落盘后检查文件大小，确认 ≤ 32 GB。</li>
+<li>记录最终参数组合，例如：<code>IVF16384,PQ96x8,nprobe=48,recall=0.93,P99=4.2ms,size=28GB</code>。</li>
+</ol>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ol>
+<li><p><strong>磁盘级索引 DiskANN</strong><br>DiskANN 通过压缩向量 + 内存驻留图索引 + SSD 驻留原始向量的分层设计，实现十亿级向量的低延迟检索。2026 年已有多个云厂商向量数据库支持 DiskANN 变体，适合内存预算极低但延迟要求仍高的场景。</p>
+</li>
+<li><p><strong>流式向量更新与 Online ANN</strong><br>传统 HNSW 增量插入虽然可用，但大规模持续写入会导致图结构退化。研究热点转向<strong>可分解图索引（FreshDiskANN、Vamana 增量版）<strong>和</strong>日志结构合并树（LSM-Tree）风格的向量索引</strong>，目标是在高吞吐写入下保持稳定的 recall。</p>
+</li>
+<li><p><strong>稀疏-密集混合检索</strong><br>纯 dense embedding 在关键词精确匹配、长尾实体上容易失效。ColBERT、SPLADE 等稀疏表示与 dense ANN 的混合检索成为 RAG 新方向。工程上需要同时维护两套索引，并通过重排（rerank）融合分数。</p>
+</li>
+<li><p><strong>学习型索引（Learned Index）在 ANN 中的渗透</strong><br>用神经网络预测向量位置、替代 k-means 聚类或图路由节点，理论上可以进一步降低索引尺寸和查询延迟。该方向仍处于研究-工程转化期，但在特定数据分布上已有可观收益。</p>
+</li>
+</ol>
+<hr>
+<h2 id="今日小结"><a href="#今日小结" class="headerlink" title="今日小结"></a>今日小结</h2><ul>
+<li>ANN 索引调优的核心是 <strong>recall &#x2F; latency &#x2F; memory 三角取舍</strong>，业务指标是决策锚点。</li>
+<li>HNSW 适合动态数据和高 recall，关键参数是 <code>M</code>、<code>ef_construction</code>、<code>ef_search</code>。</li>
+<li>IVF 适合静态大数据，关键参数是 <code>nlist</code> &#x2F; <code>nprobe</code>，增量更新能力弱。</li>
+<li>PQ &#x2F; SQ &#x2F; OPQ 用于压缩，能显著降低内存，但要权衡量化误差。</li>
+<li>Metadata filtering 会打乱索引局部性，需要预过滤、后过滤、独立索引或组合索引策略。</li>
+<li>从 PG&#x2F;Backend 视角看，ANN 索引与传统数据库索引的选型逻辑高度相似：理解查询模式、数据分布和写入频率，才能选出最合适的索引结构。</li>
+</ul>
+<p>下一步建议：选一组真实业务 embedding，用 Faiss 跑通 HNSW vs IVF-PQ 的 benchmark，把本节的理论数字变成属于你的 recall-latency 曲线。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/">https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/RAG/">
+                                    <span class="chip bg-color">RAG</span>
+                                </a>
+                            
+                                <a href="/tags/Week-2/">
+                                    <span class="chip bg-color">Week-2</span>
+                                </a>
+                            
+                                <a href="/tags/ANN/">
+                                    <span class="chip bg-color">ANN</span>
+                                </a>
+                            
+                                <a href="/tags/HNSW/">
+                                    <span class="chip bg-color">HNSW</span>
+                                </a>
+                            
+                                <a href="/tags/IVF/">
+                                    <span class="chip bg-color">IVF</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/">
+                                    <span class="chip bg-color">向量量化</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/07/30/week-2-day-4-ann-tuning/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍">
+                        
+                        <span class="card-title">ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            今日主题ANN 索引调优与工程选型。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-30
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/Week-2/">
+                        <span class="chip bg-color">Week-2</span>
+                    </a>
+                    
+                    <a href="/tags/ANN/">
+                        <span class="chip bg-color">ANN</span>
+                    </a>
+                    
+                    <a href="/tags/HNSW/">
+                        <span class="chip bg-color">HNSW</span>
+                    </a>
+                    
+                    <a href="/tags/IVF/">
+                        <span class="chip bg-color">IVF</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/">
+                        <span class="chip bg-color">向量量化</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/30/week4-day10-tool-use-and-planning-patterns/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Agent 的规划与工具调用（01）：从 Function Calling 到工具编排">
+                        
+                        <span class="card-title">Agent 的规划与工具调用（01）：从 Function Calling 到工具编排</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-30
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Orchestration/">
+                        <span class="chip bg-color">Agent-Orchestration</span>
+                    </a>
+                    
+                    <a href="/tags/Tool-Use/">
+                        <span class="chip bg-color">Tool-Use</span>
+                    </a>
+                    
+                    <a href="/tags/Function-Calling/">
+                        <span class="chip bg-color">Function-Calling</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Planning/">
+                        <span class="chip bg-color">Planning</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">245.7k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

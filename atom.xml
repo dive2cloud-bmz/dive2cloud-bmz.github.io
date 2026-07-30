@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-30T03:05:18.794Z</updated>
+  <updated>2026-07-30T13:33:00.318Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,37 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/</id>
+    <published>2026-07-30T13:00:43.000Z</published>
+    <updated>2026-07-30T13:33:00.318Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;今日主题&quot;&gt;&lt;a href=&quot;#今日主题&quot; class=&quot;headerlink&quot; title=&quot;今日主题&quot;&gt;&lt;/a&gt;今日主题&lt;/h2&gt;&lt;p&gt;ANN 索引调优与工程选型。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
+    
+    <category term="ANN" scheme="https://dive2cloud-bmz.github.io/tags/ANN/"/>
+    
+    <category term="HNSW" scheme="https://dive2cloud-bmz.github.io/tags/HNSW/"/>
+    
+    <category term="IVF" scheme="https://dive2cloud-bmz.github.io/tags/IVF/"/>
+    
+    <category term="向量量化" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 的规划与工具调用（01）：从 Function Calling 到工具编排</title>
@@ -39,11 +70,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -490,15 +521,15 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
-    
-    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
-    
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
     <category term="LLM-Gateway" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Gateway/"/>
     
+    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
+    
     <category term="Reliability" scheme="https://dive2cloud-bmz.github.io/tags/Reliability/"/>
+    
+    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
     
   </entry>
   
@@ -641,11 +672,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
-    
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
@@ -684,43 +715,6 @@
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
     
     <category term="LLM-Safety" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Safety/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 也会&quot;崩&quot;：错误处理、重试与降级策略实战</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/16/week2-day7-agent-error-handling-retry-fallback-strategies/</id>
-    <published>2026-07-16T03:00:47.000Z</published>
-    <updated>2026-07-16T03:02:51.547Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;Agent-也会”崩”：错误处理、重试与降级策略实战&quot;&gt;&lt;a href=&quot;#Agent-也会”崩”：错误处理、重试与降级策略实战&quot; class=&quot;headerlink&quot; title=&quot;Agent 也会”崩”：错误处理、重试与降级策略实战&quot;&gt;&lt;/a&gt;Agent</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
-    
-    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
-    
-    <category term="Resilience" scheme="https://dive2cloud-bmz.github.io/tags/Resilience/"/>
-    
-    <category term="Retry" scheme="https://dive2cloud-bmz.github.io/tags/Retry/"/>
-    
-    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
-    
-    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
     
   </entry>
   
