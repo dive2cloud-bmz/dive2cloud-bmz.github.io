@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图, BMZ BLOG">
-    <meta name="description" content="智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图🚀 核心洞察前两篇我们厘清了 Agent 为什么需要记忆，也拿到了一张“时间跨度 × 认知类型 × 生命周期”的三维分类地图。今天进入工程落地层">
+    <meta name="keywords" content="Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV, BMZ BLOG">
+    <meta name="description" content="Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV🚀 核心洞察前两篇我们厘清了 Agent 为什么需要记忆，也拿到了一张“时间跨度 × 认知类型 × 生命周期”的三维分类地图。今天进入工程落地层：这些不同">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图 | BMZ BLOG</title>
+    <title>Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV | BMZ BLOG</title>
     <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
     
 
@@ -289,12 +289,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图</h1>
+                    <h1 class="description center-align post-title">Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV</h1>
                 </div>
             </div>
         </div>
@@ -370,21 +370,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2026-07-28
+                    2026-07-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.7k
+                    3.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    15 分
+                    14 分
                 </div>
                 
 
@@ -404,7 +404,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="智能体记忆-Day-3：技术承载与架构模式——上下文拼接、向量库、知识图谱与-KV-的选型地图"><a href="#智能体记忆-Day-3：技术承载与架构模式——上下文拼接、向量库、知识图谱与-KV-的选型地图" class="headerlink" title="智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图"></a>智能体记忆 Day 3：技术承载与架构模式——上下文拼接、向量库、知识图谱与 KV 的选型地图</h1><h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>前两篇我们厘清了 Agent 为什么需要记忆，也拿到了一张“时间跨度 × 认知类型 × 生命周期”的三维分类地图。今天进入工程落地层：<strong>这些不同类别的记忆，到底该放在哪种存储里？</strong></p>
+                <h1 id="Agent-记忆系列（03）·-存储架构与选型：上下文拼接、向量库、知识图谱与-KV"><a href="#Agent-记忆系列（03）·-存储架构与选型：上下文拼接、向量库、知识图谱与-KV" class="headerlink" title="Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV"></a>Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV</h1><h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>前两篇我们厘清了 Agent 为什么需要记忆，也拿到了一张“时间跨度 × 认知类型 × 生命周期”的三维分类地图。今天进入工程落地层：<strong>这些不同类别的记忆，到底该放在哪种存储里？</strong></p>
 <p>作为 RDS PostgreSQL 后端工程师，我对“数据该放哪”有本能的敏感。真实业务里从来没有 silver bullet：热数据进 Redis、结构化数据进关系库、搜索日志进 Elasticsearch、图关系进图数据库——这叫 polyglot persistence。Agent 记忆也一样：工作记忆像连接级会话状态，长期语义记忆像一张带语义索引的宽表，情景记忆像时序日志，知识图谱像外键关系图，KV 记忆像 Redis 缓存。</p>
 <p>今天的核心洞察是：<strong>Agent 记忆系统本质上是多种存储介质的组合检索层，而不是一个单一的“向量数据库”。</strong> 选对承载介质，再设计好“写入 → 存储 → 检索 → 巩固&#x2F;遗忘”的流水线，才是可落地的长期记忆。</p>
 <h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-上下文拼接：最朴素的“工作记忆”"><a href="#1-上下文拼接：最朴素的“工作记忆”" class="headerlink" title="1. 上下文拼接：最朴素的“工作记忆”"></a>1. 上下文拼接：最朴素的“工作记忆”</h3><p>没有任何外部存储时，Agent 能依赖的只有当前上下文窗口。把历史对话直接拼进 Prompt，是最先被想到、也最容易踩坑的方案。</p>
@@ -428,8 +428,7 @@
 </ul>
 <p><strong>代表工具</strong>：pgvector、Chroma、Milvus、Qdrant、Weaviate、Pinecone。</p>
 <p><strong>架构流程</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[用户输入] --&gt; B[Embedding 模型]</span><br><span class="line">    B --&gt; C[向量数据库]</span><br><span class="line">    D[历史记忆文本] --&gt; B</span><br><span class="line">    B --&gt; C</span><br><span class="line">    C --&gt; E[Top-K 相似记忆]</span><br><span class="line">    E --&gt; F[拼接 Prompt]</span><br><span class="line">    F --&gt; G[LLM 生成回复]</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day3-1-vector-flow.png" alt="向量记忆架构流程：用户输入与历史记忆经 Embedding 写入向量库，检索 Top-K 后拼接 Prompt 交给 LLM"></p>
 <p><strong>关键工程决策</strong>：</p>
 <ul>
 <li><strong>Embedding 模型选型</strong>：OpenAI <code>text-embedding-3-small</code> 便宜够用；若对中文要求高，可考虑 BGE-M3、Jina Embeddings v3。</li>
@@ -446,8 +445,7 @@
 <li>能显式表达“事实”而非“相似文本”</li>
 </ul>
 <p><strong>代表工具</strong>：Neo4j、NetworkX、Cognee、GraphRAG（Microsoft）。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[对话文本] --&gt; B[LLM 抽取三元组]</span><br><span class="line">    B --&gt; C[(知识图谱)]</span><br><span class="line">    C --&gt; D[Graph Query / 向量混合检索]</span><br><span class="line">    D --&gt; E[Prompt 增强]</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day3-2-knowledge-graph.png" alt="知识图谱记忆流程：对话文本经 LLM 抽取三元组写入知识图谱，再通过图查询&#x2F;向量混合检索增强 Prompt"></p>
 <p>下面是一个用 NetworkX 维护最小知识图谱的示例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> networkx <span class="keyword">as</span> nx</span><br><span class="line"></span><br><span class="line">kg = nx.DiGraph()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_fact</span>(<span class="params">subject: <span class="built_in">str</span>, relation: <span class="built_in">str</span>, obj: <span class="built_in">str</span>, source: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    kg.add_edge(subject, obj, relation=relation, source=source)</span><br><span class="line"></span><br><span class="line">add_fact(<span class="string">&quot;张三&quot;</span>, <span class="string">&quot;职业&quot;</span>, <span class="string">&quot;后端工程师&quot;</span>, <span class="string">&quot;自我介绍&quot;</span>)</span><br><span class="line">add_fact(<span class="string">&quot;张三&quot;</span>, <span class="string">&quot;专精&quot;</span>, <span class="string">&quot;PostgreSQL&quot;</span>, <span class="string">&quot;自我介绍&quot;</span>)</span><br><span class="line">add_fact(<span class="string">&quot;张三&quot;</span>, <span class="string">&quot;学习目标&quot;</span>, <span class="string">&quot;AI 应用工程师&quot;</span>, <span class="string">&quot;学习规划&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多跳查询示例：找出张三的所有目标</span></span><br><span class="line"><span class="keyword">for</span> _, target, data <span class="keyword">in</span> kg.out_edges(<span class="string">&quot;张三&quot;</span>, data=<span class="literal">True</span>):</span><br><span class="line">    <span class="keyword">if</span> data[<span class="string">&quot;relation&quot;</span>] == <span class="string">&quot;学习目标&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;张三的目标：<span class="subst">&#123;target&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 
@@ -463,8 +461,7 @@
 
 <p>KV 记忆常被低估。很多 Agent 系统明明只需要“记住用户姓什么”，却硬生生把整段自我介绍 embedding 进向量库，每次检索都触发一次相似度计算。识别出“需要精确查询” vs “需要语义检索”的记忆，是设计高效记忆系统的第一步。</p>
 <h3 id="5-混合架构：为记忆分层"><a href="#5-混合架构：为记忆分层" class="headerlink" title="5. 混合架构：为记忆分层"></a>5. 混合架构：为记忆分层</h3><p>真实系统不会只选一种介质，而是根据记忆的认知类型和访问模式分层组合。下面是一个常见的分层模型：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    subgraph 工作记忆</span><br><span class="line">        A1[当前 Prompt]</span><br><span class="line">        A2[本轮工具结果]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph 短期持久化</span><br><span class="line">        B1[KV 记忆&lt;br/&gt;用户偏好/任务状态]</span><br><span class="line">        B2[最近 N 轮对话&lt;br/&gt;Redis / JSONB]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph 长期记忆</span><br><span class="line">        C1[情景记忆&lt;br/&gt;向量库]</span><br><span class="line">        C2[语义记忆&lt;br/&gt;知识图谱 + KV]</span><br><span class="line">        C3[程序记忆&lt;br/&gt;Prompt 模板 / Tool 注册表]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    A1 --&gt; B1</span><br><span class="line">    A1 --&gt; B2</span><br><span class="line">    A1 --&gt; C1</span><br><span class="line">    A1 --&gt; C2</span><br><span class="line">    A1 --&gt; C3</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day3-3-layered-memory.png" alt="分层记忆架构：工作记忆经当前 Prompt 分别写入短期持久化（KV&#x2F;Redis）与长期记忆（向量库&#x2F;知识图谱&#x2F;程序记忆）"></p>
 <p><strong>各层职责</strong>：</p>
 <ul>
 <li><strong>工作记忆</strong>：只放当前决策必须的信息，生命周期一次 LLM 调用。</li>
@@ -727,9 +724,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="精读 CoALA：用认知科学给语言智能体画一张「记忆—动作—决策」地图">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="Agent 记忆系列（04）· 精读 CoALA：用认知科学画出「记忆—动作—决策」地图">
                         
-                        <span class="card-title">精读 CoALA：用认知科学给语言智能体画一张「记忆—动作—决策」地图</span>
+                        <span class="card-title">Agent 记忆系列（04）· 精读 CoALA：用认知科学画出「记忆—动作—决策」地图</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -792,9 +789,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="从零认识 Agent 记忆（二）：一张分类地图，看懂记忆的三个正交维度">
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="Agent 记忆系列（02）· 一张分类地图，看懂记忆的三个正交维度">
                         
-                        <span class="card-title">从零认识 Agent 记忆（二）：一张分类地图，看懂记忆的三个正交维度</span>
+                        <span class="card-title">Agent 记忆系列（02）· 一张分类地图，看懂记忆的三个正交维度</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1017,7 +1014,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">226.1k</span>
+                        class="white-color">242k</span>
             
             
             

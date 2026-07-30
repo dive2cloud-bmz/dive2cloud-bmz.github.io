@@ -4,9 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统, BMZ BLOG">
-    <meta name="description" content="Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统
-本篇是「Agent Memory」系列第 6 篇。前 5 篇分别讨论了：为什么无状态 LLM 会失败、记忆分类学、存储架构、CoALA 论文精读，以及近期技术雷达。今天我们">
+    <meta name="keywords" content="Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统, BMZ BLOG">
+    <meta name="description" content="Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统
+本篇是「Agent Memory」系列第 6 篇。前 5 篇分别讨论了：为什么无状态 LLM 会失败、记忆分类学、存储架构、CoALA 论文精读，以及近期技术">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -18,7 +18,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统 | BMZ BLOG</title>
+    <title>Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统 | BMZ BLOG</title>
     <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
     
 
@@ -290,12 +290,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统</h1>
+                    <h1 class="description center-align post-title">Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统</h1>
                 </div>
             </div>
         </div>
@@ -378,14 +378,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.5k
+                    5.4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    22 分
+                    21 分
                 </div>
                 
 
@@ -405,7 +405,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Agent-记忆的写入与检索策略：像设计数据库索引一样设计记忆系统"><a href="#Agent-记忆的写入与检索策略：像设计数据库索引一样设计记忆系统" class="headerlink" title="Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统"></a>Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统</h1><blockquote>
+                <h1 id="Agent-记忆系列（06）·-写入与检索策略：像设计数据库索引一样设计记忆系统"><a href="#Agent-记忆系列（06）·-写入与检索策略：像设计数据库索引一样设计记忆系统" class="headerlink" title="Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统"></a>Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统</h1><blockquote>
 <p>本篇是「Agent Memory」系列第 6 篇。前 5 篇分别讨论了：为什么无状态 LLM 会失败、记忆分类学、存储架构、CoALA 论文精读，以及近期技术雷达。今天我们聚焦记忆的<strong>写入路径</strong>与<strong>检索策略</strong>——这是把记忆从”能跑”变成”好用”的分水岭。</p>
 </blockquote>
 <hr>
@@ -423,8 +423,7 @@
 <p>今天的目标就是建立这个子系统的完整直觉，并给出一套可运行的最小实现。</p>
 <hr>
 <h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-记忆生命周期：从感知到使用"><a href="#1-记忆生命周期：从感知到使用" class="headerlink" title="1. 记忆生命周期：从感知到使用"></a>1. 记忆生命周期：从感知到使用</h3><p>Agent 记忆不是”存一句话”那么简单。一个完整的记忆生命周期包含五个阶段：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[感知 Perceive] --&gt; B[编码 Encode]</span><br><span class="line">    B --&gt; C[存储 Store]</span><br><span class="line">    C --&gt; D[检索 Retrieve]</span><br><span class="line">    D --&gt; E[使用 Use]</span><br><span class="line">    E --&gt;|反馈| A</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day6-1-lifecycle.png" alt="记忆生命周期：感知 → 编码 → 存储 → 检索 → 使用，并将使用结果反馈回感知形成闭环"></p>
 <ul>
 <li><strong>感知</strong>：从环境输入（用户消息、工具返回值、系统事件）中捕获原始信号。</li>
 <li><strong>编码</strong>：把原始信号压缩成语义向量、结构化事实、摘要或情感标签。</li>
@@ -502,8 +501,7 @@
 <li><strong>温路径准同步</strong>：把事件追加到本地 WAL，确认落盘后再返回。</li>
 <li><strong>冷路径异步处理</strong>：后台 worker 读取 WAL，生成摘要、 embedding、写入向量库。</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户输入] --&gt; B&#123;是否关键事实?&#125;</span><br><span class="line">    B --&gt;|是| C[同步写入本地 KV]</span><br><span class="line">    B --&gt;|否| D[追加到本地 WAL]</span><br><span class="line">    C --&gt; E[立即返回响应]</span><br><span class="line">    D --&gt; E</span><br><span class="line">    E --&gt; F[后台 Worker]</span><br><span class="line">    F --&gt; G[总结/Embedding]</span><br><span class="line">    G --&gt; H[写入向量库]</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day6-2-hybrid-write.png" alt="混合写入策略：关键事实同步写入本地 KV，其余追加本地 WAL，立即返回响应后由后台 Worker 总结、Embedding 并写入向量库"></p>
 <p>这种分层让 Agent 既能在毫秒级响应用户，又能把长期记忆慢慢沉淀到向量库中。</p>
 <hr>
 <h3 id="3-检索触发条件：什么时候去查记忆？"><a href="#3-检索触发条件：什么时候去查记忆？" class="headerlink" title="3. 检索触发条件：什么时候去查记忆？"></a>3. 检索触发条件：什么时候去查记忆？</h3><p>写入只是第一步。更微妙的问题是：<strong>什么时候触发检索？</strong> 检索不是免费的：它涉及向量搜索、重排序、上下文拼接，都会增加延迟和 token 消耗。</p>
@@ -567,8 +565,7 @@
 <li>对语义相近但上下文不同的片段容易混淆。</li>
 </ul>
 <p>多路召回（Hybrid Retrieval）可以显著改善。常见组合：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    Q[Query] --&gt; V[向量召回&lt;br/&gt;语义相似]</span><br><span class="line">    Q --&gt; K[关键词召回&lt;br/&gt;BM25/TF-IDF]</span><br><span class="line">    Q --&gt; T[时间衰减召回&lt;br/&gt;最近优先]</span><br><span class="line">    V --&gt; R[Reranker 融合]</span><br><span class="line">    K --&gt; R</span><br><span class="line">    T --&gt; R</span><br><span class="line">    R --&gt; F[最终 Top-K]</span><br></pre></td></tr></table></figure>
-
+<p><img src="/medias/images/mermaid-day6-3-hybrid-retrieval.png" alt="多路召回：Query 分别经向量召回、关键词召回、时间衰减召回，再由 Reranker 融合得到最终 Top-K"></p>
 <ul>
 <li><strong>向量召回</strong>：负责语义相关。</li>
 <li><strong>关键词召回</strong>：负责精确匹配实体、ID、术语。</li>
@@ -837,18 +834,17 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2026/07/29/week4-day6-agent-memory-write-and-retrieval-strategy/">
+                <a href="/2026/07/29/week4-day7-agent-memory-evaluation-and-tuning/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉">
                         
-                        <span class="card-title">Agent 记忆的写入与检索策略：像设计数据库索引一样设计记忆系统</span>
+                        <span class="card-title">Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -858,9 +854,9 @@
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -873,7 +869,6 @@
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -881,8 +876,8 @@
                         <span class="chip bg-color">AI-Learning</span>
                     </a>
                     
-                    <a href="/tags/RAG/">
-                        <span class="chip bg-color">RAG</span>
+                    <a href="/tags/Evaluation/">
+                        <span class="chip bg-color">Evaluation</span>
                     </a>
                     
                     <a href="/tags/Week-4/">
@@ -893,12 +888,12 @@
                         <span class="chip bg-color">Agent-Memory</span>
                     </a>
                     
-                    <a href="/tags/Memory-Architecture/">
-                        <span class="chip bg-color">Memory-Architecture</span>
+                    <a href="/tags/Recall/">
+                        <span class="chip bg-color">Recall</span>
                     </a>
                     
-                    <a href="/tags/Recall-Optimization/">
-                        <span class="chip bg-color">Recall-Optimization</span>
+                    <a href="/tags/A-B-Testing/">
+                        <span class="chip bg-color">A-B-Testing</span>
                     </a>
                     
                 </div>
@@ -916,9 +911,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Agent Memory 技术雷达：从 CoALA 论文到产业落地的三年演进史">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="Agent 记忆系列（05）· 技术雷达：从 CoALA 论文到产业落地的三年演进">
                         
-                        <span class="card-title">Agent Memory 技术雷达：从 CoALA 论文到产业落地的三年演进史</span>
+                        <span class="card-title">Agent 记忆系列（05）· 技术雷达：从 CoALA 论文到产业落地的三年演进</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1149,7 +1144,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">226.1k</span>
+                        class="white-color">242k</span>
             
             
             

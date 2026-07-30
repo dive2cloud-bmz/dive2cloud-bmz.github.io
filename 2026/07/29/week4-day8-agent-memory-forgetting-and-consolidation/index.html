@@ -1,0 +1,1291 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计, BMZ BLOG">
+    <meta name="description" content="Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计
+本篇是「Agent 记忆系列」第 8 篇。前面 7 篇我们一直在解决「怎么记住」——存储、写入、检索、评估。今天我们反过来问一个反直觉的问题：什么时候">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Agent-Memory/">
+                                <span class="chip bg-color">Agent-Memory</span>
+                            </a>
+                        
+                            <a href="/tags/Forgetting/">
+                                <span class="chip bg-color">Forgetting</span>
+                            </a>
+                        
+                            <a href="/tags/Consolidation/">
+                                <span class="chip bg-color">Consolidation</span>
+                            </a>
+                        
+                            <a href="/tags/TTL/">
+                                <span class="chip bg-color">TTL</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-29
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-29
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.5k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    13 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Agent-记忆系列（08）·-遗忘与巩固：为什么「永不遗忘」的-Agent-是糟糕设计"><a href="#Agent-记忆系列（08）·-遗忘与巩固：为什么「永不遗忘」的-Agent-是糟糕设计" class="headerlink" title="Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计"></a>Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计</h1><blockquote>
+<p>本篇是「Agent 记忆系列」第 8 篇。前面 7 篇我们一直在解决「怎么记住」——存储、写入、检索、评估。今天我们反过来问一个反直觉的问题：<strong>什么时候应该主动忘掉？</strong> 一个把所有东西都记住、永不删除的 Agent，看起来很强大，实际上会越来越慢、越来越蠢、越来越危险。遗忘不是记忆系统的 bug，而是它的核心 feature。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：无限增长的记忆库，等于没有索引的日志表"><a href="#🚀-核心洞察：无限增长的记忆库，等于没有索引的日志表" class="headerlink" title="🚀 核心洞察：无限增长的记忆库，等于没有索引的日志表"></a>🚀 核心洞察：无限增长的记忆库，等于没有索引的日志表</h2><p>作为 PostgreSQL 后端工程师，我们对「无限增长的表」有本能的警惕。一张只写不删、没有分区、没有归档策略的日志表，会带来什么？</p>
+<ul>
+<li>索引越来越大，B-Tree 越来越深，查询越来越慢。</li>
+<li>表膨胀（bloat）严重，<code>VACUUM</code> 追不上写入。</li>
+<li>冷热数据混在一起，热点查询被大量冷数据拖累。</li>
+<li>磁盘迟早写满，某天凌晨把整个实例拖垮。</li>
+</ul>
+<p>Agent 记忆系统面对的是同一个问题，只是换了张皮。如果每一轮对话、每一个观察、每一条中间推理都被永久写入向量库，你会得到：</p>
+<ul>
+<li><strong>检索精度下降</strong>：候选集里塞满了三个月前早已过时的信息，Top-K 召回的相关性被稀释。</li>
+<li><strong>矛盾与陈旧</strong>：用户上周说「我搬到上海了」，但库里还留着半年前「我在北京」的记忆，检索时两条都命中，Agent 精神分裂。</li>
+<li><strong>成本爆炸</strong>：向量库规模线性增长，存储、索引重建、检索延迟全部跟着涨。</li>
+<li><strong>隐私风险</strong>：本该在会话结束后清除的敏感信息，永久留存，成了合规隐患。</li>
+</ul>
+<p>所以，好的记忆系统一定同时是一个「好的遗忘系统」。人脑就是最好的证明：我们记不住上周三午饭吃了什么，但记得住三年前换工作的决定——<strong>遗忘是为了给重要的事情腾出信噪比</strong>。</p>
+<hr>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-遗忘的三种机制：TTL、衰减、容量淘汰"><a href="#1-遗忘的三种机制：TTL、衰减、容量淘汰" class="headerlink" title="1. 遗忘的三种机制：TTL、衰减、容量淘汰"></a>1. 遗忘的三种机制：TTL、衰减、容量淘汰</h3><p>遗忘不是「随便删」，而是有策略的资源管理。工程上主要有三种机制，可以组合使用。</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>触发方式</th>
+<th>PG 类比</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TTL 过期</strong></td>
+<td>到达固定生存时间即失效</td>
+<td>Redis <code>EXPIRE</code> &#x2F; 分区表按时间 <code>DROP PARTITION</code></td>
+<td>工作记忆、会话上下文、临时缓存</td>
+</tr>
+<tr>
+<td><strong>时间衰减</strong></td>
+<td>相关性随时间指数下降，不硬删</td>
+<td>排序时对 <code>age</code> 做惩罚权重</td>
+<td>长期记忆的软性降权</td>
+</tr>
+<tr>
+<td><strong>容量淘汰</strong></td>
+<td>库满时按策略驱逐</td>
+<td>LRU&#x2F;LFU 缓存淘汰</td>
+<td>固定预算的短期记忆缓冲区</td>
+</tr>
+</tbody></table>
+<p><strong>TTL 过期</strong>最简单直接：写入时打一个 <code>expire_at</code> 时间戳，检索时过滤掉、后台定期物理清除。工作记忆天然适合 TTL——一次任务完成，中间的临时观察就没必要留了。</p>
+<p><strong>时间衰减</strong>更柔和，它不删除记忆，而是在检索打分时给旧记忆打折。经典公式是指数衰减：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">score = relevance * exp(-λ * age_in_days)</span><br></pre></td></tr></table></figure>
+
+<p><code>λ</code> 是衰减率。λ 越大，遗忘越快。这对应人脑的「遗忘曲线」——艾宾浩斯早在 1885 年就发现记忆强度随时间指数下降。</p>
+<p><strong>容量淘汰</strong>用于固定大小的缓冲区，比如「只保留最近 20 轮对话的工作记忆」。满了就淘汰。LRU（最近最少使用）淘汰最久没被访问的，LFU（最不经常使用）淘汰访问次数最少的——和数据库缓冲池的淘汰算法一模一样。</p>
+<h3 id="2-巩固：从短期记忆到长期记忆的「转正」"><a href="#2-巩固：从短期记忆到长期记忆的「转正」" class="headerlink" title="2. 巩固：从短期记忆到长期记忆的「转正」"></a>2. 巩固：从短期记忆到长期记忆的「转正」</h3><p>遗忘只是硬币的一面，另一面是<strong>巩固（Consolidation）</strong>——把值得长期保留的信息，从易失的短期记忆「提炼、压缩、转正」到持久的长期记忆。</p>
+<p>这直接对应神经科学里的「记忆巩固」：人在睡眠时，海马体（短期）会把白天的经历重放，重要的部分固化到大脑皮层（长期）。Agent 的巩固过程几乎是同构的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">短期缓冲区（原始对话/观察）</span><br><span class="line">      │  后台巩固任务（类似睡眠重放）</span><br><span class="line">      ▼</span><br><span class="line">  LLM 摘要 + 抽取关键事实</span><br><span class="line">      │  去重、合并、解决冲突</span><br><span class="line">      ▼</span><br><span class="line">长期记忆（结构化事实 / 向量化摘要）</span><br></pre></td></tr></table></figure>
+
+<p>巩固的核心动作有三个：</p>
+<ul>
+<li><strong>摘要压缩</strong>：把 50 轮啰嗦对话压成 5 条关键事实。省 token，也省检索噪声。</li>
+<li><strong>事实抽取</strong>：从自然语言里抽出结构化三元组，如 <code>(用户, 居住地, 上海)</code>，存进知识图谱或事实表。</li>
+<li><strong>冲突消解</strong>：新事实和旧事实矛盾时（北京 → 上海），要么更新覆盖，要么保留时间线（valid_from &#x2F; valid_to）。</li>
+</ul>
+<p>这里有个关键设计选择：<strong>巩固应该异步做</strong>。就像 PG 的 <code>CHECKPOINT</code> 不会卡在用户事务的关键路径上，巩固任务也应该在后台批处理，不能拖慢 Agent 的实时响应。</p>
+<h3 id="3-更新与冲突消解：记忆不是-append-only"><a href="#3-更新与冲突消解：记忆不是-append-only" class="headerlink" title="3. 更新与冲突消解：记忆不是 append-only"></a>3. 更新与冲突消解：记忆不是 append-only</h3><p>新手最容易犯的错，是把记忆库当成 append-only 的日志——只加不改。但真实世界的信息会变：用户改了偏好、换了工作、更新了目标。如果只追加不更新，记忆库很快就充满自相矛盾的「历史化石」。</p>
+<p>三种冲突消解策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>做法</th>
+<th>PG 类比</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>覆盖更新</strong></td>
+<td>新事实直接替换旧值</td>
+<td><code>UPDATE ... SET</code></td>
+<td>丢失历史，无法追溯</td>
+</tr>
+<tr>
+<td><strong>时间线版本</strong></td>
+<td>旧记录标记失效，新记录带 <code>valid_from</code></td>
+<td>双时态表 &#x2F; SCD Type 2</td>
+<td>存储更大，查询更复杂</td>
+</tr>
+<tr>
+<td><strong>软性降权</strong></td>
+<td>不删旧的，靠时间衰减自然沉底</td>
+<td>排序惩罚</td>
+<td>短期内仍可能命中旧值</td>
+</tr>
+</tbody></table>
+<p>生产系统里，对「事实型记忆」（居住地、偏好）推荐时间线版本，既能回答「现在住哪」也能回答「以前住哪」；对「体验型记忆」（闲聊）用软性降权就够了。</p>
+<h3 id="4-什么绝对不能忘：记忆的分级保护"><a href="#4-什么绝对不能忘：记忆的分级保护" class="headerlink" title="4. 什么绝对不能忘：记忆的分级保护"></a>4. 什么绝对不能忘：记忆的分级保护</h3><p>遗忘要有边界。有些记忆是「高压线」，无论多旧都不能自动淘汰：</p>
+<ul>
+<li><strong>用户显式要求记住的</strong>（”记住我对花生过敏”）——这类是安全&#x2F;健康红线。</li>
+<li><strong>系统级约束与偏好</strong>（”永远用中文回复”）——影响所有后续交互。</li>
+<li><strong>合规要求保留的审计记录</strong>——受法律法规约束。</li>
+</ul>
+<p>工程上给每条记忆打一个 <code>pinned</code> 或 <code>priority</code> 标记，遗忘策略跳过高优先级项。这就像数据库里有些配置表，无论如何清理日志都绝对不能碰。</p>
+<hr>
+<h2 id="🔗-后端桥接：用-PostgreSQL-的数据生命周期理解记忆遗忘"><a href="#🔗-后端桥接：用-PostgreSQL-的数据生命周期理解记忆遗忘" class="headerlink" title="🔗 后端桥接：用 PostgreSQL 的数据生命周期理解记忆遗忘"></a>🔗 后端桥接：用 PostgreSQL 的数据生命周期理解记忆遗忘</h2><p>这一整篇的概念，几乎都能在 PG 的数据生命周期管理里找到镜像。</p>
+<table>
+<thead>
+<tr>
+<th>Agent 记忆概念</th>
+<th>PostgreSQL 对应</th>
+<th>共同的本质</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TTL 过期</td>
+<td>分区表 <code>DROP PARTITION</code> &#x2F; <code>pg_cron</code> 定时清理</td>
+<td>按时间批量淘汰冷数据</td>
+</tr>
+<tr>
+<td>时间衰减打分</td>
+<td>查询里 <code>ORDER BY relevance / age</code></td>
+<td>让新数据排序占优</td>
+</tr>
+<tr>
+<td>容量淘汰（LRU&#x2F;LFU）</td>
+<td><code>shared_buffers</code> 缓冲池淘汰</td>
+<td>固定预算下的驱逐</td>
+</tr>
+<tr>
+<td>巩固（摘要转正）</td>
+<td>物化视图 &#x2F; ETL 汇总到数仓</td>
+<td>明细压缩为聚合</td>
+</tr>
+<tr>
+<td>冲突消解-时间线</td>
+<td>双时态表 &#x2F; SCD Type 2</td>
+<td><code>valid_from</code> &#x2F; <code>valid_to</code></td>
+</tr>
+<tr>
+<td>后台异步巩固</td>
+<td><code>CHECKPOINT</code> &#x2F; <code>autovacuum</code></td>
+<td>不阻塞前台事务</td>
+</tr>
+<tr>
+<td>表膨胀清理</td>
+<td><code>VACUUM</code> &#x2F; <code>pg_repack</code></td>
+<td>回收无效数据空间</td>
+</tr>
+<tr>
+<td>pinned 高优先级</td>
+<td>配置表 &#x2F; 约束不可删</td>
+<td>关键数据的保护</td>
+</tr>
+</tbody></table>
+<p><strong>一个特别贴切的类比：巩固 ≈ autovacuum + 物化视图。</strong> <code>autovacuum</code> 在后台默默回收死元组、更新统计信息，让查询计划保持锐利；物化视图把明细汇总成可快速查询的聚合。记忆巩固做的是同一件事——后台默默把原始对话「回收+汇总」成精炼事实，让检索保持又快又准。你不会想关掉 autovacuum，同理，你也不该让 Agent「永不巩固」。</p>
+<hr>
+<h2 id="🛠️-微实战：一个带遗忘与巩固的记忆管理器"><a href="#🛠️-微实战：一个带遗忘与巩固的记忆管理器" class="headerlink" title="🛠️ 微实战：一个带遗忘与巩固的记忆管理器"></a>🛠️ 微实战：一个带遗忘与巩固的记忆管理器</h2><p>下面是一个可运行的最小实现，演示 TTL 过期、时间衰减打分、容量淘汰和后台巩固四件事。用标准库即可运行，无需外部依赖。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> heapq</span><br><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MemoryItem</span>:</span><br><span class="line">    content: <span class="built_in">str</span></span><br><span class="line">    created_at: <span class="built_in">float</span></span><br><span class="line">    last_access: <span class="built_in">float</span></span><br><span class="line">    access_count: <span class="built_in">int</span> = <span class="number">0</span></span><br><span class="line">    ttl: <span class="type">Optional</span>[<span class="built_in">float</span>] = <span class="literal">None</span>          <span class="comment"># 秒；None 表示不过期</span></span><br><span class="line">    pinned: <span class="built_in">bool</span> = <span class="literal">False</span>                 <span class="comment"># 高优先级，遗忘策略跳过</span></span><br><span class="line">    valid_until: <span class="type">Optional</span>[<span class="built_in">float</span>] = <span class="literal">None</span>  <span class="comment"># 时间线版本：被新事实取代的时刻</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MemoryManager</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, capacity: <span class="built_in">int</span> = <span class="number">100</span>, decay_lambda: <span class="built_in">float</span> = <span class="number">0.05</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.capacity = capacity          <span class="comment"># 容量上限（触发淘汰）</span></span><br><span class="line">        <span class="variable language_">self</span>.decay_lambda = decay_lambda  <span class="comment"># 时间衰减率，越大忘得越快</span></span><br><span class="line">        <span class="variable language_">self</span>.items: <span class="built_in">list</span>[MemoryItem] = []</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- 写入 ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">self, content, ttl=<span class="literal">None</span>, pinned=<span class="literal">False</span></span>):</span><br><span class="line">        now = time.time()</span><br><span class="line">        item = MemoryItem(content, now, now, ttl=ttl, pinned=pinned)</span><br><span class="line">        <span class="variable language_">self</span>.items.append(item)</span><br><span class="line">        <span class="variable language_">self</span>._evict_if_needed()</span><br><span class="line">        <span class="keyword">return</span> item</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- TTL 过期清理（类似 pg_cron 定时任务） ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">expire_ttl</span>(<span class="params">self</span>):</span><br><span class="line">        now = time.time()</span><br><span class="line">        before = <span class="built_in">len</span>(<span class="variable language_">self</span>.items)</span><br><span class="line">        <span class="variable language_">self</span>.items = [</span><br><span class="line">            it <span class="keyword">for</span> it <span class="keyword">in</span> <span class="variable language_">self</span>.items</span><br><span class="line">            <span class="keyword">if</span> it.pinned <span class="keyword">or</span> it.ttl <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> (now - it.created_at) &lt; it.ttl</span><br><span class="line">        ]</span><br><span class="line">        <span class="keyword">return</span> before - <span class="built_in">len</span>(<span class="variable language_">self</span>.items)  <span class="comment"># 清除条数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- 容量淘汰（LFU：淘汰访问最少的非 pinned 项） ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_evict_if_needed</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="built_in">len</span>(<span class="variable language_">self</span>.items) &gt; <span class="variable language_">self</span>.capacity:</span><br><span class="line">            candidates = [it <span class="keyword">for</span> it <span class="keyword">in</span> <span class="variable language_">self</span>.items <span class="keyword">if</span> <span class="keyword">not</span> it.pinned]</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> candidates:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            victim = <span class="built_in">min</span>(candidates, key=<span class="keyword">lambda</span> it: (it.access_count, it.last_access))</span><br><span class="line">            <span class="variable language_">self</span>.items.remove(victim)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- 检索：相关性 × 时间衰减 ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">self, query, top_k=<span class="number">5</span></span>):</span><br><span class="line">        now = time.time()</span><br><span class="line">        scored = []</span><br><span class="line">        <span class="keyword">for</span> it <span class="keyword">in</span> <span class="variable language_">self</span>.items:</span><br><span class="line">            <span class="keyword">if</span> it.valid_until <span class="keyword">and</span> now &gt; it.valid_until:</span><br><span class="line">                <span class="keyword">continue</span>  <span class="comment"># 已被新事实取代</span></span><br><span class="line">            relevance = <span class="variable language_">self</span>._<span class="keyword">match</span>(query, it.content)   <span class="comment"># 简化：关键词命中</span></span><br><span class="line">            <span class="keyword">if</span> relevance == <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            age_days = (now - it.created_at) / <span class="number">86400</span></span><br><span class="line">            decay = math.exp(-<span class="variable language_">self</span>.decay_lambda * age_days)</span><br><span class="line">            boost = <span class="number">10</span> <span class="keyword">if</span> it.pinned <span class="keyword">else</span> <span class="number">1</span>               <span class="comment"># pinned 强加权</span></span><br><span class="line">            score = relevance * decay * boost</span><br><span class="line">            it.last_access, it.access_count = now, it.access_count + <span class="number">1</span></span><br><span class="line">            scored.append((score, it))</span><br><span class="line">        scored.sort(key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>], reverse=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> [it.content <span class="keyword">for</span> _, it <span class="keyword">in</span> scored[:top_k]]</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_match</span>(<span class="params">query, content</span>):</span><br><span class="line">        q = <span class="built_in">set</span>(query.lower().split())</span><br><span class="line">        c = <span class="built_in">set</span>(content.lower().split())</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(q &amp; c) / <span class="built_in">len</span>(q) <span class="keyword">if</span> q <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- 巩固：把旧的短期记忆压缩成一条摘要（异步跑） ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">consolidate</span>(<span class="params">self, older_than_days=<span class="number">7</span></span>):</span><br><span class="line">        now = time.time()</span><br><span class="line">        old = [it <span class="keyword">for</span> it <span class="keyword">in</span> <span class="variable language_">self</span>.items</span><br><span class="line">               <span class="keyword">if</span> <span class="keyword">not</span> it.pinned <span class="keyword">and</span> (now - it.created_at) / <span class="number">86400</span> &gt; older_than_days]</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(old) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="comment"># 真实场景这里调用 LLM 做摘要+事实抽取；此处用拼接示意</span></span><br><span class="line">        summary = <span class="string">&quot;【巩固摘要】&quot;</span> + <span class="string">&quot;；&quot;</span>.join(it.content <span class="keyword">for</span> it <span class="keyword">in</span> old[:<span class="number">10</span>])</span><br><span class="line">        <span class="keyword">for</span> it <span class="keyword">in</span> old:</span><br><span class="line">            <span class="variable language_">self</span>.items.remove(it)</span><br><span class="line">        <span class="variable language_">self</span>.write(summary, pinned=<span class="literal">False</span>)  <span class="comment"># 摘要转正为长期记忆</span></span><br><span class="line">        <span class="keyword">return</span> summary</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------- 更新：时间线冲突消解（旧事实标记失效） ----------</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update_fact</span>(<span class="params">self, new_content, supersedes_keyword</span>):</span><br><span class="line">        now = time.time()</span><br><span class="line">        <span class="keyword">for</span> it <span class="keyword">in</span> <span class="variable language_">self</span>.items:</span><br><span class="line">            <span class="keyword">if</span> supersedes_keyword <span class="keyword">in</span> it.content <span class="keyword">and</span> it.valid_until <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                it.valid_until = now  <span class="comment"># 旧事实即刻失效，但保留历史</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.write(new_content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 运行示例 =====</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    mm = MemoryManager(capacity=<span class="number">5</span>, decay_lambda=<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line">    mm.write(<span class="string">&quot;用户 对花生 过敏&quot;</span>, pinned=<span class="literal">True</span>)          <span class="comment"># 高压线，永不遗忘</span></span><br><span class="line">    mm.write(<span class="string">&quot;用户 住在 北京&quot;</span>)</span><br><span class="line">    time.sleep(<span class="number">0.01</span>)</span><br><span class="line">    mm.update_fact(<span class="string">&quot;用户 住在 上海&quot;</span>, supersedes_keyword=<span class="string">&quot;住在&quot;</span>)  <span class="comment"># 冲突消解</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;查居住地：&quot;</span>, mm.retrieve(<span class="string">&quot;用户 住在 哪&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;查过敏：&quot;</span>, mm.retrieve(<span class="string">&quot;用户 过敏&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果解读"><a href="#运行结果解读" class="headerlink" title="运行结果解读"></a>运行结果解读</h3><ul>
+<li>查居住地时，只返回「上海」——旧的「北京」被 <code>update_fact</code> 标记 <code>valid_until</code>，检索时被过滤，但历史仍在库里可追溯。</li>
+<li>查过敏时，「花生过敏」因为 <code>pinned=True</code> 拿到 10 倍加权，无论多旧都稳稳排在前面，且永远不会被 TTL 或容量淘汰清除。</li>
+<li>如果持续写入超过 capacity&#x3D;5 条，<code>_evict_if_needed</code> 会用 LFU 淘汰访问最少的非 pinned 项——和数据库缓冲池同一套逻辑。</li>
+</ul>
+<p>这个 60 行的小玩具，已经把生产级记忆系统的四大遗忘&#x2F;巩固机制跑通了。真实系统只是把 <code>_match</code> 换成向量检索、把 <code>consolidate</code> 里的拼接换成 LLM 摘要而已。</p>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><p><strong>Mem0 的自动记忆更新。</strong> Mem0 的一大卖点就是内置了「ADD &#x2F; UPDATE &#x2F; DELETE」的记忆操作决策——它用 LLM 判断新信息是该新增、更新还是删除旧记忆，本质上就是自动化的冲突消解。这正是本篇「更新与冲突消解」的产品化。</p>
+<p><strong>Letta（原 MemGPT）的记忆分层与驱逐。</strong> MemGPT 把有限的上下文窗口类比成操作系统的「主存」，把外部存储类比成「磁盘」，用分页（paging）机制在两者间换入换出。当主存满了，它会把不常用的记忆「换出」到外部——这就是操作系统级的记忆淘汰思想。</p>
+<p><strong>遗忘曲线与间隔重复的复兴。</strong> 一些研究开始把认知科学的间隔重复（spaced repetition）引入 Agent 记忆：被反复检索到的记忆强化、加长 TTL；长期无人问津的记忆自然衰减。让记忆强度随「使用频率」动态变化，而不是简单的时间线性淘汰。</p>
+<p><strong>GDPR 与「被遗忘权」的工程化。</strong> 合规角度，「被遗忘权（right to be forgotten）」要求系统能彻底删除某用户的全部记忆。这对向量库是个真实挑战——如何保证一条记忆从索引、副本、缓存里被干净抹除，正在成为记忆基础设施的必答题。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>这一篇我们把记忆系统「反过来」看了一遍：</p>
+<ul>
+<li><strong>遗忘是 feature 不是 bug</strong>：无限增长的记忆库 &#x3D; 没有归档策略的日志表，迟早拖垮精度、成本和合规。</li>
+<li><strong>三种遗忘机制</strong>：TTL 过期、时间衰减、容量淘汰，分别对应 PG 的分区清理、排序惩罚、缓冲池驱逐。</li>
+<li><strong>巩固 ≈ autovacuum + 物化视图</strong>：后台异步把原始对话压缩成精炼事实，让检索保持又快又准。</li>
+<li><strong>冲突消解</strong>：记忆不是 append-only，用时间线版本（SCD Type 2）既能答「现在」也能答「过去」。</li>
+<li><strong>分级保护</strong>：pinned 高压线记忆（过敏、系统偏好、审计）无论多旧都不淘汰。</li>
+</ul>
+<p>下一篇（Day 9）是本系列的收官之作：我们把前 8 篇的所有概念——存储、写入、检索、评估、遗忘——<strong>拼装成一个从零到一、可运行的生产级记忆系统</strong>，用一个完整案例串起整条知识线。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/29/week4-day8-agent-memory-forgetting-and-consolidation/">https://dive2cloud-bmz.github.io/2026/07/29/week4-day8-agent-memory-forgetting-and-consolidation/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Agent-Memory/">
+                                    <span class="chip bg-color">Agent-Memory</span>
+                                </a>
+                            
+                                <a href="/tags/Forgetting/">
+                                    <span class="chip bg-color">Forgetting</span>
+                                </a>
+                            
+                                <a href="/tags/Consolidation/">
+                                    <span class="chip bg-color">Consolidation</span>
+                                </a>
+                            
+                                <a href="/tags/TTL/">
+                                    <span class="chip bg-color">TTL</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2026/07/29/week4-day9-agent-memory-production-capstone/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Agent 记忆系列（09·完结）· 收官实战：从零搭一个生产级记忆系统">
+                        
+                        <span class="card-title">Agent 记忆系列（09·完结）· 收官实战：从零搭一个生产级记忆系统</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Production/">
+                        <span class="chip bg-color">Production</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Memory/">
+                        <span class="chip bg-color">Agent-Memory</span>
+                    </a>
+                    
+                    <a href="/tags/System-Design/">
+                        <span class="chip bg-color">System-Design</span>
+                    </a>
+                    
+                    <a href="/tags/Capstone/">
+                        <span class="chip bg-color">Capstone</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/29/week4-day7-agent-memory-evaluation-and-tuning/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉">
+                        
+                        <span class="card-title">Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Evaluation/">
+                        <span class="chip bg-color">Evaluation</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Memory/">
+                        <span class="chip bg-color">Agent-Memory</span>
+                    </a>
+                    
+                    <a href="/tags/Recall/">
+                        <span class="chip bg-color">Recall</span>
+                    </a>
+                    
+                    <a href="/tags/A-B-Testing/">
+                        <span class="chip bg-color">A-B-Testing</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">242k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

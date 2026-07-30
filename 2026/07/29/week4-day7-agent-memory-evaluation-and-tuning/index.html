@@ -1,0 +1,1282 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉, BMZ BLOG">
+    <meta name="description" content="Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉
+本篇是「Agent 记忆系列」第 7 篇。前 6 篇我们把记忆系统从「为什么需要」一路搭到了「怎么写入、怎么检索」。今天要回答一个更工程、也更容易被忽视的问题：你">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Evaluation/">
+                                <span class="chip bg-color">Evaluation</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Agent-Memory/">
+                                <span class="chip bg-color">Agent-Memory</span>
+                            </a>
+                        
+                            <a href="/tags/Recall/">
+                                <span class="chip bg-color">Recall</span>
+                            </a>
+                        
+                            <a href="/tags/A-B-Testing/">
+                                <span class="chip bg-color">A-B-Testing</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-07-29
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-07-29
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Agent-记忆系列（07）·-评估与调优：如何量化记忆有用性、避免记忆幻觉"><a href="#Agent-记忆系列（07）·-评估与调优：如何量化记忆有用性、避免记忆幻觉" class="headerlink" title="Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉"></a>Agent 记忆系列（07）· 评估与调优：如何量化记忆有用性、避免记忆幻觉</h1><blockquote>
+<p>本篇是「Agent 记忆系列」第 7 篇。前 6 篇我们把记忆系统从「为什么需要」一路搭到了「怎么写入、怎么检索」。今天要回答一个更工程、也更容易被忽视的问题：<strong>你怎么知道你的记忆系统真的有用？</strong> 没有度量，就没有优化——这是每个后端工程师都懂的道理。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：记忆系统需要「可观测性」，而不是「感觉良好」"><a href="#🚀-核心洞察：记忆系统需要「可观测性」，而不是「感觉良好」" class="headerlink" title="🚀 核心洞察：记忆系统需要「可观测性」，而不是「感觉良好」"></a>🚀 核心洞察：记忆系统需要「可观测性」，而不是「感觉良好」</h2><p>作为 PostgreSQL 后端工程师，我们从不会凭感觉说「数据库很快」。我们看 <code>pg_stat_statements</code> 的 p99 延迟，看缓存命中率 <code>blks_hit / (blks_hit + blks_read)</code>，看慢查询日志，看执行计划。一切靠数字说话。</p>
+<p>但很多人做 Agent 记忆系统时，却停留在「我加了记忆，感觉对话更连贯了」这种主观判断上。这非常危险。因为记忆系统一旦上线，会同时带来两类相反的风险：</p>
+<ul>
+<li><strong>召回不足</strong>：该记住的没记住，该检索的没检索到，Agent 表现得像失忆。</li>
+<li><strong>召回过度 &#x2F; 记忆幻觉</strong>：检索到了不相关的旧记忆，或者把「模型编造的内容」当成「真实记忆」注入，导致 Agent 一本正经地胡说八道。</li>
+</ul>
+<p>第二类问题尤其隐蔽。它不像程序崩溃那样立刻暴露，而是悄悄降低 Agent 的可信度。今天这篇，就是要给记忆系统装上「仪表盘」，用可量化的指标把这两类风险都管起来。</p>
+<hr>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-记忆系统的四层评估指标"><a href="#1-记忆系统的四层评估指标" class="headerlink" title="1. 记忆系统的四层评估指标"></a>1. 记忆系统的四层评估指标</h3><p>评估记忆系统不能只看一个数。我把它拆成四层，从底层检索质量到顶层业务价值，逐层向上：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>关注问题</th>
+<th>典型指标</th>
+<th>类比后端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索层</td>
+<td>检索得准不准</td>
+<td>Recall@K、Precision@K、MRR、nDCG</td>
+<td>索引命中率 &#x2F; 查询准确性</td>
+</tr>
+<tr>
+<td>写入层</td>
+<td>该记的记住了吗</td>
+<td>写入成功率、事实抽取准确率、去重率</td>
+<td>写入吞吐 &#x2F; 数据完整性</td>
+</tr>
+<tr>
+<td>注入层</td>
+<td>记忆用得对不对</td>
+<td>记忆利用率、噪声率、上下文占用</td>
+<td>缓存有效性</td>
+</tr>
+<tr>
+<td>业务层</td>
+<td>最终有没有用</td>
+<td>任务成功率、多轮一致性、用户满意度</td>
+<td>SLA &#x2F; 业务转化</td>
+</tr>
+</tbody></table>
+<p>下面重点讲最容易量化、也最能指导优化的两层：检索层和业务层。</p>
+<h3 id="2-检索层：借用信息检索的经典指标"><a href="#2-检索层：借用信息检索的经典指标" class="headerlink" title="2. 检索层：借用信息检索的经典指标"></a>2. 检索层：借用信息检索的经典指标</h3><p>记忆检索本质上就是一个信息检索（IR）问题，所以可以直接套用 IR 领域几十年沉淀下来的指标。</p>
+<p><strong>Recall@K（召回率）</strong>：在返回的 top-K 条记忆里，真正相关的记忆占「所有应该被召回的相关记忆」的比例。它回答「我漏掉了多少该记住的东西」。</p>
+<p><strong>Precision@K（精确率）</strong>：top-K 里真正相关的占返回总数的比例。它回答「我返回的东西里有多少是噪声」。</p>
+<p><strong>MRR（Mean Reciprocal Rank，平均倒数排名）</strong>：第一条相关记忆出现在第几位。如果相关记忆排在第 1 位，得分 1；第 2 位，得分 1&#x2F;2；以此类推。它衡量「最相关的东西是不是排在了前面」。</p>
+<p><strong>nDCG（归一化折损累计增益）</strong>：综合考虑相关性等级和排序位置，是排序质量的黄金标准。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">recall_at_k</span>(<span class="params">retrieved_ids, relevant_ids, k</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;在 top-k 检索结果中，覆盖了多少真正相关的记忆。&quot;&quot;&quot;</span></span><br><span class="line">    retrieved_k = <span class="built_in">set</span>(retrieved_ids[:k])</span><br><span class="line">    relevant = <span class="built_in">set</span>(relevant_ids)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> relevant:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(retrieved_k &amp; relevant) / <span class="built_in">len</span>(relevant)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">precision_at_k</span>(<span class="params">retrieved_ids, relevant_ids, k</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;top-k 检索结果中，有多少是真正相关的。&quot;&quot;&quot;</span></span><br><span class="line">    retrieved_k = retrieved_ids[:k]</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> retrieved_k:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">    relevant = <span class="built_in">set</span>(relevant_ids)</span><br><span class="line">    hits = <span class="built_in">sum</span>(<span class="number">1</span> <span class="keyword">for</span> rid <span class="keyword">in</span> retrieved_k <span class="keyword">if</span> rid <span class="keyword">in</span> relevant)</span><br><span class="line">    <span class="keyword">return</span> hits / <span class="built_in">len</span>(retrieved_k)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mrr</span>(<span class="params">retrieved_ids, relevant_ids</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;第一条相关记忆的倒数排名。&quot;&quot;&quot;</span></span><br><span class="line">    relevant = <span class="built_in">set</span>(relevant_ids)</span><br><span class="line">    <span class="keyword">for</span> rank, rid <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved_ids, start=<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">if</span> rid <span class="keyword">in</span> relevant:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.0</span> / rank</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">ndcg_at_k</span>(<span class="params">retrieved_ids, relevance_scores, k</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;归一化折损累计增益。relevance_scores: &#123;id: 相关性等级&#125;&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">dcg</span>(<span class="params">ids</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">sum</span>(</span><br><span class="line">            relevance_scores.get(rid, <span class="number">0</span>) / np.log2(i + <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">for</span> i, rid <span class="keyword">in</span> <span class="built_in">enumerate</span>(ids[:k])</span><br><span class="line">        )</span><br><span class="line">    actual = dcg(retrieved_ids)</span><br><span class="line">    ideal_order = <span class="built_in">sorted</span>(relevance_scores, key=relevance_scores.get, reverse=<span class="literal">True</span>)</span><br><span class="line">    ideal = dcg(ideal_order)</span><br><span class="line">    <span class="keyword">return</span> actual / ideal <span class="keyword">if</span> ideal &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例</span></span><br><span class="line">retrieved = [<span class="string">&quot;m3&quot;</span>, <span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m7&quot;</span>, <span class="string">&quot;m2&quot;</span>, <span class="string">&quot;m9&quot;</span>]</span><br><span class="line">relevant = [<span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m2&quot;</span>, <span class="string">&quot;m5&quot;</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Recall@5    = <span class="subst">&#123;recall_at_k(retrieved, relevant, <span class="number">5</span>):<span class="number">.2</span>f&#125;</span>&quot;</span>)   <span class="comment"># 0.67</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Precision@5 = <span class="subst">&#123;precision_at_k(retrieved, relevant, <span class="number">5</span>):<span class="number">.2</span>f&#125;</span>&quot;</span>)<span class="comment"># 0.40</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;MRR         = <span class="subst">&#123;mrr(retrieved, relevant):<span class="number">.2</span>f&#125;</span>&quot;</span>)              <span class="comment"># 0.50</span></span><br></pre></td></tr></table></figure>
+
+<p>这些指标的价值在于：它们把「记忆检索准不准」这个模糊问题，变成了可以持续监控、可以做回归测试的数字。</p>
+<h3 id="3-构建评估数据集：黄金问答对"><a href="#3-构建评估数据集：黄金问答对" class="headerlink" title="3. 构建评估数据集：黄金问答对"></a>3. 构建评估数据集：黄金问答对</h3><p>要算上面这些指标，你需要一个「标准答案」——也就是评估数据集。对记忆系统来说，一条评估样本长这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">eval_case = &#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: <span class="string">&quot;我上次说我用的什么数据库？&quot;</span>,</span><br><span class="line">    <span class="string">&quot;memory_pool&quot;</span>: [        <span class="comment"># 记忆库里的候选记忆</span></span><br><span class="line">        <span class="string">&quot;m1: 用户说他是 PostgreSQL 后端工程师&quot;</span>,</span><br><span class="line">        <span class="string">&quot;m2: 用户在做 AI 转型&quot;</span>,</span><br><span class="line">        <span class="string">&quot;m5: 用户偏好用中文交流&quot;</span>,</span><br><span class="line">        <span class="string">&quot;m7: 用户今天心情不错&quot;</span>,</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;relevant_ids&quot;</span>: [<span class="string">&quot;m1&quot;</span>],  <span class="comment"># 人工标注：哪些记忆真正回答了 query</span></span><br><span class="line">    <span class="string">&quot;expected_answer&quot;</span>: <span class="string">&quot;PostgreSQL&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构建这个数据集有三条路径，可以组合使用：</p>
+<p>第一是<strong>从真实日志采样 + 人工标注</strong>。这是质量最高的方式，但成本也最高。从生产环境采样真实对话，人工标注「这一轮应该检索到哪些记忆」。</p>
+<p>第二是<strong>用强模型自动生成</strong>。让 GPT-4 级别的模型阅读一段对话，自动生成「问题 + 应召回记忆」对，再抽样人工校验。成本低、可规模化，但要小心生成数据的偏差。</p>
+<p>第三是<strong>合成对抗样本</strong>。故意构造一些「相似但不相关」的干扰记忆，测试系统会不会误召回。这对发现记忆幻觉特别有效。</p>
+<h3 id="4-记忆幻觉：最危险的失败模式"><a href="#4-记忆幻觉：最危险的失败模式" class="headerlink" title="4. 记忆幻觉：最危险的失败模式"></a>4. 记忆幻觉：最危险的失败模式</h3><p>记忆幻觉（Memory Hallucination）指的是：Agent 使用了「实际上不存在或不准确」的记忆。它有三种典型来源：</p>
+<p><strong>来源一：写入阶段的错误抽取。</strong> 后台从对话里抽取事实时，可能抽错。比如用户说「我不用 MySQL」，抽取成了「用户用 MySQL」——否定词丢失是高频错误。</p>
+<p><strong>来源二：检索阶段的错误召回。</strong> 检索到了语义相似但事实无关的记忆，模型却当成了依据。</p>
+<p><strong>来源三：生成阶段的记忆混淆。</strong> 模型把「自己编的内容」和「真实检索到的记忆」混在一起输出，用户无法分辨哪些是真记忆。</p>
+<p>对抗记忆幻觉的工程手段有几个层次：</p>
+<table>
+<thead>
+<tr>
+<th>手段</th>
+<th>作用阶段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>事实抽取双重校验</td>
+<td>写入</td>
+<td>抽取后让模型自检「这条事实是否忠实于原文」</td>
+</tr>
+<tr>
+<td>来源标注（provenance）</td>
+<td>存储</td>
+<td>每条记忆带上来源、时间戳、置信度</td>
+</tr>
+<tr>
+<td>相关性阈值门控</td>
+<td>检索</td>
+<td>低于阈值不注入，宁缺毋滥</td>
+</tr>
+<tr>
+<td>引用式注入</td>
+<td>使用</td>
+<td>让模型输出时标明「根据记忆 X」，可追溯</td>
+</tr>
+<tr>
+<td>记忆与生成分离</td>
+<td>使用</td>
+<td>明确区分「检索到的事实」和「模型推理」</td>
+</tr>
+</tbody></table>
+<p>其中「来源标注」是后端工程师最容易理解也最该做的。就像数据库里每条记录都该有 <code>created_at</code>、<code>updated_at</code>、<code>source</code> 一样，每条记忆也该带上它的「血统」：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">memory_record = &#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="string">&quot;m1&quot;</span>,</span><br><span class="line">    <span class="string">&quot;content&quot;</span>: <span class="string">&quot;用户是 PostgreSQL 后端工程师&quot;</span>,</span><br><span class="line">    <span class="string">&quot;source&quot;</span>: <span class="string">&quot;conversation:session_abc:turn_3&quot;</span>,  <span class="comment"># 从哪来</span></span><br><span class="line">    <span class="string">&quot;extracted_at&quot;</span>: <span class="string">&quot;2026-07-29T10:00:00+08:00&quot;</span>,</span><br><span class="line">    <span class="string">&quot;confidence&quot;</span>: <span class="number">0.92</span>,        <span class="comment"># 抽取置信度</span></span><br><span class="line">    <span class="string">&quot;verified&quot;</span>: <span class="literal">True</span>,          <span class="comment"># 是否经过二次校验</span></span><br><span class="line">    <span class="string">&quot;access_count&quot;</span>: <span class="number">5</span>,         <span class="comment"># 被召回次数（可用于巩固/遗忘）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了这些元数据，当 Agent 说错话时，你能顺着 <code>source</code> 追溯到底是哪条记忆、从哪轮对话抽错的——这就是可观测性。</p>
+<h3 id="5-LLM-as-a-Judge：让模型当裁判"><a href="#5-LLM-as-a-Judge：让模型当裁判" class="headerlink" title="5. LLM-as-a-Judge：让模型当裁判"></a>5. LLM-as-a-Judge：让模型当裁判</h3><p>有些指标很难用规则算，比如「这一轮回复是否忠实地使用了检索到的记忆」「有没有出现记忆幻觉」。这时可以用 LLM-as-a-Judge：让另一个模型来打分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">JUDGE_PROMPT = <span class="string">&quot;&quot;&quot;你是一个严格的评估员。请判断 Agent 的回复是否只依据了给定的记忆，</span></span><br><span class="line"><span class="string">没有编造记忆里不存在的信息。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">【检索到的记忆】</span></span><br><span class="line"><span class="string">&#123;memories&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">【用户问题】</span></span><br><span class="line"><span class="string">&#123;query&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">【Agent 回复】</span></span><br><span class="line"><span class="string">&#123;answer&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请按以下 JSON 格式输出：</span></span><br><span class="line"><span class="string">&#123;&#123;</span></span><br><span class="line"><span class="string">  &quot;faithful&quot;: true/false,       // 回复是否忠实于记忆</span></span><br><span class="line"><span class="string">  &quot;hallucination&quot;: true/false,  // 是否存在记忆幻觉</span></span><br><span class="line"><span class="string">  &quot;used_memory_ids&quot;: [...],     // 实际用到了哪些记忆</span></span><br><span class="line"><span class="string">  &quot;reason&quot;: &quot;简要说明&quot;</span></span><br><span class="line"><span class="string">&#125;&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">judge_faithfulness</span>(<span class="params">client, memories, query, answer</span>):</span><br><span class="line">    prompt = JUDGE_PROMPT.<span class="built_in">format</span>(memories=memories, query=query, answer=answer)</span><br><span class="line">    resp = client.chat(prompt, temperature=<span class="number">0</span>)  <span class="comment"># 裁判要用 temperature=0</span></span><br><span class="line">    <span class="keyword">return</span> parse_json(resp)</span><br></pre></td></tr></table></figure>
+
+<p>LLM-as-a-Judge 的几个注意点：裁判模型要用 <code>temperature=0</code> 保证稳定；要用比被评估模型更强的模型当裁判；要定期用人工标注抽查裁判本身的准确性，避免「裁判自己也幻觉」。</p>
+<hr>
+<h2 id="🔗-后端桥接：记忆调优就是数据库调优的翻版"><a href="#🔗-后端桥接：记忆调优就是数据库调优的翻版" class="headerlink" title="🔗 后端桥接：记忆调优就是数据库调优的翻版"></a>🔗 后端桥接：记忆调优就是数据库调优的翻版</h2><p>把记忆系统的评估调优，和 PostgreSQL 的性能调优放在一起看，你会发现几乎是一一对应的：</p>
+<table>
+<thead>
+<tr>
+<th>记忆系统</th>
+<th>PostgreSQL</th>
+<th>共同的调优思路</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recall@K 偏低</td>
+<td>索引没命中 &#x2F; 全表扫描</td>
+<td>检查检索策略、加多路召回</td>
+</tr>
+<tr>
+<td>Precision 偏低</td>
+<td>返回太多无关行</td>
+<td>加过滤条件、提高阈值、上 reranker</td>
+</tr>
+<tr>
+<td>记忆幻觉</td>
+<td>脏数据 &#x2F; 约束缺失</td>
+<td>加校验、加来源约束（≈外键&#x2F;CHECK）</td>
+</tr>
+<tr>
+<td>上下文占用过高</td>
+<td>结果集太大</td>
+<td>分页、摘要压缩（≈LIMIT + 投影）</td>
+</tr>
+<tr>
+<td>评估数据集</td>
+<td>慢查询日志 + 基准测试</td>
+<td>用真实负载回归测试</td>
+</tr>
+<tr>
+<td>LLM-as-a-Judge</td>
+<td>EXPLAIN ANALYZE</td>
+<td>让系统解释「为什么这么做」</td>
+</tr>
+</tbody></table>
+<p>一个特别贴切的类比是<strong>相关性阈值 ≈ 查询的 WHERE 条件</strong>。你在 PG 里不会 <code>SELECT *</code> 把整表拉回来，而是用 WHERE 精准过滤。记忆检索也一样：设一个相关性阈值，把不够相关的记忆挡在门外，宁可少召回也不引入噪声。这就是「宁缺毋滥」原则，在两个领域是相通的。</p>
+<p>还有一个思维迁移：<strong>你调 PG 时会先建立 baseline（基准），改一个参数看一次效果，而不是一次改十个</strong>。调记忆系统也该如此——先固定评估集跑出基线指标，每次只调一个变量（chunk 大小、top-K、阈值、reranker），观察指标变化。这就引出了下一节的 A&#x2F;B 测试。</p>
+<hr>
+<h2 id="🛠️-微实战：一个可运行的记忆评估框架"><a href="#🛠️-微实战：一个可运行的记忆评估框架" class="headerlink" title="🛠️ 微实战：一个可运行的记忆评估框架"></a>🛠️ 微实战：一个可运行的记忆评估框架</h2><p>下面是一个不依赖外部服务的最小评估框架。它把「一批评估样本 + 你的检索函数」跑一遍，输出 Recall &#x2F; Precision &#x2F; MRR &#x2F; nDCG 的平均值，并支持对比两组配置（A&#x2F;B 测试）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Callable</span>, <span class="type">List</span>, <span class="type">Dict</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">EvalCase</span>:</span><br><span class="line">    query: <span class="built_in">str</span></span><br><span class="line">    relevant_ids: <span class="type">List</span>[<span class="built_in">str</span>]</span><br><span class="line">    relevance_scores: <span class="type">Dict</span>[<span class="built_in">str</span>, <span class="built_in">int</span>] = field(default_factory=<span class="built_in">dict</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MemoryEvaluator</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, cases: <span class="type">List</span>[EvalCase], k: <span class="built_in">int</span> = <span class="number">5</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.cases = cases</span><br><span class="line">        <span class="variable language_">self</span>.k = k</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_recall</span>(<span class="params">self, retrieved, relevant</span>):</span><br><span class="line">        relevant = <span class="built_in">set</span>(relevant)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> relevant:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(<span class="built_in">set</span>(retrieved[:<span class="variable language_">self</span>.k]) &amp; relevant) / <span class="built_in">len</span>(relevant)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_precision</span>(<span class="params">self, retrieved, relevant</span>):</span><br><span class="line">        top = retrieved[:<span class="variable language_">self</span>.k]</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> top:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">        relevant = <span class="built_in">set</span>(relevant)</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">sum</span>(<span class="number">1</span> <span class="keyword">for</span> r <span class="keyword">in</span> top <span class="keyword">if</span> r <span class="keyword">in</span> relevant) / <span class="built_in">len</span>(top)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_mrr</span>(<span class="params">self, retrieved, relevant</span>):</span><br><span class="line">        relevant = <span class="built_in">set</span>(relevant)</span><br><span class="line">        <span class="keyword">for</span> rank, rid <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved, <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> rid <span class="keyword">in</span> relevant:</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1.0</span> / rank</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_ndcg</span>(<span class="params">self, retrieved, scores</span>):</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">dcg</span>(<span class="params">ids</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">sum</span>(scores.get(r, <span class="number">0</span>) / np.log2(i + <span class="number">2</span>)</span><br><span class="line">                       <span class="keyword">for</span> i, r <span class="keyword">in</span> <span class="built_in">enumerate</span>(ids[:<span class="variable language_">self</span>.k]))</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> scores:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0.0</span></span><br><span class="line">        ideal = <span class="built_in">sorted</span>(scores, key=scores.get, reverse=<span class="literal">True</span>)</span><br><span class="line">        denom = dcg(ideal)</span><br><span class="line">        <span class="keyword">return</span> dcg(retrieved) / denom <span class="keyword">if</span> denom &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">self, retrieve_fn: <span class="type">Callable</span>[[<span class="built_in">str</span>], <span class="type">List</span>[<span class="built_in">str</span>]], label=<span class="string">&quot;config&quot;</span></span>):</span><br><span class="line">        metrics = &#123;<span class="string">&quot;recall&quot;</span>: [], <span class="string">&quot;precision&quot;</span>: [], <span class="string">&quot;mrr&quot;</span>: [], <span class="string">&quot;ndcg&quot;</span>: []&#125;</span><br><span class="line">        <span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> <span class="variable language_">self</span>.cases:</span><br><span class="line">            retrieved = retrieve_fn(<span class="keyword">case</span>.query)</span><br><span class="line">            metrics[<span class="string">&quot;recall&quot;</span>].append(<span class="variable language_">self</span>._recall(retrieved, <span class="keyword">case</span>.relevant_ids))</span><br><span class="line">            metrics[<span class="string">&quot;precision&quot;</span>].append(<span class="variable language_">self</span>._precision(retrieved, <span class="keyword">case</span>.relevant_ids))</span><br><span class="line">            metrics[<span class="string">&quot;mrr&quot;</span>].append(<span class="variable language_">self</span>._mrr(retrieved, <span class="keyword">case</span>.relevant_ids))</span><br><span class="line">            metrics[<span class="string">&quot;ndcg&quot;</span>].append(<span class="variable language_">self</span>._ndcg(retrieved, <span class="keyword">case</span>.relevance_scores))</span><br><span class="line">        result = &#123;m: <span class="built_in">round</span>(np.mean(v), <span class="number">4</span>) <span class="keyword">for</span> m, v <span class="keyword">in</span> metrics.items()&#125;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;label&#125;</span>] <span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ab_test</span>(<span class="params">self, fn_a, fn_b</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;=== A/B 测试 ===&quot;</span>)</span><br><span class="line">        ra = <span class="variable language_">self</span>.evaluate(fn_a, <span class="string">&quot;A&quot;</span>)</span><br><span class="line">        rb = <span class="variable language_">self</span>.evaluate(fn_b, <span class="string">&quot;B&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;--- 差异 (B - A) ---&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> ra:</span><br><span class="line">            diff = rb[m] - ra[m]</span><br><span class="line">            arrow = <span class="string">&quot;↑&quot;</span> <span class="keyword">if</span> diff &gt; <span class="number">0</span> <span class="keyword">else</span> (<span class="string">&quot;↓&quot;</span> <span class="keyword">if</span> diff &lt; <span class="number">0</span> <span class="keyword">else</span> <span class="string">&quot;=&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;m&#125;</span>: <span class="subst">&#123;diff:+<span class="number">.4</span>f&#125;</span> <span class="subst">&#123;arrow&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> ra, rb</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== 使用示例 =====</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    cases = [</span><br><span class="line">        EvalCase(<span class="string">&quot;我用什么数据库？&quot;</span>, [<span class="string">&quot;m1&quot;</span>], &#123;<span class="string">&quot;m1&quot;</span>: <span class="number">3</span>, <span class="string">&quot;m2&quot;</span>: <span class="number">1</span>&#125;),</span><br><span class="line">        EvalCase(<span class="string">&quot;我的转型目标是什么？&quot;</span>, [<span class="string">&quot;m2&quot;</span>], &#123;<span class="string">&quot;m2&quot;</span>: <span class="number">3</span>&#125;),</span><br><span class="line">        EvalCase(<span class="string">&quot;我喜欢用什么语言交流？&quot;</span>, [<span class="string">&quot;m5&quot;</span>], &#123;<span class="string">&quot;m5&quot;</span>: <span class="number">3</span>, <span class="string">&quot;m1&quot;</span>: <span class="number">1</span>&#125;),</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 模拟两种检索配置</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">retrieve_baseline</span>(<span class="params">query</span>):</span><br><span class="line">        <span class="comment"># 配置 A：只做简单关键词匹配</span></span><br><span class="line">        table = &#123;</span><br><span class="line">            <span class="string">&quot;我用什么数据库？&quot;</span>: [<span class="string">&quot;m3&quot;</span>, <span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m7&quot;</span>],</span><br><span class="line">            <span class="string">&quot;我的转型目标是什么？&quot;</span>: [<span class="string">&quot;m7&quot;</span>, <span class="string">&quot;m2&quot;</span>],</span><br><span class="line">            <span class="string">&quot;我喜欢用什么语言交流？&quot;</span>: [<span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m5&quot;</span>, <span class="string">&quot;m9&quot;</span>],</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> table.get(query, [])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">retrieve_improved</span>(<span class="params">query</span>):</span><br><span class="line">        <span class="comment"># 配置 B：加了 reranker，相关记忆排更前</span></span><br><span class="line">        table = &#123;</span><br><span class="line">            <span class="string">&quot;我用什么数据库？&quot;</span>: [<span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m3&quot;</span>, <span class="string">&quot;m7&quot;</span>],</span><br><span class="line">            <span class="string">&quot;我的转型目标是什么？&quot;</span>: [<span class="string">&quot;m2&quot;</span>, <span class="string">&quot;m7&quot;</span>],</span><br><span class="line">            <span class="string">&quot;我喜欢用什么语言交流？&quot;</span>: [<span class="string">&quot;m5&quot;</span>, <span class="string">&quot;m1&quot;</span>, <span class="string">&quot;m9&quot;</span>],</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> table.get(query, [])</span><br><span class="line"></span><br><span class="line">    evaluator = MemoryEvaluator(cases, k=<span class="number">3</span>)</span><br><span class="line">    evaluator.ab_test(retrieve_baseline, retrieve_improved)</span><br></pre></td></tr></table></figure>
+
+<p>运行后你会清楚看到配置 B（加了 reranker）在 MRR 和 nDCG 上的提升——因为它把相关记忆排到了更靠前的位置。这就是数据驱动调优的样子：不靠感觉，靠指标的正负号说话。</p>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><p><strong>RAGAS 与记忆评估的融合。</strong> RAGAS 原本是评估 RAG 系统的框架（faithfulness、answer relevancy、context precision 等指标），社区正在把它的思路迁移到 Agent 记忆评估上。它的 faithfulness 指标几乎可以直接用来检测记忆幻觉。</p>
+<p><strong>LongMemEval 基准。</strong> 这是近期出现的专门评估长期对话记忆的基准，覆盖信息抽取、多会话推理、时间推理、知识更新、拒答等五类能力。如果你在做长期记忆 Agent，值得用它做回归。</p>
+<p><strong>Mem0 &#x2F; Zep 的内置评估。</strong> 商业记忆服务开始把评估能力内置。Zep 提供了对话事实抽取准确率的监控面板；Mem0 也在文档里给出了记忆召回质量的评估脚本。这说明「记忆可观测性」正在从「自己攒轮子」走向「平台标配」。</p>
+<p><strong>LLM-as-a-Judge 的可靠性研究。</strong> 学界越来越关注「裁判模型本身的偏差」，比如位置偏差（偏好排在前面的答案）、长度偏差（偏好更长的回答）。实践中要用「交换位置多次评估取平均」等技巧来消偏。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>这一篇我们给记忆系统装上了仪表盘：</p>
+<ul>
+<li><strong>四层指标</strong>：检索层（Recall&#x2F;Precision&#x2F;MRR&#x2F;nDCG）、写入层、注入层、业务层，从底到顶逐层度量。</li>
+<li><strong>记忆幻觉</strong>是最危险的失败模式，靠「来源标注 + 阈值门控 + 引用式注入 + 记忆生成分离」组合防御。</li>
+<li><strong>评估数据集 + A&#x2F;B 测试</strong>是数据驱动调优的基础，思路和 PG 的基准测试完全一致：先建 baseline，每次只调一个变量。</li>
+<li><strong>LLM-as-a-Judge</strong> 补上了规则算不出来的主观指标，但裁判自己也要被评估。</li>
+</ul>
+<p>下一篇（Day 8）我们聊记忆系统里一个反直觉但至关重要的话题：<strong>遗忘与巩固</strong>——为什么一个「永不遗忘」的 Agent 反而是糟糕的设计。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/07/29/week4-day7-agent-memory-evaluation-and-tuning/">https://dive2cloud-bmz.github.io/2026/07/29/week4-day7-agent-memory-evaluation-and-tuning/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Evaluation/">
+                                    <span class="chip bg-color">Evaluation</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Agent-Memory/">
+                                    <span class="chip bg-color">Agent-Memory</span>
+                                </a>
+                            
+                                <a href="/tags/Recall/">
+                                    <span class="chip bg-color">Recall</span>
+                                </a>
+                            
+                                <a href="/tags/A-B-Testing/">
+                                    <span class="chip bg-color">A-B-Testing</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2026/07/29/week4-day8-agent-memory-forgetting-and-consolidation/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计">
+                        
+                        <span class="card-title">Agent 记忆系列（08）· 遗忘与巩固：为什么「永不遗忘」的 Agent 是糟糕设计</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Memory/">
+                        <span class="chip bg-color">Agent-Memory</span>
+                    </a>
+                    
+                    <a href="/tags/Forgetting/">
+                        <span class="chip bg-color">Forgetting</span>
+                    </a>
+                    
+                    <a href="/tags/Consolidation/">
+                        <span class="chip bg-color">Consolidation</span>
+                    </a>
+                    
+                    <a href="/tags/TTL/">
+                        <span class="chip bg-color">TTL</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/07/29/week4-day6-agent-memory-write-and-retrieval-strategy/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统">
+                        
+                        <span class="card-title">Agent 记忆系列（06）· 写入与检索策略：像设计数据库索引一样设计记忆系统</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-07-29
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Memory/">
+                        <span class="chip bg-color">Agent-Memory</span>
+                    </a>
+                    
+                    <a href="/tags/Memory-Architecture/">
+                        <span class="chip bg-color">Memory-Architecture</span>
+                    </a>
+                    
+                    <a href="/tags/Recall-Optimization/">
+                        <span class="chip bg-color">Recall-Optimization</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">242k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
