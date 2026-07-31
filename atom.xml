@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-07-30T13:33:00.318Z</updated>
+  <updated>2026-07-31T03:04:26.442Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 的规划与工具调用（02）：ReAct / Plan-and-Execute / ToT 的代码实现与选型</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/07/31/week4-day11-react-plan-and-execute-tot/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/07/31/week4-day11-react-plan-and-execute-tot/</id>
+    <published>2026-07-31T03:00:39.000Z</published>
+    <updated>2026-07-31T03:04:26.442Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察：规划不是预测未来，而是为不确定性预留分支&quot;&gt;&lt;a href=&quot;#🚀-核心洞察：规划不是预测未来，而是为不确定性预留分支&quot; class=&quot;headerlink&quot; title=&quot;🚀</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
+    
+    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Tree-of-Thoughts" scheme="https://dive2cloud-bmz.github.io/tags/Tree-of-Thoughts/"/>
+    
+    <category term="Agent-Planning" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Planning/"/>
+    
+  </entry>
   
   <entry>
     <title>ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍</title>
@@ -70,11 +105,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -521,15 +556,15 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
+    
+    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
+    
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
     <category term="LLM-Gateway" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Gateway/"/>
     
-    <category term="Fallback" scheme="https://dive2cloud-bmz.github.io/tags/Fallback/"/>
-    
     <category term="Reliability" scheme="https://dive2cloud-bmz.github.io/tags/Reliability/"/>
-    
-    <category term="Circuit-Breaker" scheme="https://dive2cloud-bmz.github.io/tags/Circuit-Breaker/"/>
     
   </entry>
   
@@ -672,49 +707,13 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
-    
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
     <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
     
     <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
     
-  </entry>
-  
-  <entry>
-    <title>从 SQL 注入到 Prompt 注入：AI Agent 安全第一课</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/17/week3-day1-agent-security-prompt-injection-basics/</id>
-    <published>2026-07-17T03:01:55.000Z</published>
-    <updated>2026-07-17T03:04:46.029Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;今日一句话：把 LLM 看成一个执行自然语言 SQL 的数据库，Prompt 注入就是绕过参数化查询、直接改写执行计划的攻击。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;🚀-核心洞察（2-min）&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
-    
-    <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
-    
-    <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
-    
-    <category term="LLM-Safety" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Safety/"/>
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
     
   </entry>
   
