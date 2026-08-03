@@ -4,6 +4,128 @@
   
     
     <entry>
+      <title>从单兵到编队：Multi-Agent 编排的架构模式与 LangGraph 实战</title>
+      <link href="/2026/08/03/week4-day12-multi-agent-orchestration-patterns/"/>
+      <url>/2026/08/03/week4-day12-multi-agent-orchestration-patterns/</url>
+      
+        <content type="html"><![CDATA[<h2 id="🚀-核心洞察：当-Agent-数量超过一个，架构比模型更重要"><a href="#🚀-核心洞察：当-Agent-数量超过一个，架构比模型更重要" class="headerlink" title="🚀 核心洞察：当 Agent 数量超过一个，架构比模型更重要"></a>🚀 核心洞察：当 Agent 数量超过一个，架构比模型更重要</h2><p>过去两周，我们把单个 Agent 的能力拆解到了极致：Function Calling 让它能调用外部工具，ReAct 让它边想边做，Plan-and-Execute 让它先谋后动，ToT 让它多路探索。但真实世界里的复杂任务——比如「完成一次完整的需求评审到代码合并」——很难靠一个 Agent 独立完成。</p><p>作为后端工程师，你一定熟悉这个场景：当业务逻辑膨胀到一个人写不完时，我们会把系统拆成多个微服务；当一次操作涉及多个服务时，我们会引入编排层（Orchestrator）来协调调用顺序、处理失败回滚、保证最终一致。Multi-Agent 系统本质上是一样的：<strong>每个 Agent 是一个具备特定能力的「服务」，而编排层决定它们什么时候被调用、如何交换信息、出错时怎么恢复</strong>。</p><p>今天我们要回答的核心问题是：如果把一群 Agent 当成一个分布式系统来设计，常见的架构模式有哪些？各自适合什么场景？以及如何用 LangGraph 把它们落地成可运行的代码。</p><hr><h2 id="🧠-核心概念：Multi-Agent-编排的全景地图"><a href="#🧠-核心概念：Multi-Agent-编排的全景地图" class="headerlink" title="🧠 核心概念：Multi-Agent 编排的全景地图"></a>🧠 核心概念：Multi-Agent 编排的全景地图</h2><h3 id="1-编排到底在编排什么？"><a href="#1-编排到底在编排什么？" class="headerlink" title="1. 编排到底在编排什么？"></a>1. 编排到底在编排什么？</h3><p>Multi-Agent Orchestration 不是简单地把多个 LLM 调用串起来，它要管理三件事：</p><table><thead><tr><th>维度</th><th>要解决的问题</th><th>后端类比</th></tr></thead><tbody><tr><td><strong>任务路由</strong></td><td>一条用户请求该交给哪个 Agent 处理？</td><td>API Gateway &#x2F; 负载均衡</td></tr><tr><td><strong>状态流转</strong></td><td>Agent 之间如何共享上下文和中间结果？</td><td>共享存储 &#x2F; 消息队列</td></tr><tr><td><strong>执行控制</strong></td><td>串行、并行、条件分支、循环怎么表达？</td><td>工作流引擎 &#x2F; 状态机</td></tr></tbody></table><p>一个设计良好的编排层，能让 Agent 团队像一支训练有素的工程团队：每个人知道自己的职责，也知道该在什么时候把接力棒交给谁。</p><h3 id="2-三种经典编排模式"><a href="#2-三种经典编排模式" class="headerlink" title="2. 三种经典编排模式"></a>2. 三种经典编排模式</h3><h4 id="模式一：Supervisor（监督者模式）"><a href="#模式一：Supervisor（监督者模式）" class="headerlink" title="模式一：Supervisor（监督者模式）"></a>模式一：Supervisor（监督者模式）</h4><p>一个中心 Supervisor Agent 负责理解用户意图、拆解任务、选择下一个该执行的 Worker Agent，Worker 只与 Supervisor 通信。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    U[用户请求] --&gt; S[Supervisor]</span><br><span class="line">    S --&gt;|task| W1[Researcher]</span><br><span class="line">    W1 --&gt;|result| S</span><br><span class="line">    S --&gt;|task| W2[Coder]</span><br><span class="line">    W2 --&gt;|result| S</span><br><span class="line">    S --&gt;|task| W3[Reviewer]</span><br><span class="line">    W3 --&gt;|result| S</span><br><span class="line">    S --&gt; U[最终回复]</span><br></pre></td></tr></table></figure><p><strong>优点</strong>：结构清晰、调试简单、适合任务阶段明确的场景。<br><strong>缺点</strong>：Supervisor 成为单点瓶颈，所有上下文都要经过它，长链路时上下文膨胀明显。</p><p><strong>适合场景</strong>：代码审查、报告生成、客服工单分诊。</p><h4 id="模式二：Swarm（蜂群模式）"><a href="#模式二：Swarm（蜂群模式）" class="headerlink" title="模式二：Swarm（蜂群模式）"></a>模式二：Swarm（蜂群模式）</h4><p>Agent 之间平级协作，通过「交接（Handoff）」把对话控制权从一个 Agent 转移到另一个。没有永远的中心节点，谁适合当前任务，谁就接管。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as 用户</span><br><span class="line">    participant A as Router Agent</span><br><span class="line">    participant B as Billing Agent</span><br><span class="line">    participant C as Tech Agent</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;A: 我的账单有问题</span><br><span class="line">    A-&gt;&gt;B: handoff</span><br><span class="line">    B--&gt;&gt;U: 查询到一笔异常扣款</span><br><span class="line">    U-&gt;&gt;B: 但我没开通这个服务</span><br><span class="line">    B-&gt;&gt;C: handoff（涉及技术日志核查）</span><br><span class="line">    C--&gt;&gt;U: 发现是 API 误调用导致</span><br></pre></td></tr></table></figure><p><strong>优点</strong>：更接近真实客服或销售团队的协作方式，灵活自然。<br><strong>缺点</strong>：交接边界需要精心设计，否则容易陷入无限传递。</p><p><strong>适合场景</strong>：客户支持、销售线索跟进、多领域咨询。</p><h4 id="模式三：Hierarchical-Teams（分层团队模式）"><a href="#模式三：Hierarchical-Teams（分层团队模式）" class="headerlink" title="模式三：Hierarchical Teams（分层团队模式）"></a>模式三：Hierarchical Teams（分层团队模式）</h4><p>Supervisor 下面再挂 Supervisor，形成树状结构。顶层负责整体目标，中层负责子项目，叶子节点负责具体执行。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    S1[顶层 Supervisor] --&gt; S2[技术 Supervisor]</span><br><span class="line">    S1 --&gt; S3[产品 Supervisor]</span><br><span class="line">    S2 --&gt; C1[Coder]</span><br><span class="line">    S2 --&gt; C2[Reviewer]</span><br><span class="line">    S3 --&gt; P1[需求分析]</span><br><span class="line">    S3 --&gt; P2[竞品调研]</span><br></pre></td></tr></table></figure><p><strong>优点</strong>：可扩展性强，适合大规模复杂任务，责任边界清晰。<br><strong>缺点</strong>：层级过多会增加延迟，顶层 Supervisor 可能看不到一线细节。</p><p><strong>适合场景</strong>：大型项目交付、跨部门协作、复杂研究任务。</p><h3 id="3-状态管理：Multi-Agent-系统的共享内存"><a href="#3-状态管理：Multi-Agent-系统的共享内存" class="headerlink" title="3. 状态管理：Multi-Agent 系统的共享内存"></a>3. 状态管理：Multi-Agent 系统的共享内存</h3><p>无论哪种模式，Agent 之间都需要共享状态。LangGraph 通过 <code>StateGraph</code> 提供一个显式的共享状态对象，所有节点都可以读写它。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[Agent A] --&gt;|update| SharedState[共享 State]</span><br><span class="line">    B[Agent B] --&gt;|read/write| SharedState</span><br><span class="line">    C[Agent C] --&gt;|read| SharedState</span><br></pre></td></tr></table></figure><p>一个好的状态设计要遵循三个原则：</p><ol><li><strong>最小够用</strong>：只放必要的上下文，避免把整块对话历史塞给每个 Agent。</li><li><strong>类型清晰</strong>：用 TypedDict 或 Pydantic 定义字段，避免运行时拼写错误。</li><li><strong>写入隔离</strong>：每个 Agent 尽量只写自己负责的字段，减少冲突。</li></ol><h3 id="4-Handoff：控制权交接的艺术"><a href="#4-Handoff：控制权交接的艺术" class="headerlink" title="4. Handoff：控制权交接的艺术"></a>4. Handoff：控制权交接的艺术</h3><p>Handoff 是 Swarm 模式的核心。它回答的问题是：当前 Agent 什么时候应该把任务交给别人？</p><p>常见触发条件：</p><table><thead><tr><th>触发条件</th><th>说明</th></tr></thead><tbody><tr><td><strong>能力边界</strong></td><td>当前 Agent 发现自己没有处理该子任务的工具</td></tr><tr><td><strong>用户意图转移</strong></td><td>用户话题从账单切换到技术支持</td></tr><tr><td><strong>任务完成</strong></td><td>当前阶段结束，需要进入下一阶段</td></tr><tr><td><strong>错误恢复</strong></td><td>当前 Agent 多次失败，需要升级处理</td></tr></tbody></table><p>Handoff 时通常要传递的最小信息包括：用户原始请求、当前已完成的中间结果、下一位 Agent 需要关注的上下文。</p><hr><h2 id="🔗-后端桥接：用分布式系统的眼光看-Agent-编排"><a href="#🔗-后端桥接：用分布式系统的眼光看-Agent-编排" class="headerlink" title="🔗 后端桥接：用分布式系统的眼光看 Agent 编排"></a>🔗 后端桥接：用分布式系统的眼光看 Agent 编排</h2><p>作为 PostgreSQL 后端工程师，你已经接触过大量与 Multi-Agent 编排概念相通的系统。下面这张对照表能帮你快速建立直觉：</p><table><thead><tr><th>AI 概念</th><th>后端概念</th><th>类比说明</th></tr></thead><tbody><tr><td><strong>Agent</strong></td><td><strong>微服务</strong></td><td>每个 Agent 有独立职责和接口（Prompt + Tools），像一个个微服务</td></tr><tr><td><strong>Supervisor</strong></td><td><strong>API Gateway &#x2F; 编排服务</strong></td><td>统一入口，负责路由和聚合</td></tr><tr><td><strong>Shared State</strong></td><td><strong>共享数据库 &#x2F; Redis</strong></td><td>多个 Agent 通过共享状态交换信息</td></tr><tr><td><strong>Handoff</strong></td><td><strong>消息队列 + 路由键</strong></td><td>一个服务处理完后把消息路由到下一个服务</td></tr><tr><td><strong>Tool Call</strong></td><td><strong>RPC &#x2F; HTTP 调用</strong></td><td>Agent 调用外部能力的标准接口</td></tr><tr><td><strong>RePlan</strong></td><td><strong>Saga 补偿 &#x2F; 重试策略</strong></td><td>执行失败时调整计划，保证最终一致</td></tr><tr><td><strong>Long-running Task</strong></td><td><strong>异步工作流</strong></td><td>复杂任务不适合同步阻塞，需要状态持久化</td></tr></tbody></table><p>特别值得展开的是 <strong>Saga 模式</strong>。在分布式事务中，Saga 把一个长事务拆成多个本地事务，每个本地事务提交后通过「补偿操作」来回滚之前的步骤。Multi-Agent 的长链路任务非常相似：如果 Reviewer 发现 Coder 的代码有严重问题，不应该从头再来，而是只让 Coder 修正相关部分，然后继续后续流程。这就是 Agent 版本的 Saga：不是全量回滚，而是<strong>局部重试 + 状态前进</strong>。</p><p>另一个值得类比的点是 <strong>PostgreSQL 的查询优化器</strong>。优化器会根据统计信息生成执行计划，决定是走索引还是全表扫描、是 Nested Loop 还是 Hash Join。Multi-Agent 的 Supervisor 也类似：它根据当前状态（用户请求、已收集信息、可用 Agent 能力）生成一个「执行计划」，然后在执行中根据反馈动态调整。</p><hr><h2 id="🛠️-微实战：用-LangGraph-实现一个代码评审小队"><a href="#🛠️-微实战：用-LangGraph-实现一个代码评审小队" class="headerlink" title="🛠️ 微实战：用 LangGraph 实现一个代码评审小队"></a>🛠️ 微实战：用 LangGraph 实现一个代码评审小队</h2><p>下面我们实现一个 Supervisor 模式的代码评审小队，包含三个 Agent：</p><ul><li><strong>Coder</strong>：根据需求生成代码。</li><li><strong>Reviewer</strong>：检查代码质量并给出修改意见。</li><li><strong>Tester</strong>：为代码生成测试用例并验证。</li></ul><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langgraph langchain-openai</span><br></pre></td></tr></table></figure><h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, Annotated, <span class="type">Sequence</span></span><br><span class="line"><span class="keyword">import</span> operator</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, END</span><br><span class="line"><span class="keyword">from</span> langchain_core.messages <span class="keyword">import</span> BaseMessage, HumanMessage, SystemMessage</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义共享状态</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AgentState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    messages: Annotated[<span class="type">Sequence</span>[BaseMessage], operator.add]</span><br><span class="line">    next_agent: <span class="built_in">str</span></span><br><span class="line">    code: <span class="built_in">str</span></span><br><span class="line">    review_comment: <span class="built_in">str</span></span><br><span class="line">    test_result: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型</span></span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>, temperature=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 系统提示</span></span><br><span class="line">coder_prompt = <span class="string">&quot;&quot;&quot;你是一位资深 Python 后端工程师。你的任务是根据用户需求生成清晰、可运行的代码。</span></span><br><span class="line"><span class="string">只输出代码，不要输出解释。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">reviewer_prompt = <span class="string">&quot;&quot;&quot;你是一位严格的代码评审员。检查代码是否存在以下问题：</span></span><br><span class="line"><span class="string">1. 边界条件未处理</span></span><br><span class="line"><span class="string">2. 类型安全</span></span><br><span class="line"><span class="string">3. 性能隐患</span></span><br><span class="line"><span class="string">4. 可读性</span></span><br><span class="line"><span class="string">请用中文输出评审意见。如果没有问题，输出 &quot;LGTM&quot;。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">tester_prompt = <span class="string">&quot;&quot;&quot;你是一位测试工程师。为给定代码生成 pytest 测试用例，并说明是否覆盖主要分支。</span></span><br><span class="line"><span class="string">如果没有明显问题，输出 &quot;测试通过&quot;。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Agent 节点</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">coder_node</span>(<span class="params">state: AgentState</span>):</span><br><span class="line">    messages = state[<span class="string">&quot;messages&quot;</span>] + [SystemMessage(content=coder_prompt)]</span><br><span class="line">    response = llm.invoke(messages)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>: [response],</span><br><span class="line">        <span class="string">&quot;code&quot;</span>: response.content,</span><br><span class="line">        <span class="string">&quot;next_agent&quot;</span>: <span class="string">&quot;reviewer&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">reviewer_node</span>(<span class="params">state: AgentState</span>):</span><br><span class="line">    code = state.get(<span class="string">&quot;code&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">    prompt = <span class="string">f&quot;请评审以下代码：\n\n<span class="subst">&#123;code&#125;</span>&quot;</span></span><br><span class="line">    messages = [HumanMessage(content=prompt), SystemMessage(content=reviewer_prompt)]</span><br><span class="line">    response = llm.invoke(messages)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>: [response],</span><br><span class="line">        <span class="string">&quot;review_comment&quot;</span>: response.content,</span><br><span class="line">        <span class="string">&quot;next_agent&quot;</span>: <span class="string">&quot;tester&quot;</span> <span class="keyword">if</span> <span class="string">&quot;LGTM&quot;</span> <span class="keyword">in</span> response.content <span class="keyword">else</span> <span class="string">&quot;coder&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tester_node</span>(<span class="params">state: AgentState</span>):</span><br><span class="line">    code = state.get(<span class="string">&quot;code&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">    prompt = <span class="string">f&quot;请为以下代码生成测试用例：\n\n<span class="subst">&#123;code&#125;</span>&quot;</span></span><br><span class="line">    messages = [HumanMessage(content=prompt), SystemMessage(content=tester_prompt)]</span><br><span class="line">    response = llm.invoke(messages)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>: [response],</span><br><span class="line">        <span class="string">&quot;test_result&quot;</span>: response.content,</span><br><span class="line">        <span class="string">&quot;next_agent&quot;</span>: <span class="string">&quot;end&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Supervisor 路由函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">supervisor_router</span>(<span class="params">state: AgentState</span>):</span><br><span class="line">    <span class="keyword">return</span> state[<span class="string">&quot;next_agent&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建图</span></span><br><span class="line">workflow = StateGraph(AgentState)</span><br><span class="line">workflow.add_node(<span class="string">&quot;coder&quot;</span>, coder_node)</span><br><span class="line">workflow.add_node(<span class="string">&quot;reviewer&quot;</span>, reviewer_node)</span><br><span class="line">workflow.add_node(<span class="string">&quot;tester&quot;</span>, tester_node)</span><br><span class="line"></span><br><span class="line">workflow.set_entry_point(<span class="string">&quot;coder&quot;</span>)</span><br><span class="line">workflow.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;coder&quot;</span>,</span><br><span class="line">    supervisor_router,</span><br><span class="line">    &#123;<span class="string">&quot;reviewer&quot;</span>: <span class="string">&quot;reviewer&quot;</span>&#125;</span><br><span class="line">)</span><br><span class="line">workflow.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;reviewer&quot;</span>,</span><br><span class="line">    supervisor_router,</span><br><span class="line">    &#123;<span class="string">&quot;coder&quot;</span>: <span class="string">&quot;coder&quot;</span>, <span class="string">&quot;tester&quot;</span>: <span class="string">&quot;tester&quot;</span>&#125;</span><br><span class="line">)</span><br><span class="line">workflow.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;tester&quot;</span>,</span><br><span class="line">    supervisor_router,</span><br><span class="line">    &#123;<span class="string">&quot;end&quot;</span>: END&#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">app = workflow.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行</span></span><br><span class="line">inputs = &#123;<span class="string">&quot;messages&quot;</span>: [HumanMessage(content=<span class="string">&quot;写一个判断字符串是否为回文的 Python 函数&quot;</span>)]&#125;</span><br><span class="line">result = app.invoke(inputs)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;=== 最终代码 ===&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&quot;code&quot;</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 评审意见 ===&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&quot;review_comment&quot;</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 测试结果 ===&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&quot;test_result&quot;</span>])</span><br></pre></td></tr></table></figure><h3 id="这段代码的关键设计点"><a href="#这段代码的关键设计点" class="headerlink" title="这段代码的关键设计点"></a>这段代码的关键设计点</h3><ol><li><strong>State 是唯一的共享内存</strong>：<code>code</code>、<code>review_comment</code>、<code>test_result</code> 被显式定义，每个 Agent 只写自己负责的字段。</li><li><strong>Supervisor 逻辑被内嵌到节点中</strong>：每个 Agent 在返回时声明 <code>next_agent</code>，这比单独的 Supervisor LLM 调用更省 Token，适合角色边界清晰的场景。</li><li><strong>循环支持失败重审</strong>：如果 Reviewer 没有给出 LGTM，流程会回到 Coder 重新生成代码，形成闭环。</li></ol><p>如果你想把它扩展成 Supervisor 外置的版本，可以再增加一个 <code>supervisor_node</code>，由它根据当前状态决定下一步该调用谁。这样更灵活，但 Token 成本也会更高。</p><hr><h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><h3 id="开源框架动态"><a href="#开源框架动态" class="headerlink" title="开源框架动态"></a>开源框架动态</h3><ul><li><strong>LangGraph 0.2.x</strong>：新增 <code>create_react_agent</code>、<code>create_supervisor</code> 等高层 API，大幅降低了多 Agent 系统的样板代码。LangGraph Studio 也进入公测，可以可视化调试 Agent 执行路径。</li><li><strong>OpenAI Swarm</strong>：OpenAI 发布的实验性多 Agent 框架，主打轻量级 Handoff，适合构建客服、销售等对话型 Multi-Agent 系统。</li><li><strong>AutoGen v0.4</strong>：微软重构后的版本引入了 AgentChat 和 Core 两层架构，更强调可扩展性和可观测性。</li><li><strong>CrewAI</strong>： continues to focus on「角色 + 任务 + 工具」的声明式编排，适合快速搭建研究报告、内容生成类工作流。</li></ul><h3 id="值得关注的研究方向"><a href="#值得关注的研究方向" class="headerlink" title="值得关注的研究方向"></a>值得关注的研究方向</h3><ul><li><strong>Agent 间的显式通信协议</strong>：如何让 Agent 像微服务一样定义清晰的接口契约，而不是靠 Prompt 里的自然语言约定。</li><li><strong>多 Agent 系统的可观测性</strong>：当一条请求经过五六个 Agent 后，如何追踪完整调用链、定位是哪一步产生了错误。</li><li><strong>成本感知的编排策略</strong>：不同 Agent 可以使用不同模型（Planner 用 GPT-4o，Executor 用 GPT-4o-mini），如何在效果与成本之间自动权衡。</li></ul><hr><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Multi-Agent 不是把多个 LLM 简单拼在一起，而是用系统设计的思路解决「谁做什么、何时交接、状态如何共享」的问题。Supervisor 模式适合阶段清晰的任务，Swarm 模式适合对话式协作，Hierarchical Teams 适合大型复杂项目。</p><p>作为后端工程师，你最大的优势不是 Prompt 写得花，而是已经习惯了分布式系统中的拆分、编排、状态共享和故障恢复。把这些思维迁移到 Agent 设计上，你会发现 Multi-Agent 系统并没有想象中那么神秘——它本质上是一群有语言能力的微服务，而你是它们的架构师。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI-Transition </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI-Learning </tag>
+            
+            <tag> LangGraph </tag>
+            
+            <tag> Agent-Orchestration </tag>
+            
+            <tag> Multi-Agent </tag>
+            
+            <tag> Week-4 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MemOS：面向 AI 系统的记忆操作系统</title>
+      <link href="/2026/07/31/MemOS-Memory-Operating-System/"/>
+      <url>/2026/07/31/MemOS-Memory-Operating-System/</url>
+      
+        <content type="html"><![CDATA[<h2 id="什么是-MemOS"><a href="#什么是-MemOS" class="headerlink" title="什么是 MemOS"></a>什么是 MemOS</h2><p>MemOS（Memory Operating System）是由上海交通大学、浙江大学等团队联合研发的开源 AI 记忆操作系统，2025 年 7 月首次发布，当前版本为 MemOS 2.0 “Stardust”。它的核心主张是：像传统操作系统管理 CPU、内存和存储一样，将 LLM 的记忆作为一种可调度、可治理、可演进的系统资源来管理。</p><p>与仅做”存取”的记忆工具不同，MemOS 提供了一套完整的记忆生命周期管理体系——从记忆的生成、激活、合并到归档和过期，覆盖了 Agent 记忆的全生命周期。项目以 Apache 2.0 协议开源，在 LoCoMo 基准上取得 88.83 分，LongMemEval 89.20 分，BEAM-10M 56.75 分，在多跳推理和时序推理维度上大幅超越 mem0、LangMem、Zep 和 OpenAI Memory。</p><h2 id="设计哲学"><a href="#设计哲学" class="headerlink" title="设计哲学"></a>设计哲学</h2><p>MemOS 将传统操作系统的概念映射到记忆管理领域：</p><table><thead><tr><th>传统 OS 概念</th><th>MemOS 对应</th></tr></thead><tbody><tr><td>进程调度器</td><td>MemScheduler（记忆调度器）</td></tr><tr><td>文件系统</td><td>MemVault（记忆仓库）</td></tr><tr><td>系统调用</td><td>Memory API（记忆接口）</td></tr><tr><td>内存管理</td><td>MemLifecycle（生命周期管理）</td></tr><tr><td>权限控制</td><td>MemGovernance（治理层）</td></tr></tbody></table><p>其设计理念建立在三个支柱之上：记忆即系统资源（Memory as System Resource）、演进即核心能力（Evolution as Core Capability）、治理即安全基础（Governance as Foundation for Safety）。</p><h2 id="三类记忆"><a href="#三类记忆" class="headerlink" title="三类记忆"></a>三类记忆</h2><p>MemOS 统一管理三种根本不同的记忆形态：</p><p><strong>文本记忆（Plaintext Memory）。</strong> 显式的、可动态检索的知识模块——可编辑、可追溯、可存储。在内部组织为层次化图结构，按”任务→概念→事实”路径管理。这是最贴近人类”我知道什么”的部分。</p><p><strong>激活记忆（Activation Memory）。</strong> 推理过程中的中间状态，以 KV-Cache 为核心结构，辅以隐藏状态和注意力权重。支持懒加载和选择性冻结，让 Agent 在多轮对话中高效复用计算状态。MemOS 的 KV-Cache 注入可将首 token 延迟降低高达 91%。</p><p><strong>参数记忆（Parameter Memory）。</strong> 编码在模型权重中的知识和能力，通过 LoRA&#x2F;Adapter 等方式作为可加载的”能力模块”动态挂载。这让一个基础模型可以在运行时按需获得特定领域的能力，而无需全量微调。</p><p>三类记忆之间支持跨类型转换：文本记忆可编译为 KV-Cache 加速注入（Plaintext → Activation），频繁使用的文本知识可蒸馏为参数模块（Plaintext → Parameter），模型内在知识可外化为可审计的文本（Parameter → Plaintext）。这些转换由策略感知调度（Policy-Aware Scheduling）统一管理。</p><h2 id="MemCube：统一记忆封装"><a href="#MemCube：统一记忆封装" class="headerlink" title="MemCube：统一记忆封装"></a>MemCube：统一记忆封装</h2><p>MemCube 是 MemOS 的最小可调度记忆单元，由两部分组成：</p><p><strong>记忆载荷（Memory Payload）：</strong> 实际内容——文本、图像、工具调用痕迹、人格设定等。</p><p><strong>元数据头（Metadata Header）：</strong> 三类属性——</p><ul><li>描述性标识：时间戳、来源签名、语义类型</li><li>治理属性：访问控制、生命周期策略、优先级、合规追溯</li><li>行为使用指标：访问模式、上下文指纹、版本链</li></ul><p>MemCube 的设计使记忆变得”可调度、可共享、可组合”——多个 MemCube 可以组合为 Multi-Cube（复合知识库视图），支持跨 Agent、跨平台的记忆迁移和共享。</p><h2 id="三层系统架构"><a href="#三层系统架构" class="headerlink" title="三层系统架构"></a>三层系统架构</h2><p><strong>接口层（Interface Layer）。</strong></p><ul><li>MemReader：将自然语言请求解析为结构化的 MemoryCall</li><li>Memory API：提供 Provenance（溯源）、Update（更新）、LogQuery（日志查询）等标准接口</li><li>Memory Pipeline：可链式编排的记忆处理管线（检索 → 增强 → 更新 → 归档），支持 DSL 定义</li></ul><p><strong>运行层（Operation Layer）。</strong></p><ul><li>MemOperator：执行标签化、知识图谱构建、语义分层、路径解析等操作</li><li>MemScheduler：类型感知的记忆调度器，决定”何时使用哪类记忆、以何种形态”，支持异步处理，声称毫秒级延迟</li><li>MemLifecycle：管理记忆的五个生命周期状态——Generated（生成）→ Activated（激活）→ Merged（合并）→ Archived（归档）→ Expired（过期）</li></ul><p><strong>基础设施层（Infrastructure Layer）。</strong></p><ul><li>MemGovernance：策略引擎，执行隐私、合规和使用规则</li><li>MemVault：持久化存储抽象</li><li>MemLoader&#x2F;MemDumper：跨平台的记忆导入导出</li><li>MemStore：发布-订阅机制的记忆共享总线</li></ul><h2 id="核心能力模块"><a href="#核心能力模块" class="headerlink" title="核心能力模块"></a>核心能力模块</h2><p><strong>Tree Text Memory（树形文本记忆）。</strong> 文本记忆不是扁平列表，而是按 Topic → Concept → Fact 的三级树形结构组织。越靠近根节点的内容越稳定、越抽象；叶子节点是具体事实，变更频率最高。这种结构让检索可以从粗到细逐层展开，也让”巩固”操作有了清晰的语义——把碎片 Fact 向上聚合为 Concept 摘要。</p><p><strong>Dream Module（梦境巩固模块）。</strong> 模仿人类睡眠记忆巩固的离线处理机制。五种触发动机：新颖性（Newness）、频率（Frequency）、冲突（Conflict）、反馈（Feedback）、碎片化（Fragmentation）。四种操作：Create（新建）、Update（修订）、Merge（合并）、Archive（归档）。每条记忆维护 DreamMemoryLifecycle 状态：<code>last_hit_at</code>、<code>hit_count</code>、<code>usefulness_score</code>、<code>invalidated_by_feedback</code>、<code>status</code>。Dream 在后台定期运行，将碎片化的短期记忆整合为长期稳定记忆。</p><p><strong>MemFeedback（记忆反馈修正）。</strong> 允许用户或上层系统通过自然语言对已有记忆进行修正——“这条不对，实际情况是……”。系统使用 LLM 判断修正的合理性，自动标记旧记忆为”被反馈失效”，并生成修正后的新记忆版本。</p><p><strong>Skill Memory（技能自演进）。</strong> 从 Agent 的操作轨迹中自动提取可复用的程序性知识，分四个层级递进：L1（原始操作痕迹）→ L2（策略提取）→ L3（世界模型）→ Skill（可直接调用的结晶化技能）。让 Agent 在使用过程中自动积累和改进自己的操作方法论。</p><p><strong>Multi-Cube（复合知识库）。</strong> 将多个 MemCube 组合为一个逻辑视图，支持跨领域、跨 Agent 的知识组合。例如一个客服 Agent 可以同时加载”产品知识 Cube”和”客户历史 Cube”，在保持各自独立治理的同时实现联合检索。</p><h2 id="基准测试表现"><a href="#基准测试表现" class="headerlink" title="基准测试表现"></a>基准测试表现</h2><table><thead><tr><th>基准</th><th>MemOS 得分</th><th>说明</th></tr></thead><tbody><tr><td>LoCoMo</td><td>88.83</td><td>多轮对话记忆基准，所有类别第一</td></tr><tr><td>LongMemEval</td><td>89.20</td><td>长期记忆评估，含知识更新维度</td></tr><tr><td>BEAM-10M</td><td>56.75</td><td>1000 万 token 超长记忆基准（ICLR 2026）</td></tr><tr><td>PersonaMem v2</td><td>40.58</td><td>人格一致性记忆</td></tr><tr><td>HaluMem</td><td>80.91</td><td>记忆幻觉检测</td></tr></tbody></table><p>在 LoCoMo 上”所有类别均排名第一，尤其在多跳推理和时序推理维度上有巨大优势”，超越 mem0、LangMem、Zep 和 OpenAI Memory 等主流方案。时序推理相较 OpenAI Memory 提升 159%。</p><h2 id="部署方式"><a href="#部署方式" class="headerlink" title="部署方式"></a>部署方式</h2><p>MemOS 提供四种接入路径：</p><ol><li><strong>云 API（托管服务）：</strong> 获取 API Key 直接调用，免运维</li><li><strong>自托管 Docker：</strong> <code>git clone</code> + <code>docker compose up</code>，依赖 Neo4j（图数据库）+ Qdrant（向量数据库），API 服务于 <code>localhost:8000</code></li><li><strong>OpenClaw 云插件：</strong> <code>openclaw plugins install</code>，对接 MemOS Cloud</li><li><strong>本地插件（memos-local-plugin 2.0）：</strong> 100% 本地运行，使用 SQLite 存储，支持 FTS5 + 向量混合检索、智能去重、分级技能演进</li></ol><h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>MemOS 最擅长的场景包括：需要跨会话长期记忆的 Agent 系统、多 Agent 协作（记忆共享与隔离）、需要记忆可审计和可治理的企业级应用、个人助手型产品（偏好积累、习惯学习）、以及需要在多模型&#x2F;多平台间迁移记忆的场景。</p><h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p><strong>无本体治理。</strong> MemOS 的知识图谱没有 RDF&#x2F;OWL 级别的 schema 定义和约束验证，实体类型和关系类型由数据自然生长，缺乏形式化治理手段。</p><p><strong>部署复杂度。</strong> 完整部署需要 Neo4j + Qdrant + LLM 服务 + 应用服务四个组件，相比单一 Postgres 方案运维成本更高。</p><p><strong>写入路径复杂。</strong> 记忆写入存在多条路径（add&#x2F;feedback&#x2F;dream&#x2F;reorganize），各路径对同一记忆的修改可能产生竞态，需要仔细设计一致性策略。</p><p><strong>无原生双时序。</strong> 虽然 MemCube 有时间戳和版本链元数据，但不具备 Graphiti&#x2F;Zep 那样的事件时间 + 系统时间双时序建模能力，无法做”某个历史时刻的认知是什么”这样的时间旅行查询。</p><p><strong>社区与成熟度。</strong> 2025 年 7 月首发，相对年轻。虽然论文基准成绩优秀，但大规模生产环境的验证案例尚不充分。</p><h2 id="与其他方案的定位对比"><a href="#与其他方案的定位对比" class="headerlink" title="与其他方案的定位对比"></a>与其他方案的定位对比</h2><ul><li>对比 <strong>mem0</strong>：MemOS 提供完整的生命周期管理、多类型记忆和调度能力，mem0 更轻量但功能单一（latest-wins 覆写、无图谱）</li><li>对比 <strong>LangMem</strong>：MemOS 有独立的 Dream 巩固和 Feedback 修正机制，LangMem 依赖 LLM 三路判决（INSERT&#x2F;UPDATE&#x2F;DELETE）</li><li>对比 <strong>Cognee</strong>：MemOS 上层能力更丰富（Skill、Dream、Feedback），Cognee 有本体治理和 ECL 管线</li><li>对比 <strong>GBrain</strong>：MemOS 是运行时系统（API 驱动），GBrain 是文件系统（Markdown-in-Git）</li></ul><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>MemOS 代表了 AI 记忆系统从”存储工具”向”操作系统”演进的方向。它不仅回答”记住什么”，还回答”何时用、以何种形态用、用完后怎么维护、如何安全治理”。三类记忆的统一管理（尤其是 KV-Cache 和 LoRA 层面的激活&#x2F;参数记忆）是其独特之处——大多数竞品仅处理文本层面的记忆。Dream 巩固 + MemFeedback 修正的组合让记忆具备了”自我进化”的能力，而 MemCube 封装则为多租户、多 Agent 场景下的记忆隔离和共享提供了干净的抽象。</p><hr><p><strong>参考来源：</strong></p><ul><li><a href="https://arxiv.org/html/2507.03724v2">MemOS: A Memory OS for AI System — arXiv</a></li><li><a href="https://github.com/MemTensor/MemOS">MemTensor&#x2F;MemOS — GitHub</a></li><li><a href="https://rits.shanghai.nyu.edu/ai/chinese-researchers-unveil-memos-the-first-memory-operating-system-for-ai/">Chinese Researchers Unveil MemOS — NYU Shanghai RITS</a></li><li><a href="https://cbarkinozer.medium.com/memos-a-memory-os-for-ai-systems-d1f5242cca14">MemOS: A Memory OS for AI Systems — Medium</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI Agent Memory </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+            <tag> Agent Memory </tag>
+            
+            <tag> MemOS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>LLM Wiki：Karpathy 提出的反 RAG 知识管理范式</title>
+      <link href="/2026/07/31/LLM-Wiki-Karpathy-Knowledge-Management/"/>
+      <url>/2026/07/31/LLM-Wiki-Karpathy-Knowledge-Management/</url>
+      
+        <content type="html"><![CDATA[<h2 id="什么是-LLM-Wiki"><a href="#什么是-LLM-Wiki" class="headerlink" title="什么是 LLM Wiki"></a>什么是 LLM Wiki</h2><p>LLM Wiki 是 Andrej Karpathy（前 OpenAI 研究主管、Tesla AI 负责人）于 2026 年 4 月发布的一个”提示模式”（prompt pattern），以 GitHub Gist 的形式公开（gist ID <code>442a6bf555914893e9891c11519de94f</code>），发布后迅速获得 5000+ Stars 和 5000+ Forks。它不是一个框架或工具，而是一种理念——用 LLM 维护的纯 Markdown 文件作为知识库，取代传统 RAG（检索增强生成）中的向量数据库 + Embedding + 分块流水线。</p><p>核心哲学用一句话概括：<strong>“Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase.”</strong></p><h2 id="为什么不用-RAG"><a href="#为什么不用-RAG" class="headerlink" title="为什么不用 RAG"></a>为什么不用 RAG</h2><p>传统 RAG 在查询时做综合：用户提问 → Embedding → 向量检索 TopK → 拼入 Prompt → LLM 生成。每次查询都是一次”即时编译”——结果是无状态的、概率性的、不可审计的。</p><p>LLM Wiki 在摄取时做综合：新信息进入系统时，LLM 就把它编译成结构化的 Markdown 页面存储下来。查询时不需要检索，直接加载已编译好的知识。这让知识成为一个”持久的、复利累积的制品”——知识被”编译一次，然后保持更新，而非每次查询都重新推导”。</p><p>两种范式的取舍是明确的：RAG 适合海量文档（&gt;10M token）、频繁更新的语料、面向公众的知识库；LLM Wiki 适合个人记忆、运营手册、领域专家知识、小团队知识库——这些场景下数据量在大模型上下文窗口之内（GPT-4o 128K、Claude 200K、Gemini 1M），加载全部内容比概率检索更可靠。</p><h2 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h2><p>Karpathy 的设计将知识系统分为三层：</p><p><strong>Raw Sources（原始来源）。</strong> 不可变的输入材料——文章、论文、会议记录、笔记。Agent 只读不改，将其视为”记忆的原料”。</p><p><strong>Wiki（知识维基）。</strong> 核心层。LLM 维护的结构化 Markdown 知识库，每个主题一个文件。文件之间通过 <code>[[page-name]]</code> 交叉引用互联，形成知识图谱。这一层不是原始材料的复制，而是 LLM 理解后的”编译产物”。</p><p><strong>Schema（模式定义）。</strong> 一个 <code>AGENTS.md</code>（或类似）文件，告诉 Agent 如何维护 Wiki——命名规范、目录结构、更新策略、质量标准、何时创建新页面、何时合并已有页面。它是”程序员的代码规范”等价物。</p><h2 id="关键文件与操作"><a href="#关键文件与操作" class="headerlink" title="关键文件与操作"></a>关键文件与操作</h2><p><strong><code>index.md</code></strong> — Wiki 的导航目录，帮助 Agent 和人类快速定位页面。Agent 在回答问题前先读这个文件，确定性地决定需要加载哪些页面（而不是靠 Embedding 相似度猜测）。</p><p><strong><code>log.md</code></strong> — 按时间记录所有操作（摄取、查询、清理），类似 Git 的 commit log，提供完整的审计轨迹。</p><p><strong>三种核心操作：</strong></p><ul><li><strong>Ingest（摄取）：</strong> 新来源被处理时，Agent 识别受影响的已有页面，做局部更新而非全量重写。包含矛盾检测——如果新信息与已有认知冲突，Agent 会标记并解决。</li><li><strong>Query（查询）：</strong> 读取 index.md → 确定性加载相关页面 → 基于已编译知识回答。无向量检索、无概率。</li><li><strong>Lint（清理&#x2F;做梦）：</strong> 定期维护操作，包括：避免重复页面、衰减过期趋势、将一次性观察与可复用知识分离、更新规范页面而非堆砌新条目、保持 index 最新。这是 Schema 中编码的”睡眠整理”规则。</li></ul><h2 id="文件结构示例"><a href="#文件结构示例" class="headerlink" title="文件结构示例"></a>文件结构示例</h2><p>Wiki 目录通常按领域组织：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">wiki/</span><br><span class="line">├── personal/</span><br><span class="line">│   ├── preferences.md</span><br><span class="line">│   ├── goals.md</span><br><span class="line">│   └── health.md</span><br><span class="line">├── work/</span><br><span class="line">│   ├── projects.md</span><br><span class="line">│   └── contacts.md</span><br><span class="line">├── knowledge/</span><br><span class="line">│   ├── machine-learning.md</span><br><span class="line">│   └── distributed-systems.md</span><br><span class="line">├── index.md</span><br><span class="line">└── log.md</span><br></pre></td></tr></table></figure><p>每个文件使用 YAML frontmatter 记录元数据（标签、最后更新日期），正文使用自然语言 + 结构化标题，底部常有 <code>[[related-page]]</code> 交叉引用。”最后更新”日期用于新鲜度管理——Agent 在 Lint 阶段可以识别并处理过期内容。</p><h2 id="为什么说它比-RAG-高效-70-倍"><a href="#为什么说它比-RAG-高效-70-倍" class="headerlink" title="为什么说它比 RAG 高效 70 倍"></a>为什么说它比 RAG 高效 70 倍</h2><p>这个数字来自计算成本的对比：RAG 系统为每次查询运行 Embedding 推理、向量数据库查询、可能的 re-ranking，最终仅传递约 2000 token 的检索结果到 LLM（其余语料闲置在向量库中）。LLM Wiki 不需要 Embedding 基础设施，直接加载 10,000-50,000 token 的精炼知识——所有加载内容都是”已编译的高密度知识”，没有 chunk 边界切割造成的信息损失。代价是上下文窗口的 token 用量更高，但随着窗口不断增长（128K → 200K → 1M），这个代价在个人规模数据量上可以忽略。</p><h2 id="记忆类型支持"><a href="#记忆类型支持" class="headerlink" title="记忆类型支持"></a>记忆类型支持</h2><p>Wiki + Schema 的组合天然覆盖多种 Agent 记忆类型：</p><ul><li>语义记忆（Semantic）：概念页面、领域知识</li><li>实体记忆（Entity）：人物、公司、项目页面</li><li>情景记忆（Episodic）：会议记录、事件 timeline</li><li>摘要记忆（Summary）：编译后的认知总结</li><li>程序性记忆（Procedural）：操作手册、工作流页面</li></ul><p>不覆盖的是对话记忆（Conversational）和工作记忆（Working Memory），因为这两种是短期、会话内的，不需要持久化。</p><h2 id="工具链"><a href="#工具链" class="headerlink" title="工具链"></a>工具链</h2><p>Karpathy 的参考实现使用：</p><ul><li><strong>Obsidian</strong> — 人类端的 IDE，提供图谱可视化和快速浏览</li><li><strong>Claude Code &#x2F; Codex &#x2F; Gemini CLI</strong> — Agent 端的执行者</li><li><strong>qmd</strong> — 本地 BM25 + 向量搜索工具（当 Wiki 规模超过单次加载上限时的辅助检索）</li><li><strong>Git</strong> — 版本管理，Wiki 的每一次变更都可追溯</li></ul><p>本地部署可用 Ollama（Qwen3 32B、Llama 3 70B 等）替代闭源模型。</p><h2 id="适用与不适用场景"><a href="#适用与不适用场景" class="headerlink" title="适用与不适用场景"></a>适用与不适用场景</h2><p>适合：个人知识管理（笔记整理、读书笔记、研究追踪）、Agent 长期记忆（偏好、习惯、项目上下文）、小团队 Playbook、领域专家知识库——数据量在数百页以内、需要高确定性和可审计性。</p><p>不适合：大规模文档检索（&gt;10M token）、频繁全量更新的语料库、面向公众的知识服务、需要实时 Embedding 和模糊匹配的场景。</p><h2 id="与-GBrain-的关系"><a href="#与-GBrain-的关系" class="headerlink" title="与 GBrain 的关系"></a>与 GBrain 的关系</h2><p>GBrain 可以被看作 LLM Wiki 思想的”工程化实现”——它继承了 Markdown-in-Git 的系统设计，加上了 Postgres 混合检索（当 Wiki 规模超出单次 context 加载能力时的检索层）、自动化的类型化边提取、和可执行的技能系统。两者的哲学一脉相承：知识应该被编译后存储为人类可读的持久制品，而非每次查询时从碎片中临时拼凑。</p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>LLM Wiki 的贡献不在于任何新技术——它用的是 Markdown、Git、Obsidian 这些已存在多年的工具。它的贡献在于思维范式的转换：当大模型的 context window 足够大时，”检索”不再是必需品。你可以把知识库当作”代码”来管理——Agent 是维护者，Schema 是代码规范，Lint 是 CI&#x2F;CD，Git 是版本控制。这让 AI 记忆系统的构建门槛从”需要向量数据库专家”降低到”会写 Markdown”。</p><hr><p><strong>参考来源：</strong></p><ul><li><a href="https://aaif.io/blog/karpathys-llm-wiki-as-agent-memory">Karpathy’s LLM Wiki as Agent Memory — AAIF</a></li><li><a href="https://www.kunalganglani.com/blog/llm-wiki-karpathy-local-knowledge-base">LLM Wiki Setup: Karpathy’s Knowledge Base — Kunal Ganglani</a></li><li><a href="https://www.mindstudio.ai/blog/karpathy-llm-wiki-pattern-knowledge-base-without-rag">Where RAG Breaks Down: The Karpathy LLM Wiki Pattern — MindStudio</a></li><li><a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">Karpathy’s LLM Wiki Gist — GitHub</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI Agent Memory </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+            <tag> Agent Memory </tag>
+            
+            <tag> LLM Wiki </tag>
+            
+            <tag> RAG </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>GBrain：把记忆装进 Git 仓库的 AI Agent 记忆系统</title>
+      <link href="/2026/07/31/GBrain-AI-Agent-Memory-System/"/>
+      <url>/2026/07/31/GBrain-AI-Agent-Memory-System/</url>
+      
+        <content type="html"><![CDATA[<h2 id="什么是-GBrain"><a href="#什么是-GBrain" class="headerlink" title="什么是 GBrain"></a>什么是 GBrain</h2><p>GBrain 是 Y Combinator 现任总裁 Garry Tan 于 2026 年 4 月开源的 AI Agent 记忆系统。它的核心理念极为直接——用一个 Git 仓库里的纯 Markdown 文件作为 Agent 的”大脑”，辅以 Postgres 混合检索和一套 Markdown 格式的技能文件来驱动 Agent 的读写行为。项目在发布首日获得约 5000 GitHub Stars，截至 2026 年 7 月已超过 14000 Stars，v0.41 版本管理着超过 146,600 个页面、24,000 个人物和 5,000 家公司的数据。</p><h2 id="三层架构"><a href="#三层架构" class="headerlink" title="三层架构"></a>三层架构</h2><p>GBrain 的设计分为三个层次：</p><p><strong>第一层：Brain Repo（Git 中的 Markdown）。</strong> 这是整个系统的”单一事实来源”。所有记忆以 Markdown 文件的形式存放在一个独立的 Git 仓库中，按主题组织目录（<code>people/</code>、<code>companies/</code>、<code>concepts/</code>、<code>meetings/</code> 等）。每个页面遵循”编译真相 + 时间线”（Compiled Truth + Timeline）模式：文件上半部分是当前对该实体的最终认知总结（读取时优先看这里），下半部分是按日期只追加（append-only）的事件记录，保留完整的历史演进脉络。由于是纯 Markdown，可以 diff、branch、回溯，甚至从仓库重建整个数据库。</p><p><strong>第二层：混合检索（Postgres + pgvector）。</strong> GBrain 构建了一个多路融合的检索管线：</p><ol><li>可选的查询扩展——如果配置了 Anthropic API Key，Claude Haiku 会为查询生成 2 个改写版本</li><li>向量搜索——基于 pgvector 的 HNSW 余弦相似度索引，使用 OpenAI 1536 维嵌入</li><li>关键词搜索——Postgres 原生 <code>tsvector</code>&#x2F;<code>ts_rank</code>，标题权重 A、编译真相权重 B、时间线权重 C</li><li>RRF 融合——得分公式 <code>score = Σ(1 / (60 + rank))</code>，将向量和关键词两路结果合并排序</li><li>四层去重——每页最多保留 3 个 chunk，Jaccard 相似度超过 0.85 的视为重复</li><li>反向链接增强排序——被更多其他页面引用的页面获得排名加成</li></ol><p>本地模式使用 PGLite（WASM 版 Postgres，约 2 秒启动），共享模式可接 Supabase 或任何外部 Postgres。</p><p><strong>第三层：AI Agent 技能文件。</strong> GBrain 包含 34 个 Markdown 格式的”技能”文件，涵盖信号检测（<code>signal-detector</code>）、大脑运维（<code>brain-ops</code>）、内容摄取、研究综合等类别。这些技能文件告诉 Agent 何时读写、质量标准是什么、如何链式调用多步操作。设计哲学是”薄壳厚技能”（thin harness, fat skills）——智能不在运行时引擎里，而在技能文件里。技能可以调用确定性 TypeScript 函数（搜索、导入、嵌入、同步），不依赖 LLM 完成这些操作。</p><h2 id="核心设计决策"><a href="#核心设计决策" class="headerlink" title="核心设计决策"></a>核心设计决策</h2><p><strong>零 LLM 写入。</strong> 知识图谱的类型化边（<code>works_at</code>、<code>founded</code>、<code>invested_in</code>、<code>advises</code> 等）通过正则表达式和字符串匹配从页面内容中提取，”每次写入零 LLM 调用”。这确保了写入操作的确定性、低成本和可预测性。</p><p><strong>分级充实（Tiered Enrichment）。</strong> 实体的详细程度随提及次数递进：首次出现仅建一个 stub 页面（Tier 3）；被提及三次后触发 Web&#x2F;Social 信息补充（Tier 2）；如果来自会议记录或提及超过 8 次，触发完整的研究管线（Tier 1）。</p><p><strong>失败改进循环（Fail-Improve Loop）。</strong> 系统记录 LLM 回退（fallback）的情况，并据此生成更好的正则表达式，逐步降低对 LLM 判断的依赖和运营成本。</p><p><strong>后台巩固（Dream Cycle）。</strong> 类似睡眠整理：在后台摄取会议记录、邮件、推文、语音通话和灵感记录，自动充实人物&#x2F;公司页面、修复引用、合并碎片化记忆。</p><h2 id="技术基础设施"><a href="#技术基础设施" class="headerlink" title="技术基础设施"></a>技术基础设施</h2><p>GBrain 引入了两个底层组件：</p><ul><li><strong>Minions</strong>（v0.11.1）：Postgres 原生作业队列，区分”确定性任务”（零 token、毫秒级完成、重启恢复）和”判断性任务”（需要 LLM），确保大量写入操作不消耗推理资源。</li><li><strong><code>gbrain agent</code></strong>（v0.15）：基于”提交式 turn&#x2F;tool 账本”（<code>pending</code> → <code>complete | failed</code>）运行的崩溃安全子代理。</li></ul><h2 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h2><p>GBrain 在其配套的 <code>gbrain-evals</code> 仓库中使用 BrainBench 进行评估（240 页语料）：</p><ul><li>Precision@5：49.1%</li><li>Recall@5：97.9%</li><li>对比禁用图谱层的版本，精确度提升 +31.4 个百分点</li></ul><p>结论是：”类型化边的图层在检索中贡献的工作量比混合搜索本身更大。”</p><h2 id="接入方式"><a href="#接入方式" class="headerlink" title="接入方式"></a>接入方式</h2><p>GBrain 提供多种接入路径：原生支持 OpenClaw 和 Hermes Agent 的技能包；通过 MCP Server 连接 Claude Code、Cursor、ChatGPT 等客户端。CLI 一键初始化（<code>gbrain init --pglite</code>），约 30 分钟完成 Agent 驱动的完整安装。支持 Linux&#x2F;macOS（含 Apple Silicon），Windows 支持有限。</p><h2 id="适用与不适用场景"><a href="#适用与不适用场景" class="headerlink" title="适用与不适用场景"></a>适用与不适用场景</h2><p>GBrain 擅长的场景：个人&#x2F;团队知识管理、Agent 长期记忆、需要完整历史回溯的场景、对确定性和成本敏感的部署。</p><p>不太适合的场景：多租户 SaaS 记忆服务、需要自动生成结构（而非人工定义）的场景、超大规模（&gt;10M token）时序图遍历、以及非 OpenClaw&#x2F;Hermes 生态需要深度 Agent 集成的情况。</p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>GBrain 的核心洞见是：Agent 记忆不需要复杂的向量数据库或专有格式——一个结构清晰的 Git Markdown 仓库加上一套混合检索管线就足够了。”编译真相 + 时间线”模式让知识既可被人类阅读审计，又可被 Agent 高效检索；零 LLM 写入和分级充实则把运营成本压到极低。它把”记忆问题”变成了”代码管理问题”——diff、branch、review、revert，这些开发者已经做了二十年的事情。</p><hr><p><strong>参考来源：</strong></p><ul><li><a href="https://vectorize.io/articles/what-is-gbrain">What Is GBrain? — Vectorize</a></li><li><a href="https://gamgee.ai/blogs/garry-tan-gbrain-ai-memory-system/">GBrain: How It Works — Gamgee AI</a></li><li><a href="https://github.com/garrytan/gbrain">garrytan&#x2F;gbrain — GitHub</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI Agent Memory </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+            <tag> Agent Memory </tag>
+            
+            <tag> GBrain </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Agent 的规划与工具调用（02）：ReAct / Plan-and-Execute / ToT 的代码实现与选型</title>
       <link href="/2026/07/31/week4-day11-react-plan-and-execute-tot/"/>
       <url>/2026/07/31/week4-day11-react-plan-and-execute-tot/</url>
@@ -55,9 +177,9 @@
       
         <tags>
             
-            <tag> AI-Learning </tag>
-            
             <tag> RAG </tag>
+            
+            <tag> AI-Learning </tag>
             
             <tag> Week-2 </tag>
             
@@ -94,9 +216,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Tool-Use </tag>
-            
             <tag> Function-Calling </tag>
+            
+            <tag> Tool-Use </tag>
             
             <tag> Agent-Orchestration </tag>
             
@@ -232,9 +354,9 @@
       
         <tags>
             
-            <tag> AI-Learning </tag>
-            
             <tag> RAG </tag>
+            
+            <tag> AI-Learning </tag>
             
             <tag> Week-4 </tag>
             
@@ -681,15 +803,15 @@
       
         <tags>
             
-            <tag> AI-Learning </tag>
-            
             <tag> RAG </tag>
+            
+            <tag> AI-Learning </tag>
             
             <tag> Chunking </tag>
             
-            <tag> Week-2 </tag>
-            
             <tag> Embedding </tag>
+            
+            <tag> Week-2 </tag>
             
         </tags>
       
@@ -790,9 +912,9 @@
             
             <tag> Agent </tag>
             
-            <tag> LangGraph </tag>
-            
             <tag> Memory </tag>
+            
+            <tag> LangGraph </tag>
             
             <tag> Human-in-the-Loop </tag>
             
@@ -854,6 +976,8 @@
       
         <tags>
             
+            <tag> RAG </tag>
+            
             <tag> AI-Learning </tag>
             
             <tag> Week-1 </tag>
@@ -861,8 +985,6 @@
             <tag> RAGAS </tag>
             
             <tag> Evaluation </tag>
-            
-            <tag> RAG </tag>
             
         </tags>
       
@@ -1000,15 +1122,15 @@
             
             <tag> Week-2 </tag>
             
+            <tag> Function-Calling </tag>
+            
             <tag> ReAct </tag>
+            
+            <tag> Tool-Use </tag>
             
             <tag> Agent </tag>
             
             <tag> Reasoning </tag>
-            
-            <tag> Tool-Use </tag>
-            
-            <tag> Function-Calling </tag>
             
         </tags>
       
@@ -1033,11 +1155,11 @@
       
         <tags>
             
+            <tag> RAG </tag>
+            
             <tag> AI-Learning </tag>
             
             <tag> Week-1 </tag>
-            
-            <tag> RAG </tag>
             
             <tag> Embeddings </tag>
             
@@ -1066,11 +1188,11 @@
       
         <tags>
             
+            <tag> RAG </tag>
+            
             <tag> AI-Learning </tag>
             
             <tag> Week-1 </tag>
-            
-            <tag> RAG </tag>
             
             <tag> Chunking </tag>
             
@@ -1103,13 +1225,13 @@
             
             <tag> Week-2 </tag>
             
-            <tag> ReAct </tag>
-            
-            <tag> Tool-Use </tag>
+            <tag> AI-Agent </tag>
             
             <tag> Function-Calling </tag>
             
-            <tag> AI-Agent </tag>
+            <tag> ReAct </tag>
+            
+            <tag> Tool-Use </tag>
             
         </tags>
       
@@ -1134,11 +1256,11 @@
       
         <tags>
             
+            <tag> RAG </tag>
+            
             <tag> AI-Learning </tag>
             
             <tag> Week-1 </tag>
-            
-            <tag> RAG </tag>
             
             <tag> Embedding </tag>
             
@@ -1245,6 +1367,8 @@
             
             <tag> Week-1 </tag>
             
+            <tag> RAG-Pipeline </tag>
+            
             <tag> Vector-DB </tag>
             
             <tag> pgvector </tag>
@@ -1252,8 +1376,6 @@
             <tag> Milvus </tag>
             
             <tag> Qdrant </tag>
-            
-            <tag> RAG-Pipeline </tag>
             
         </tags>
       
@@ -1344,11 +1466,11 @@
       
         <tags>
             
+            <tag> RAG </tag>
+            
             <tag> AI-Learning </tag>
             
             <tag> Week-1 </tag>
-            
-            <tag> RAG </tag>
             
             <tag> Embeddings </tag>
             
