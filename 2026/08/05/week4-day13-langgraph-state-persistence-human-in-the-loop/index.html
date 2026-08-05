@@ -1,0 +1,1225 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流, BMZ BLOG">
+    <meta name="description" content="LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流前几篇文章我们把 Agent 的”记忆”、”规划”、”多智能体编排”逐层拆开。今天进入 Agent 落地最关键的一环：让工作流像数据库事务一样可中断、可回滚、">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/LangGraph/">
+                                <span class="chip bg-color">LangGraph</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Human-in-the-loop/">
+                                <span class="chip bg-color">Human-in-the-loop</span>
+                            </a>
+                        
+                            <a href="/tags/State-Persistence/">
+                                <span class="chip bg-color">State-Persistence</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-05
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-05
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.6k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    15 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="LangGraph-状态持久化与人在回路：构建可中断、可恢复的-Agent-工作流"><a href="#LangGraph-状态持久化与人在回路：构建可中断、可恢复的-Agent-工作流" class="headerlink" title="LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流"></a>LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</h1><p>前几篇文章我们把 Agent 的”记忆”、”规划”、”多智能体编排”逐层拆开。今天进入 Agent 落地最关键的一环：<strong>让工作流像数据库事务一样可中断、可回滚、可审计</strong>。LangGraph 不是另一个工作流引擎，它把 LLM 调用抽象成状态机（State Machine），再叠加检查点（Checkpoint）和人在回路（Human-in-the-loop, HITL）能力，让 Agent 在长流程中具备”事务性”。</p>
+<h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>作为 PostgreSQL 后端工程师，我们对”状态”有天然直觉：客户端连接是状态、事务是状态、WAL 是状态、锁和 MVCC 也是状态。一个无状态的 HTTP 服务之所以能在生产环境跑稳，是因为状态被外置到了数据库、缓存或消息队列里。</p>
+<p>LLM 调用本身是无状态的：每次 <code>chat.completions.create()</code> 都是一次独立的请求，模型不会记住你上一秒说了什么。ReAct、Plan-and-Execute、Multi-Agent 这些模式之所以需要反复拼装上下文，就是因为它们缺少一个<strong>持久化状态层</strong>。LangGraph 的核心贡献就是把 Agent 运行过程中的状态显式化、图化、可持久化。</p>
+<p>它的设计哲学可以类比 PostgreSQL 的 WAL + MVCC：</p>
+<ul>
+<li><strong>State（状态）</strong>：相当于事务进行中的工作区（work_mem &#x2F; temp buffer）。</li>
+<li><strong>Checkpoint（检查点）</strong>：相当于 WAL 的 redo point，崩溃恢复时从这里继续。</li>
+<li><strong>Interrupt &#x2F; Command（中断与指令）</strong>：相当于数据库的 SAVEPOINT 和 ROLLBACK TO SAVEPOINT，允许外部介入。</li>
+<li><strong>Thread（线程&#x2F;会话）</strong>：相当于一个数据库连接 session，维护独立的运行上下文。</li>
+</ul>
+<p>当我们把 Agent 运行看成”长时间运行的事务”时，HITL 就是审计员或 DBA 在事务提交前的一次显式确认。</p>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-LangGraph-的状态机模型"><a href="#1-LangGraph-的状态机模型" class="headerlink" title="1. LangGraph 的状态机模型"></a>1. LangGraph 的状态机模型</h3><p>LangGraph 把 Agent 抽象成一张<strong>有向图</strong>：</p>
+<ul>
+<li><strong>节点（Node）</strong>：一个函数或一个可调用对象，接收当前状态并返回更新。</li>
+<li>**<strong>边（Edge）</strong>：控制流，普通边是确定性跳转，条件边根据状态决定下一个节点。</li>
+<li><strong>状态（State）</strong>：一张共享的字典&#x2F;对象，所有节点读取并更新它。</li>
+<li><strong>入口（EntryPoint）</strong>：图的起点。</li>
+<li><strong>结束（END）</strong>：图的终点。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[__start__] --&gt; B[Planner]</span><br><span class="line">    B --&gt; C&#123;工具调用?&#125;</span><br><span class="line">    C --&gt;|是| D[Tool Executor]</span><br><span class="line">    D --&gt; E[Reflect]</span><br><span class="line">    E --&gt; C</span><br><span class="line">    C --&gt;|否| F[__end__]</span><br><span class="line">    F -.-&gt;|interrupt| G[Human Review]</span><br><span class="line">    G -.-&gt;|resume / edit| C</span><br></pre></td></tr></table></figure>
+
+<p>这张图和传统”函数调用链”最大的区别是：状态不是隐式地放在局部变量里，而是显式地放在 State 对象中。每个节点都可以读、写、追加。这样图可以暂停、恢复、分支、回退。</p>
+<h3 id="2-Checkpoint：把运行状态写进”WAL”"><a href="#2-Checkpoint：把运行状态写进”WAL”" class="headerlink" title="2. Checkpoint：把运行状态写进”WAL”"></a>2. Checkpoint：把运行状态写进”WAL”</h3><p>LangGraph 的 <code>CheckpointSaver</code> 负责在每个节点执行后把状态快照持久化。官方支持内存、SQLite、PostgreSQL、Redis 等后端。对后端工程师来说，生产环境首选 PostgreSQL 或 Redis，因为：</p>
+<ol>
+<li><strong>持久化</strong>：服务重启不丢状态。</li>
+<li><strong>并发控制</strong>：多个 worker 可以共享状态。</li>
+<li><strong>可观测性</strong>：可以直接用 SQL 查询运行历史。</li>
+<li><strong>备份与恢复</strong>：复用现有的 PITR 方案。</li>
+</ol>
+<p>代码层面，使用 PostgreSQL 检查点非常简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.checkpoint.postgres <span class="keyword">import</span> PostgresSaver</span><br><span class="line"><span class="keyword">from</span> psycopg_pool <span class="keyword">import</span> ConnectionPool</span><br><span class="line"></span><br><span class="line">DB_URI = <span class="string">&quot;postgresql://user:pass@localhost:5432/langgraph_db&quot;</span></span><br><span class="line">connection_kwargs = &#123;<span class="string">&quot;autocommit&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;prepare_threshold&quot;</span>: <span class="number">0</span>&#125;</span><br><span class="line"></span><br><span class="line">pool = ConnectionPool(conninfo=DB_URI, max_size=<span class="number">20</span>, kwargs=connection_kwargs)</span><br><span class="line">checkpointer = PostgresSaver(pool)</span><br><span class="line">checkpointer.setup()  <span class="comment"># 创建 checkpoints 表</span></span><br></pre></td></tr></table></figure>
+
+<p>生成的表结构类似于：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> checkpoints (</span><br><span class="line">    thread_id TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    checkpoint_ns TEXT <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    checkpoint_id TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    parent_checkpoint_id TEXT,</span><br><span class="line">    type TEXT,</span><br><span class="line">    checkpoint BYTEA,</span><br><span class="line">    metadata BYTEA,</span><br><span class="line">    <span class="keyword">PRIMARY KEY</span> (thread_id, checkpoint_ns, checkpoint_id)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>看到 <code>thread_id</code>、<code>checkpoint_id</code>、<code>parent_checkpoint_id</code> 这几个字段，你立刻会想到 Git 的 commit graph：每个 checkpoint 是一个 commit，<code>parent_checkpoint_id</code> 是 parent commit。LangGraph 甚至支持”时间旅行”（time travel）——你可以加载任意历史 checkpoint，让图从那个点重新运行。</p>
+<h3 id="3-Interrupt：在关键点插入”SAVEPOINT”"><a href="#3-Interrupt：在关键点插入”SAVEPOINT”" class="headerlink" title="3. Interrupt：在关键点插入”SAVEPOINT”"></a>3. Interrupt：在关键点插入”SAVEPOINT”</h3><p>LangGraph 0.2 之后引入了 <code>interrupt()</code> 函数，允许节点在执行过程中抛出一个人机协作信号。和抛出异常不同，interrupt 不会破坏状态，而是把当前状态冻结，等待外部输入。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.types <span class="keyword">import</span> interrupt, Command</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">human_approval_node</span>(<span class="params">state: State</span>):</span><br><span class="line">    <span class="comment"># 把需要审批的内容展示给人类</span></span><br><span class="line">    request = &#123;</span><br><span class="line">        <span class="string">&quot;tool_call&quot;</span>: state[<span class="string">&quot;last_tool_call&quot;</span>],</span><br><span class="line">        <span class="string">&quot;args&quot;</span>: state[<span class="string">&quot;last_tool_args&quot;</span>],</span><br><span class="line">        <span class="string">&quot;reason&quot;</span>: state[<span class="string">&quot;reasoning&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 阻塞，等待人类反馈</span></span><br><span class="line">    action = interrupt(request)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> action == <span class="string">&quot;approve&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;human_decision&quot;</span>: <span class="string">&quot;approved&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">elif</span> action == <span class="string">&quot;reject&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;human_decision&quot;</span>: <span class="string">&quot;rejected&quot;</span>, <span class="string">&quot;error&quot;</span>: <span class="string">&quot;Human rejected the action&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">elif</span> action.startswith(<span class="string">&quot;edit:&quot;</span>):</span><br><span class="line">        <span class="comment"># 人类编辑后的参数</span></span><br><span class="line">        new_args = action.replace(<span class="string">&quot;edit:&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;human_decision&quot;</span>: <span class="string">&quot;edited&quot;</span>, <span class="string">&quot;last_tool_args&quot;</span>: new_args&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用方通过 <code>graph.invoke(..., thread_id=&quot;xxx&quot;)</code> 启动图，当遇到 interrupt 时会抛出 <code>GraphInterrupt</code>。之后可以通过 <code>Command(resume=&quot;approve&quot;)</code> 继续：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第一次运行，会在 human_approval_node 中断</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    result = graph.invoke(initial_state, config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;txn-001&quot;</span>&#125;&#125;)</span><br><span class="line"><span class="keyword">except</span> GraphInterrupt:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;等待人类审批...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 人类审批后继续</span></span><br><span class="line">result = graph.invoke(</span><br><span class="line">    Command(resume=<span class="string">&quot;approve&quot;</span>),</span><br><span class="line">    config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;txn-001&quot;</span>&#125;&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这种模式和数据库的 <code>SAVEPOINT</code> 非常像：你在长事务里设置一个保存点，外部可以决定继续、回滚到保存点、或者修改参数后重试。</p>
+<h3 id="4-HITL-的三种模式"><a href="#4-HITL-的三种模式" class="headerlink" title="4. HITL 的三种模式"></a>4. HITL 的三种模式</h3><p>人在回路不是非黑即白，根据介入深度可以分为三种：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>介入点</th>
+<th>适用场景</th>
+<th>响应延迟</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>审批（Approval）</strong></td>
+<td>工具执行前&#x2F;后</td>
+<td>高风险操作：转账、删数据、发邮件</td>
+<td>秒级到分钟级</td>
+</tr>
+<tr>
+<td><strong>编辑（Edit）</strong></td>
+<td>工具参数、计划步骤</td>
+<td>需要人类修正细节：SQL 条件、收件人</td>
+<td>分钟级</td>
+</tr>
+<tr>
+<td><strong>接管（Takeover）</strong></td>
+<td>任意节点</td>
+<td>Agent 能力边界外：复杂判例、情感沟通</td>
+<td>小时级</td>
+</tr>
+</tbody></table>
+<p>审批模式最容易落地，也是生产环境的首选。编辑模式需要前端配合，把 Agent 的 intermediate state 渲染成可编辑表单。接管模式则是把 Agent 变成”人类助手的草稿生成器”。</p>
+<h3 id="5-可恢复性与幂等性"><a href="#5-可恢复性与幂等性" class="headerlink" title="5. 可恢复性与幂等性"></a>5. 可恢复性与幂等性</h3><p>Checkpoint 让运行可恢复，但可恢复不等于幂等。假设某个节点已经调用了一次外部 API（例如扣款），从中断点恢复时如果重复执行该节点，就会导致重复扣款。解决思路有两条：</p>
+<ol>
+<li><strong>节点级幂等</strong>：每个外部调用使用幂等键（idempotency key）。这和 PostgreSQL 的 <code>INSERT ... ON CONFLICT</code> 或应用层的幂等表是同一套思路。</li>
+<li><strong>副作用外置</strong>：把有副作用的操作放到独立的事务性服务里，Agent 只负责编排和决策。</li>
+</ol>
+<p>LangGraph 的 <code>retry_policy</code> 和 <code>map_reduce</code> 模式也支持失败重试，但重试策略必须和业务的幂等设计对齐。</p>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><h3 id="向量索引-vs-检查点索引"><a href="#向量索引-vs-检查点索引" class="headerlink" title="向量索引 vs. 检查点索引"></a>向量索引 vs. 检查点索引</h3><p>PostgreSQL 的 B-tree 索引让我们能快速定位一行数据。LangGraph 的检查点表也有类似的”索引”需求：按 <code>thread_id</code> 查询最近 checkpoint、按时间范围遍历 checkpoint。只是这里的”数据”是整个运行状态（序列化后的 dict），而不是标量字段。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询某个 thread 的最新 checkpoint</span></span><br><span class="line"><span class="keyword">SELECT</span> checkpoint_id, checkpoint, metadata</span><br><span class="line"><span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> thread_id <span class="operator">=</span> <span class="string">&#x27;txn-001&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> checkpoint_id <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询某个 thread 的所有 checkpoint 历史</span></span><br><span class="line"><span class="keyword">SELECT</span> checkpoint_id, parent_checkpoint_id, metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;step&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> thread_id <span class="operator">=</span> <span class="string">&#x27;txn-001&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> checkpoint_id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="事务隔离与并发-Thread"><a href="#事务隔离与并发-Thread" class="headerlink" title="事务隔离与并发 Thread"></a>事务隔离与并发 Thread</h3><p>LangGraph 的 <code>thread_id</code> 提供了类似数据库 session 的隔离边界。不同 thread 之间互不干扰，同一个 thread 内的 checkpoint 是线性增长的。如果你需要让多个 Agent 协作处理同一个业务流程，可以为每个参与者分配独立的 <code>thread_id</code>，再用一个外部协调表维护它们的关系——这和微服务中用 Saga 模式协调多个本地事务是同一套思想。</p>
+<h3 id="WAL-与-Audit-Log"><a href="#WAL-与-Audit-Log" class="headerlink" title="WAL 与 Audit Log"></a>WAL 与 Audit Log</h3><p>Checkpoint 本身就是绝佳的审计日志。你可以把 checkpoint 表复制到只读副本或数据仓库，用来分析：</p>
+<ul>
+<li>哪个节点最容易触发 human interrupt？</li>
+<li>人类通常批准还是拒绝？</li>
+<li>Agent 在哪一步陷入了循环？</li>
+</ul>
+<p>这比传统应用日志更结构化，因为每个 checkpoint 都包含完整的上下文状态。</p>
+<h3 id="状态模式-vs-Schema-设计"><a href="#状态模式-vs-Schema-设计" class="headerlink" title="状态模式 vs. Schema 设计"></a>状态模式 vs. Schema 设计</h3><p>LangGraph 的 State 通常用 TypedDict 或 Pydantic 定义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, Annotated, <span class="type">List</span></span><br><span class="line"><span class="keyword">from</span> operator <span class="keyword">import</span> add</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">State</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    messages: Annotated[<span class="type">List</span>[BaseMessage], add]</span><br><span class="line">    plan: <span class="type">List</span>[<span class="built_in">str</span>]</span><br><span class="line">    last_tool_call: <span class="built_in">str</span></span><br><span class="line">    last_tool_args: <span class="built_in">dict</span></span><br><span class="line">    human_decision: <span class="built_in">str</span></span><br><span class="line">    error: <span class="built_in">str</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Annotated[..., add]</code> 表示这个字段会追加而不是覆盖。这和 PostgreSQL 的数组类型或 JSONB 追加操作异曲同工：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> sessions</span><br><span class="line"><span class="keyword">SET</span> messages <span class="operator">=</span> messages <span class="operator">||</span> <span class="string">&#x27;[&#123;&quot;role&quot;:&quot;ai&quot;,&quot;content&quot;:&quot;...&quot;&#125;]&#x27;</span>::jsonb</span><br><span class="line"><span class="keyword">WHERE</span> thread_id <span class="operator">=</span> <span class="string">&#x27;txn-001&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>设计 State Schema 时，后端工程师可以沿用数据库表设计的经验：</p>
+<ul>
+<li>哪些字段是主键&#x2F;索引？（thread_id, checkpoint_id）</li>
+<li>哪些字段需要追加语义？（messages, observations）</li>
+<li>哪些字段需要覆盖语义？（plan, error, human_decision）</li>
+<li>哪些字段应该冗余存储以便审计？（完整的 tool_call 结果）</li>
+</ul>
+<h2 id="🛠️-微实战"><a href="#🛠️-微实战" class="headerlink" title="🛠️ 微实战"></a>🛠️ 微实战</h2><p>下面实现一个**”带审批的数据库查询 Agent”**。它会根据用户问题生成 SQL，但在真正执行前必须获得人类审批。这个场景在后端工程师的日常工作中非常典型：让 AI 帮你看日志、查指标，但不能让它直接 <code>DELETE</code> 生产表。</p>
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langgraph langchain-openai psycopg psycopg-pool langgraph-checkpoint-postgres</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, Annotated, <span class="type">List</span></span><br><span class="line"><span class="keyword">from</span> operator <span class="keyword">import</span> add</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain_core.messages <span class="keyword">import</span> BaseMessage, HumanMessage, AIMessage, ToolMessage</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, END</span><br><span class="line"><span class="keyword">from</span> langgraph.types <span class="keyword">import</span> interrupt, Command</span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.postgres <span class="keyword">import</span> PostgresSaver</span><br><span class="line"><span class="keyword">from</span> psycopg_pool <span class="keyword">import</span> ConnectionPool</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 1. 状态定义 ----------</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">State</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    messages: Annotated[<span class="type">List</span>[BaseMessage], add]</span><br><span class="line">    sql: <span class="built_in">str</span></span><br><span class="line">    approved: <span class="built_in">bool</span></span><br><span class="line">    query_result: <span class="built_in">str</span></span><br><span class="line">    error: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 2. 模型与工具 ----------</span></span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>, temperature=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">execute_sql</span>(<span class="params">sql: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟执行 SQL，生产环境请接入只读副本。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 这里用 print 模拟，真实场景请使用 psycopg 连接</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;[MOCK] Executed: <span class="subst">&#123;sql&#125;</span>\nRows: 42&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 3. 节点 ----------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_sql</span>(<span class="params">state: State</span>):</span><br><span class="line">    prompt = <span class="string">f&quot;&quot;&quot;你是一名 PostgreSQL DBA。根据用户问题生成只读 SELECT SQL。</span></span><br><span class="line"><span class="string">问题：<span class="subst">&#123;state[<span class="string">&#x27;messages&#x27;</span>][-<span class="number">1</span>].content&#125;</span></span></span><br><span class="line"><span class="string">要求：</span></span><br><span class="line"><span class="string">1. 禁止生成 DELETE / UPDATE / DROP / TRUNCATE。</span></span><br><span class="line"><span class="string">2. 只返回 SQL 代码，不要解释。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">    response = llm.invoke([HumanMessage(content=prompt)])</span><br><span class="line">    sql = response.content.strip().strip(<span class="string">&quot;```&quot;</span>).strip(<span class="string">&quot;```sql&quot;</span>).strip()</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;sql&quot;</span>: sql, <span class="string">&quot;messages&quot;</span>: [AIMessage(content=<span class="string">f&quot;拟执行的 SQL：\n<span class="subst">&#123;sql&#125;</span>&quot;</span>)]&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">human_approval</span>(<span class="params">state: State</span>):</span><br><span class="line">    request = &#123;</span><br><span class="line">        <span class="string">&quot;action&quot;</span>: <span class="string">&quot;execute_sql&quot;</span>,</span><br><span class="line">        <span class="string">&quot;sql&quot;</span>: state[<span class="string">&quot;sql&quot;</span>],</span><br><span class="line">        <span class="string">&quot;hint&quot;</span>: <span class="string">&quot;请输入 approve / reject / edit:&lt;新SQL&gt;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 中断，等待人类输入</span></span><br><span class="line">    decision = interrupt(request)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> decision == <span class="string">&quot;approve&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;approved&quot;</span>: <span class="literal">True</span>&#125;</span><br><span class="line">    <span class="keyword">elif</span> decision.startswith(<span class="string">&quot;edit:&quot;</span>):</span><br><span class="line">        new_sql = decision.replace(<span class="string">&quot;edit:&quot;</span>, <span class="string">&quot;&quot;</span>).strip()</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;sql&quot;</span>: new_sql, <span class="string">&quot;approved&quot;</span>: <span class="literal">True</span>&#125;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;approved&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;error&quot;</span>: <span class="string">&quot;人类拒绝了该 SQL&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_sql</span>(<span class="params">state: State</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> state[<span class="string">&quot;approved&quot;</span>]:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;messages&quot;</span>: [AIMessage(content=<span class="string">f&quot;操作已取消：<span class="subst">&#123;state.get(<span class="string">&#x27;error&#x27;</span>, <span class="string">&#x27;未批准&#x27;</span>)&#125;</span>&quot;</span>)]&#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = execute_sql(state[<span class="string">&quot;sql&quot;</span>])</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;query_result&quot;</span>: result, <span class="string">&quot;messages&quot;</span>: [ToolMessage(content=result, tool_call_id=<span class="string">&quot;execute_sql&quot;</span>)]&#125;</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;error&quot;</span>: <span class="built_in">str</span>(e), <span class="string">&quot;messages&quot;</span>: [AIMessage(content=<span class="string">f&quot;执行失败：<span class="subst">&#123;e&#125;</span>&quot;</span>)]&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 4. 构图 ----------</span></span><br><span class="line">builder = StateGraph(State)</span><br><span class="line">builder.add_node(<span class="string">&quot;generate_sql&quot;</span>, generate_sql)</span><br><span class="line">builder.add_node(<span class="string">&quot;human_approval&quot;</span>, human_approval)</span><br><span class="line">builder.add_node(<span class="string">&quot;run_sql&quot;</span>, run_sql)</span><br><span class="line"></span><br><span class="line">builder.set_entry_point(<span class="string">&quot;generate_sql&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;generate_sql&quot;</span>, <span class="string">&quot;human_approval&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;human_approval&quot;</span>, <span class="string">&quot;run_sql&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;run_sql&quot;</span>, END)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 5. 持久化 ----------</span></span><br><span class="line">DB_URI = os.environ.get(<span class="string">&quot;DATABASE_URL&quot;</span>, <span class="string">&quot;postgresql://postgres:postgres@localhost:5432/langgraph&quot;</span>)</span><br><span class="line">pool = ConnectionPool(conninfo=DB_URI, max_size=<span class="number">5</span>, kwargs=&#123;<span class="string">&quot;autocommit&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;prepare_threshold&quot;</span>: <span class="number">0</span>&#125;)</span><br><span class="line">checkpointer = PostgresSaver(pool)</span><br><span class="line">checkpointer.setup()</span><br><span class="line"></span><br><span class="line">graph = builder.<span class="built_in">compile</span>(checkpointer=checkpointer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------- 6. 运行 ----------</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    thread_id = <span class="string">&quot;sql-audit-001&quot;</span></span><br><span class="line">    config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: thread_id&#125;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 第一次运行：生成 SQL 后中断</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = graph.invoke(</span><br><span class="line">            &#123;<span class="string">&quot;messages&quot;</span>: [HumanMessage(content=<span class="string">&quot;查询过去 7 天慢查询数量&quot;</span>)]&#125;,</span><br><span class="line">            config=config</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;运行中断，等待审批：<span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 模拟人类审批后继续</span></span><br><span class="line">    result = graph.invoke(</span><br><span class="line">        Command(resume=<span class="string">&quot;approve&quot;</span>),</span><br><span class="line">        config=config</span><br><span class="line">    )</span><br><span class="line">    <span class="built_in">print</span>(result[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h3><ol>
+<li>第一次 <code>graph.invoke()</code> 会执行到 <code>human_approval</code> 节点，抛出 <code>GraphInterrupt</code>。</li>
+<li>你在控制台或前端看到拟执行的 SQL。</li>
+<li>你决定批准、拒绝或编辑。</li>
+<li>通过 <code>Command(resume=...)</code> 恢复运行，<code>run_sql</code> 节点执行查询。</li>
+<li>即使此时服务重启，只要用相同的 <code>thread_id</code>，LangGraph 会从最近 checkpoint 恢复。</li>
+</ol>
+<h3 id="关键设计点"><a href="#关键设计点" class="headerlink" title="关键设计点"></a>关键设计点</h3><ul>
+<li><strong>只读约束</strong>：<code>generate_sql</code> 的 prompt 里强制要求 SELECT，并且可以在 <code>execute_sql</code> 里再做一次 SQL 解析校验。</li>
+<li><strong>幂等执行</strong>：<code>execute_sql</code> 如果对接真实数据库，应使用 <code>SET TRANSACTION READ ONLY</code> 或只读账号。</li>
+<li><strong>审计完备</strong>：所有状态变化（SQL 生成、人类决策、执行结果）都写入 checkpoint 表，可追溯。</li>
+</ul>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ul>
+<li><strong>LangGraph v0.2 正式发布 Interrupt &#x2F; Command API</strong>：相比早期版本的 <code>interrupt_before</code> &#x2F; <code>interrupt_after</code>，新的 <code>interrupt()</code> 函数允许在节点内部任意位置暂停，极大简化了复杂 HITL 流程的代码组织。</li>
+<li><strong>LangGraph Platform 推出 Managed Checkpointing</strong>：云服务版支持自动扩容的 Postgres 检查点后端，并提供可视化时间旅行调试器，适合不想自己运维数据库的团队。</li>
+<li><strong>论文《SWE-bench Verified》</strong>：Anthropic 发布经过人工验证的代码 Agent 基准，强调人在回路对减少幻觉的重要性。该文指出，约 30% 的 Agent 错误可以通过简单的审批节点避免。</li>
+<li><strong>OpenAI 的 Computer Use Agent 安全报告</strong>：报告详细披露了让 Agent 操作浏览器和文件系统的风险，建议生产部署必须包含”人在回路”和”最小权限原则”，与本节的数据库查询审批场景高度相关。</li>
+<li><strong>Grafana + LangGraph 可观测性插件</strong>：社区推出 LangGraph 的 OpenTelemetry 集成，可以把节点执行耗时、interrupt 次数、恢复时间等指标接入 Prometheus&#x2F;Grafana。</li>
+</ul>
+<hr>
+<p>今天我们用 LangGraph 的 State、Checkpoint、Interrupt 和 Command 构建了一个可中断、可恢复的 Agent 工作流。核心 takeaway 是：<strong>Agent 落地不是让模型变得更聪明，而是让运行过程变得可观测、可控制、可回滚</strong>。对后端工程师来说，这意味着我们可以把多年积累的数据库事务、幂等设计、审计日志经验迁移到 AI 系统设计中。</p>
+<p>下一篇我们将继续深入 LangGraph 的”时间旅行”与”分支重放”能力，探索如何在生产环境中调试复杂的 Agent 轨迹。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/">https://dive2cloud-bmz.github.io/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/LangGraph/">
+                                    <span class="chip bg-color">LangGraph</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Human-in-the-loop/">
+                                    <span class="chip bg-color">Human-in-the-loop</span>
+                                </a>
+                            
+                                <a href="/tags/State-Persistence/">
+                                    <span class="chip bg-color">State-Persistence</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流">
+                        
+                        <span class="card-title">LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-05
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Human-in-the-loop/">
+                        <span class="chip bg-color">Human-in-the-loop</span>
+                    </a>
+                    
+                    <a href="/tags/State-Persistence/">
+                        <span class="chip bg-color">State-Persistence</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/03/week4-day12-multi-agent-orchestration-patterns/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="从单兵到编队：Multi-Agent 编排的架构模式与 LangGraph 实战">
+                        
+                        <span class="card-title">从单兵到编队：Multi-Agent 编排的架构模式与 LangGraph 实战</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-03
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Multi-Agent/">
+                        <span class="chip bg-color">Multi-Agent</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Orchestration/">
+                        <span class="chip bg-color">Agent-Orchestration</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">263.3k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
