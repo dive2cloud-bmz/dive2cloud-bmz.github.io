@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-05T03:04:22.650Z</updated>
+  <updated>2026-08-06T03:04:50.821Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/</id>
+    <published>2026-08-06T03:00:00.000Z</published>
+    <updated>2026-08-06T03:04:50.821Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹&quot;&gt;&lt;a href=&quot;#LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Time-Travel" scheme="https://dive2cloud-bmz.github.io/tags/Time-Travel/"/>
+    
+    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
+    
+    <category term="Branch-Replay" scheme="https://dive2cloud-bmz.github.io/tags/Branch-Replay/"/>
+    
+    <category term="Observability" scheme="https://dive2cloud-bmz.github.io/tags/Observability/"/>
+    
+  </entry>
   
   <entry>
     <title>LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</title>
@@ -72,11 +109,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
     <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -650,41 +687,6 @@
     <category term="Production" scheme="https://dive2cloud-bmz.github.io/tags/Production/"/>
     
     <category term="FastAPI" scheme="https://dive2cloud-bmz.github.io/tags/FastAPI/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>给大模型戴上紧箍咒：LLM Guardrails 与结构化输出校验框架</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/22/week3-day6-llm-guardrails-structured-output-validation/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/22/week3-day6-llm-guardrails-structured-output-validation/</id>
-    <published>2026-07-22T01:30:00.000Z</published>
-    <updated>2026-07-22T03:06:07.208Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;给大模型戴上紧箍咒：LLM-Guardrails-与结构化输出校验框架&quot;&gt;&lt;a href=&quot;#给大模型戴上紧箍咒：LLM-Guardrails-与结构化输出校验框架&quot; class=&quot;headerlink&quot; title=&quot;给大模型戴上紧箍咒：LLM</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
-    
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
-    
-    <category term="Structured-Output" scheme="https://dive2cloud-bmz.github.io/tags/Structured-Output/"/>
-    
-    <category term="Validation" scheme="https://dive2cloud-bmz.github.io/tags/Validation/"/>
-    
-    <category term="Pydantic" scheme="https://dive2cloud-bmz.github.io/tags/Pydantic/"/>
     
   </entry>
   

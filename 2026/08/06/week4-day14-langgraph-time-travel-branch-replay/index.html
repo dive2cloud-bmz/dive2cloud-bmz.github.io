@@ -1,0 +1,1229 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹, BMZ BLOG">
+    <meta name="description" content="LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹生产环境里的 Agent 不是 demo：它会调用工具、改写状态、多次迭代，一旦在某一步出错，你很难像调试普通函数那样单步追踪。昨天的文章讲了 La">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/LangGraph/">
+                                <span class="chip bg-color">LangGraph</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Time-Travel/">
+                                <span class="chip bg-color">Time-Travel</span>
+                            </a>
+                        
+                            <a href="/tags/Checkpoint/">
+                                <span class="chip bg-color">Checkpoint</span>
+                            </a>
+                        
+                            <a href="/tags/Branch-Replay/">
+                                <span class="chip bg-color">Branch-Replay</span>
+                            </a>
+                        
+                            <a href="/tags/Observability/">
+                                <span class="chip bg-color">Observability</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-06
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-06
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    12 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹"><a href="#LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹" class="headerlink" title="LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹"></a>LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</h1><p>生产环境里的 Agent 不是 demo：它会调用工具、改写状态、多次迭代，一旦在某一步出错，你很难像调试普通函数那样单步追踪。昨天的文章讲了 LangGraph 怎么用 Checkpoint 把状态持久化下来，今天我们要更进一步：<strong>把持久化的状态当成一份可回放、可分支的执行日志</strong>，在 Agent 轨迹里做“时间旅行”。</p>
+<h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>作为 PostgreSQL 后端工程师，你一定熟悉这样的场景：线上出现数据异常，DBA 会先问“能不能定位到那条 WAL（Write-Ahead Log）？”通过 LSN 找到变更点，再用 PITR（Point-in-Time Recovery）把数据库恢复到异常发生前的瞬间，重放事务，确认根因。</p>
+<p>LangGraph 的 Time Travel 本质上在做同一件事：</p>
+<ul>
+<li>每个节点执行后，状态会被写入 Checkpoint，相当于一条带 LSN 的 WAL 记录。</li>
+<li><code>get_state_history()</code> 把整条执行链路按时间顺序展开，相当于 <code>pg_waldump</code>。</li>
+<li><code>update_state()</code> 允许你在某个历史点修改状态并继续执行，相当于 PITR 中“恢复到指定时间点后再回放”。</li>
+<li>多个 <code>thread_id</code> 之间互不干扰，相当于不同 session 拥有独立的事务上下文。</li>
+</ul>
+<p>这个能力对 AI 应用工程师的价值是致命的：你不再只能“重新 prompt 一遍”，而是可以像 DBA 查日志一样精确地审视、修正、重放 Agent 的决策过程。</p>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-从“黑箱调用”到“可追溯状态序列”"><a href="#1-从“黑箱调用”到“可追溯状态序列”" class="headerlink" title="1. 从“黑箱调用”到“可追溯状态序列”"></a>1. 从“黑箱调用”到“可追溯状态序列”</h3><p>在没有状态机的链式 Agent 里，调用过程是线性的：输入 → LLM → 工具 → LLM → 输出。如果最终结果错了，你只能重新跑一次，寄希望于新的 prompt 或随机性能给出正确结果。</p>
+<p>LangGraph 把这一过程显式化：</p>
+<ul>
+<li><strong>State</strong>：图内所有节点共享的状态对象。</li>
+<li><strong>Node</strong>：对 State 的读取&#x2F;更新函数。</li>
+<li><strong>Checkpoint</strong>：每个节点执行后自动保存的状态快照。</li>
+<li><strong>Thread</strong>：一次独立的运行会话，由 <code>thread_id</code> 标识。</li>
+</ul>
+<p>于是，一次 Agent 运行不再是黑箱，而是一条可以逐帧回放的“状态序列”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as User</span><br><span class="line">    participant S as __start__</span><br><span class="line">    participant P as parse_ticket</span><br><span class="line">    participant C as classify</span><br><span class="line">    participant R as route</span><br><span class="line">    participant E as __end__</span><br><span class="line">    participant CP as Checkpoint</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;S: 输入工单</span><br><span class="line">    S-&gt;&gt;P: 初始化 State</span><br><span class="line">    P-&gt;&gt;CP: checkpoint-1</span><br><span class="line">    P-&gt;&gt;C: 跳转</span><br><span class="line">    C-&gt;&gt;CP: checkpoint-2</span><br><span class="line">    C-&gt;&gt;R: 跳转</span><br><span class="line">    R-&gt;&gt;CP: checkpoint-3</span><br><span class="line">    R-&gt;&gt;E: 结束</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-时间旅行核心-API"><a href="#2-时间旅行核心-API" class="headerlink" title="2. 时间旅行核心 API"></a>2. 时间旅行核心 API</h3><p>LangGraph 提供一组非常贴近后端直觉的 API：</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>作用</th>
+<th>数据库类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>get_state(config)</code></td>
+<td>获取当前线程最新状态快照</td>
+<td><code>SELECT * FROM state WHERE thread_id = ?</code></td>
+</tr>
+<tr>
+<td><code>get_state_history(config)</code></td>
+<td>获取线程全部历史快照</td>
+<td><code>pg_waldump</code> &#x2F; 审计日志</td>
+</tr>
+<tr>
+<td><code>update_state(config, values, as_node=...)</code></td>
+<td>在历史快照上修改状态，产生新分支</td>
+<td>PITR 后手动修正并重放</td>
+</tr>
+<tr>
+<td><code>invoke(None, config=checkpoint_config)</code></td>
+<td>从指定 checkpoint 继续执行</td>
+<td>从 LSN 开始回放事务</td>
+</tr>
+</tbody></table>
+<p>每个 <code>StateSnapshot</code> 包含这些关键字段：</p>
+<ul>
+<li><code>values</code>：该时刻的状态字典。</li>
+<li><code>next</code>：下一个待执行的节点列表。</li>
+<li><code>config</code>：包含 <code>checkpoint_id</code>，用于唯一定位该快照。</li>
+<li><code>metadata</code>：写入该快照的节点信息、时间戳等。</li>
+<li><code>parent_config</code>：上一个快照的 config，构成链式结构。</li>
+</ul>
+<h3 id="3-时间旅行的三种典型用法"><a href="#3-时间旅行的三种典型用法" class="headerlink" title="3. 时间旅行的三种典型用法"></a>3. 时间旅行的三种典型用法</h3><ol>
+<li><strong>审计与排障</strong>：当 Agent 给出错误结果时，先沿着 <code>get_state_history()</code> 回溯，看看到底是哪个节点把状态带偏了。</li>
+<li><strong>人在回路修正</strong>：业务运营人员在中间节点修正分类或决策，再用 <code>update_state()</code> 重新运行后续流程，不需要从头输入。</li>
+<li><strong>分支探索与回归测试</strong>：从同一个中间状态出发，分别尝试 A&#x2F;B 两种决策，比较最终输出；也可以把关键路径固化成回归测试用例。</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[parse_ticket] --&gt; B[classify]</span><br><span class="line">    B --&gt; C[route]</span><br><span class="line">    C --&gt; D[notify]</span><br><span class="line">    D --&gt; E[__end__]</span><br><span class="line"></span><br><span class="line">    B -.-&gt;|time travel| B1[update_state: bug]</span><br><span class="line">    B1 --&gt; C1[route to bug queue]</span><br><span class="line">    B -.-&gt;|branch| B2[update_state: feature]</span><br><span class="line">    B2 --&gt; C2[route to product board]</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-设计原则：节点应尽量幂等"><a href="#4-设计原则：节点应尽量幂等" class="headerlink" title="4. 设计原则：节点应尽量幂等"></a>4. 设计原则：节点应尽量幂等</h3><p>时间旅行有一个前提：<strong>同一节点在相同状态下重复执行，最好产生相同结果</strong>。这和后端服务里的幂等设计完全一致：</p>
+<ul>
+<li>如果节点会调用外部 API，要确保重放不会重复扣款、重复发消息、重复创建工单。</li>
+<li>如果节点依赖随机性（如 LLM temperature），调试时应把 temperature 设为 0，或把中间结果写回 State 后再重放。</li>
+<li>把“副作用”收敛到特定节点，避免每个节点都直接操作外部系统。</li>
+</ul>
+<p>这和 PostgreSQL 的 WAL 重放也很像：WAL 回放必须是确定性的，否则 PITR 就无法保证数据一致性。</p>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><p>把时间旅行的概念翻译成后端语言，你会发现它一点都不神秘。</p>
+<p><strong>Checkpoint ≈ WAL 记录</strong></p>
+<p>每次 LangGraph 节点执行后， saver 会把状态以 checkpoint 形式写入持久化存储。这个 checkpoint 里包含状态值、父 checkpoint ID、下一个节点、时间戳，跟 WAL 记录里的 LSN、prev LSN、事务 ID、变更内容几乎一一对应。</p>
+<p><strong>Checkpoint ID ≈ LSN</strong></p>
+<p><code>checkpoint_id</code> 是一个单调递增或基于 UUID 的标识符，唯一标识一次状态快照。重放时只需要把 <code>config</code> 里的 <code>checkpoint_id</code> 换成你想回到的那个点，LangGraph 就会从那里继续执行。</p>
+<p><strong>update_state ≈ SAVEPOINT + ROLLBACK TO SAVEPOINT</strong></p>
+<p>PostgreSQL 里可以用 <code>SAVEPOINT</code> 在事务内部设置保存点，出错时 <code>ROLLBACK TO SAVEPOINT</code> 回到保存点。LangGraph 的 <code>update_state()</code> 更灵活：它不仅在某个历史状态上“分叉”，还会把这个修改当成指定节点（<code>as_node</code>）的输出，让后续条件边重新计算。</p>
+<p><strong>get_state_history ≈ 只读审计表</strong></p>
+<p>你可以把 <code>get_state_history()</code> 的输出持久化到 ClickHouse &#x2F; Elasticsearch &#x2F; PostgreSQL 里，做成一个“Agent 审计平台”。这比单纯看日志更有价值，因为每个历史点都是完整的结构化状态，而不仅是文本输出。</p>
+<p><strong>Thread ID ≈ 数据库连接 Session</strong></p>
+<p>多个用户、多个会话共享同一个图定义，但每个 <code>thread_id</code> 有独立的 State 和 checkpoint 链。这跟 PostgreSQL 里多个 backend 进程共享同一个数据库实例，但每个连接有自己的事务上下文是一个道理。</p>
+<h2 id="🛠️-微实战：可时间旅行的工单分类器"><a href="#🛠️-微实战：可时间旅行的工单分类器" class="headerlink" title="🛠️ 微实战：可时间旅行的工单分类器"></a>🛠️ 微实战：可时间旅行的工单分类器</h2><p>下面是一个不依赖 OpenAI Key、可以立刻跑起来的例子。我们模拟一个“工单分类器”，先用一条有 bug 的规则把标题含 <code>crash</code> 的工单错误地分成 <code>support</code>，然后通过时间旅行修正为 <code>bug</code>，并观察后续路由如何变化。</p>
+<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langgraph</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> operator</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Annotated, <span class="type">Literal</span>, TypedDict</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.sqlite <span class="keyword">import</span> SqliteSaver</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> END, StateGraph</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TicketState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    ticket_id: <span class="built_in">str</span></span><br><span class="line">    title: <span class="built_in">str</span></span><br><span class="line">    body: <span class="built_in">str</span></span><br><span class="line">    category: <span class="type">Literal</span>[<span class="string">&quot;bug&quot;</span>, <span class="string">&quot;feature&quot;</span>, <span class="string">&quot;support&quot;</span>] | <span class="literal">None</span></span><br><span class="line">    priority: <span class="type">Literal</span>[<span class="string">&quot;p0&quot;</span>, <span class="string">&quot;p1&quot;</span>, <span class="string">&quot;p2&quot;</span>] | <span class="literal">None</span></span><br><span class="line">    actions: Annotated[<span class="built_in">list</span>, operator.add]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_ticket</span>(<span class="params">state: TicketState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;解析工单，提取关键信息。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;actions&quot;</span>: [<span class="string">f&quot;解析工单 <span class="subst">&#123;state[<span class="string">&#x27;ticket_id&#x27;</span>]&#125;</span>: <span class="subst">&#123;state[<span class="string">&#x27;title&#x27;</span>]&#125;</span>&quot;</span>],</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify</span>(<span class="params">state: TicketState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;分类节点：故意写了一个有 bug 的规则。&quot;&quot;&quot;</span></span><br><span class="line">    title = state[<span class="string">&quot;title&quot;</span>].lower()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 有 bug 的启发式规则：crash 应该归类为 bug，但被错分到了 support</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;crash&quot;</span> <span class="keyword">in</span> title <span class="keyword">or</span> <span class="string">&quot;error&quot;</span> <span class="keyword">in</span> title:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;category&quot;</span>: <span class="string">&quot;support&quot;</span>,</span><br><span class="line">            <span class="string">&quot;priority&quot;</span>: <span class="string">&quot;p2&quot;</span>,</span><br><span class="line">            <span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;自动分类: support / p2 (疑似错误)&quot;</span>],</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;add&quot;</span> <span class="keyword">in</span> title <span class="keyword">or</span> <span class="string">&quot;new&quot;</span> <span class="keyword">in</span> title:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;category&quot;</span>: <span class="string">&quot;feature&quot;</span>,</span><br><span class="line">            <span class="string">&quot;priority&quot;</span>: <span class="string">&quot;p1&quot;</span>,</span><br><span class="line">            <span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;自动分类: feature / p1&quot;</span>],</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;category&quot;</span>: <span class="string">&quot;support&quot;</span>,</span><br><span class="line">        <span class="string">&quot;priority&quot;</span>: <span class="string">&quot;p2&quot;</span>,</span><br><span class="line">        <span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;自动分类: support / p2&quot;</span>],</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">state: TicketState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;根据分类结果路由到不同队列。&quot;&quot;&quot;</span></span><br><span class="line">    cat = state[<span class="string">&quot;category&quot;</span>]</span><br><span class="line">    <span class="keyword">if</span> cat == <span class="string">&quot;bug&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;actions&quot;</span>: [<span class="string">f&quot;路由 -&gt; 紧急 Bug 队列 (priority <span class="subst">&#123;state[<span class="string">&#x27;priority&#x27;</span>]&#125;</span>)&quot;</span>]&#125;</span><br><span class="line">    <span class="keyword">if</span> cat == <span class="string">&quot;feature&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;路由 -&gt; 产品需求看板&quot;</span>]&#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;路由 -&gt; 客服工单池&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建图</span></span><br><span class="line">builder = StateGraph(TicketState)</span><br><span class="line">builder.add_node(<span class="string">&quot;parse_ticket&quot;</span>, parse_ticket)</span><br><span class="line">builder.add_node(<span class="string">&quot;classify&quot;</span>, classify)</span><br><span class="line">builder.add_node(<span class="string">&quot;route&quot;</span>, route)</span><br><span class="line"></span><br><span class="line">builder.set_entry_point(<span class="string">&quot;parse_ticket&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;parse_ticket&quot;</span>, <span class="string">&quot;classify&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;classify&quot;</span>, <span class="string">&quot;route&quot;</span>)</span><br><span class="line">builder.add_edge(<span class="string">&quot;route&quot;</span>, END)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用内存 SQLite 作为 checkpoint 后端（生产环境可换成 PostgresSaver）</span></span><br><span class="line">memory = SqliteSaver.from_conn_string(<span class="string">&quot;:memory:&quot;</span>)</span><br><span class="line">graph = builder.<span class="built_in">compile</span>(checkpointer=memory)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第一次运行：模拟错误的分类结果</span></span><br><span class="line">config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;T-20240806-001&quot;</span>&#125;&#125;</span><br><span class="line">ticket = &#123;</span><br><span class="line">    <span class="string">&quot;ticket_id&quot;</span>: <span class="string">&quot;T-20240806-001&quot;</span>,</span><br><span class="line">    <span class="string">&quot;title&quot;</span>: <span class="string">&quot;Login crash after upgrade&quot;</span>,</span><br><span class="line">    <span class="string">&quot;body&quot;</span>: <span class="string">&quot;Users cannot log in after the latest deployment.&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;=== 第一次运行 ===&quot;</span>)</span><br><span class="line">result = graph.invoke(ticket, config=config)</span><br><span class="line"><span class="built_in">print</span>(json.dumps(result, indent=<span class="number">2</span>, ensure_ascii=<span class="literal">False</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 时间旅行：查看历史快照</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 历史快照 ===&quot;</span>)</span><br><span class="line">history = <span class="built_in">list</span>(graph.get_state_history(config))</span><br><span class="line"><span class="keyword">for</span> i, snap <span class="keyword">in</span> <span class="built_in">enumerate</span>(history):</span><br><span class="line">    cp_id = snap.config.get(<span class="string">&quot;configurable&quot;</span>, &#123;&#125;).get(<span class="string">&quot;checkpoint_id&quot;</span>, <span class="string">&quot;N/A&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(</span><br><span class="line">        <span class="string">f&quot;<span class="subst">&#123;i&#125;</span>: checkpoint=<span class="subst">&#123;cp_id[:<span class="number">8</span>]&#125;</span>... &quot;</span></span><br><span class="line">        <span class="string">f&quot;category=<span class="subst">&#123;snap.values.get(<span class="string">&#x27;category&#x27;</span>)&#125;</span>, &quot;</span></span><br><span class="line">        <span class="string">f&quot;next=<span class="subst">&#123;snap.<span class="built_in">next</span>&#125;</span>&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到 classify 执行完成后的快照（next 为 [&#x27;route&#x27;]）</span></span><br><span class="line">target = <span class="built_in">next</span>(</span><br><span class="line">    s</span><br><span class="line">    <span class="keyword">for</span> s <span class="keyword">in</span> history</span><br><span class="line">    <span class="keyword">if</span> s.<span class="built_in">next</span> == [<span class="string">&quot;route&quot;</span>] <span class="keyword">and</span> s.values.get(<span class="string">&quot;category&quot;</span>) == <span class="string">&quot;support&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 修正 classify 输出并分支重放 ===&quot;</span>)</span><br><span class="line">graph.update_state(</span><br><span class="line">    target.config,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;category&quot;</span>: <span class="string">&quot;bug&quot;</span>,</span><br><span class="line">        <span class="string">&quot;priority&quot;</span>: <span class="string">&quot;p0&quot;</span>,</span><br><span class="line">        <span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;人工修正: bug / p0&quot;</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">    as_node=<span class="string">&quot;classify&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从修正后的 checkpoint 继续执行</span></span><br><span class="line">forked = graph.invoke(<span class="literal">None</span>, config=target.config)</span><br><span class="line"><span class="built_in">print</span>(json.dumps(forked, indent=<span class="number">2</span>, ensure_ascii=<span class="literal">False</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进一步：从 parse_ticket 之后直接分支探索 feature 路径</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 从 parse_ticket 后分支探索 feature 路径 ===&quot;</span>)</span><br><span class="line">parse_snap = <span class="built_in">next</span>(s <span class="keyword">for</span> s <span class="keyword">in</span> history <span class="keyword">if</span> s.<span class="built_in">next</span> == [<span class="string">&quot;classify&quot;</span>])</span><br><span class="line">graph.update_state(</span><br><span class="line">    parse_snap.config,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;category&quot;</span>: <span class="string">&quot;feature&quot;</span>,</span><br><span class="line">        <span class="string">&quot;priority&quot;</span>: <span class="string">&quot;p1&quot;</span>,</span><br><span class="line">        <span class="string">&quot;actions&quot;</span>: [<span class="string">&quot;假设分类: feature / p1&quot;</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">    as_node=<span class="string">&quot;classify&quot;</span>,</span><br><span class="line">)</span><br><span class="line">feature_branch = graph.invoke(<span class="literal">None</span>, config=parse_snap.config)</span><br><span class="line"><span class="built_in">print</span>(json.dumps(feature_branch, indent=<span class="number">2</span>, ensure_ascii=<span class="literal">False</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果要点"><a href="#运行结果要点" class="headerlink" title="运行结果要点"></a>运行结果要点</h3><ol>
+<li><strong>第一次运行</strong>会把 <code>Login crash after upgrade</code> 错误地分到 <code>support / p2</code>，然后路由到客服工单池。</li>
+<li><strong>时间旅行</strong>找到 <code>classify</code> 完成后的 checkpoint，把分类改成 <code>bug / p0</code>，重放后路由到紧急 Bug 队列。</li>
+<li><strong>分支探索</strong>从 <code>parse_ticket</code> 之后直接假设分类为 <code>feature / p1</code>，验证另一条路径的输出。</li>
+</ol>
+<p>你可以把 <code>SqliteSaver</code> 换成 <code>PostgresSaver</code>，把 <code>thread_id</code> 换成业务上的会话 ID，这条链路就能直接跑进生产环境。</p>
+<h3 id="生产化-checklist"><a href="#生产化-checklist" class="headerlink" title="生产化 checklist"></a>生产化 checklist</h3><ul>
+<li><input disabled type="checkbox"> 把 SQLite 替换为 <code>PostgresSaver</code> 或 <code>RedisSaver</code>，确保服务重启不丢状态。</li>
+<li><input disabled type="checkbox"> 为 <code>update_state()</code> 的操作记录审计日志，明确“谁在什么时间修改了哪个 checkpoint”。</li>
+<li><input disabled type="checkbox"> 对会触发外部副作用的节点（发邮件、扣款、建工单）增加幂等键，避免重放导致重复执行。</li>
+<li><input disabled type="checkbox"> 结合 LangSmith trace，把 checkpoint 链路与 LLM 调用链路做关联，方便端到端排障。</li>
+</ul>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ul>
+<li><strong>LangGraph Checkpoint v2</strong>：官方正在推进更轻量、更适配异步 PostgresSaver 的 checkpoint 格式，生产环境下建议关注迁移指南。</li>
+<li><strong>LangSmith Timeline 与离线回放</strong>：LangSmith 已经支持把完整 Agent trace 按节点展开，未来与时间旅行 API 结合可以做自动化回归测试。</li>
+<li><strong>PostgresSaver 生产落地</strong>：<code>langgraph-checkpoint-postgres</code> 让 LangGraph 的状态持久化直接复用现有 PG 集群，后端工程师无需引入新的存储中间件。</li>
+<li><strong>推荐阅读</strong>：Lilian Weng 的《LLM Powered Autonomous Agents》和 LangChain 官方博客关于 “Observable Agents” 的系列，把时间旅行、可观测性和评估串在了一起。</li>
+<li><strong>前沿方向</strong>：把 Agent 执行轨迹当作事件流（Event Sourcing）来处理，结合 CQRS 构建可审计、可回滚、可 A&#x2F;B 测试的企业级 Agent 平台。</li>
+</ul>
+<hr>
+<p>今天的主题把 LangGraph 从“状态持久化”推进到了“状态可回放”。下一篇我们会继续深入：<strong>LangGraph 子图与远程可调用图</strong>，学习如何把大图拆成模块化服务，让 Agent 架构更像微服务。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/">https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/LangGraph/">
+                                    <span class="chip bg-color">LangGraph</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Time-Travel/">
+                                    <span class="chip bg-color">Time-Travel</span>
+                                </a>
+                            
+                                <a href="/tags/Checkpoint/">
+                                    <span class="chip bg-color">Checkpoint</span>
+                                </a>
+                            
+                                <a href="/tags/Branch-Replay/">
+                                    <span class="chip bg-color">Branch-Replay</span>
+                                </a>
+                            
+                                <a href="/tags/Observability/">
+                                    <span class="chip bg-color">Observability</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹">
+                        
+                        <span class="card-title">LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Time-Travel/">
+                        <span class="chip bg-color">Time-Travel</span>
+                    </a>
+                    
+                    <a href="/tags/Checkpoint/">
+                        <span class="chip bg-color">Checkpoint</span>
+                    </a>
+                    
+                    <a href="/tags/Branch-Replay/">
+                        <span class="chip bg-color">Branch-Replay</span>
+                    </a>
+                    
+                    <a href="/tags/Observability/">
+                        <span class="chip bg-color">Observability</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流">
+                        
+                        <span class="card-title">LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-05
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Human-in-the-loop/">
+                        <span class="chip bg-color">Human-in-the-loop</span>
+                    </a>
+                    
+                    <a href="/tags/State-Persistence/">
+                        <span class="chip bg-color">State-Persistence</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">266.3k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
