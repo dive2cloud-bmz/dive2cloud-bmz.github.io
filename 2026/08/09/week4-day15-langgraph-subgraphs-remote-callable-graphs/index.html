@@ -1,0 +1,1325 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战, BMZ BLOG">
+    <meta name="description" content="
+后端工程师转型 AI 应用工程师 · Week 4 Day 15主题：LangGraph 子图与远程可调用图：构建模块化 Agent 服务
+
+🚀 核心洞察上一篇我们研究了 LangGraph 的 Time Travel、Branch 与">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/LangGraph/">
+                                <span class="chip bg-color">LangGraph</span>
+                            </a>
+                        
+                            <a href="/tags/Multi-Agent/">
+                                <span class="chip bg-color">Multi-Agent</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Subgraph/">
+                                <span class="chip bg-color">Subgraph</span>
+                            </a>
+                        
+                            <a href="/tags/Remote-Callable-Graph/">
+                                <span class="chip bg-color">Remote-Callable-Graph</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-09
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-09
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    14 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>后端工程师转型 AI 应用工程师 · Week 4 Day 15<br>主题：LangGraph 子图与远程可调用图：构建模块化 Agent 服务</p>
+</blockquote>
+<h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>上一篇我们研究了 LangGraph 的 Time Travel、Branch 与 Replay，掌握了如何在单个图内部做审计、调试与回滚。但当 Agent 进入生产环境后，”单个巨型图”会迅速成为瓶颈：不同的业务域耦合在一起，版本发布互相牵制，团队无法独立迭代，故障面也无限放大。</p>
+<p>今天我们把视角从”单图内部调试”切换到”多图之间协作”。LangGraph 提供两条关键路径：</p>
+<ol>
+<li><strong>子图（Subgraph）</strong>：把大图拆成多个内聚的小图，像数据库里的 Schema 分区一样，每个子图维护自己的状态与生命周期。</li>
+<li><strong>远程可调用图（Remote Callable Graph）</strong>：把子图发布为独立服务，通过 HTTP&#x2F;gRPC 暴露接口，实现跨进程、跨团队的 Agent 能力复用。</li>
+</ol>
+<p>作为 PostgreSQL 后端工程师，你对”模块化”并不陌生：函数、Schema、扩展、微服务拆分，本质上都是控制复杂度与隔离故障。LangGraph 的子图与远程图，正是把同样的工程纪律引入 Agent 编排层。</p>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-为什么需要子图？"><a href="#1-为什么需要子图？" class="headerlink" title="1. 为什么需要子图？"></a>1. 为什么需要子图？</h3><p>一个典型的生产级 Agent 可能包含：意图识别、记忆检索、工具调用、代码生成、安全校验、输出格式化等多个阶段。如果全部写在一个图里，会出现以下问题：</p>
+<ul>
+<li><strong>状态膨胀</strong>：共享 State 对象越来越大，字段含义模糊。</li>
+<li><strong>逻辑纠缠</strong>：不同域的节点互相依赖，修改一个节点可能触发连锁反应。</li>
+<li><strong>测试困难</strong>：很难单独测试”记忆检索”这一小段逻辑。</li>
+<li><strong>复用性差</strong>：另一个项目想复用”代码生成”能力，必须拷贝整个图。</li>
+</ul>
+<p>子图通过”图内嵌套图”的方式解决这些问题。父图把子图当成一个普通节点来调用，而子图内部可以有自己的节点、边和状态转换规则。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户输入] --&gt; B[意图识别子图]</span><br><span class="line">    B --&gt; C[记忆检索子图]</span><br><span class="line">    C --&gt; D[工具规划子图]</span><br><span class="line">    D --&gt; E[代码生成子图]</span><br><span class="line">    E --&gt; F[输出格式化]</span><br><span class="line">    style B fill:#e1f5fe</span><br><span class="line">    style C fill:#e8f5e9</span><br><span class="line">    style D fill:#fff3e0</span><br><span class="line">    style E fill:#f3e5f5</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-LangGraph-子图的两种形态"><a href="#2-LangGraph-子图的两种形态" class="headerlink" title="2. LangGraph 子图的两种形态"></a>2. LangGraph 子图的两种形态</h3><p>LangGraph 目前支持两种子图使用方式：</p>
+<table>
+<thead>
+<tr>
+<th>形态</th>
+<th>调用方式</th>
+<th>适用场景</th>
+<th>状态共享方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>编译前子图</td>
+<td><code>builder.add_node(&quot;sub&quot;, sub_graph.compile())</code></td>
+<td>同一进程内，强调封装</td>
+<td>通过父图 State 的字段映射</td>
+</tr>
+<tr>
+<td>远程可调用图</td>
+<td><code>RemoteGraph(&quot;graph_id&quot;, client=client)</code></td>
+<td>跨进程、跨服务、跨团队</td>
+<td>通过 HTTP 请求体 + 响应体</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注：LangGraph 0.2.x 的 API 仍在快速演进，部分 RemoteGraph 能力需要配合 LangGraph Platform &#x2F; LangGraph Cloud 使用。本文示例基于 LangGraph 0.2.15 的公开接口。</p>
+</blockquote>
+<h3 id="3-子图的状态边界"><a href="#3-子图的状态边界" class="headerlink" title="3. 子图的状态边界"></a>3. 子图的状态边界</h3><p>子图最重要的设计决策是：<strong>哪些状态字段由父图管理，哪些由子图内部管理</strong>。</p>
+<p>LangGraph 推荐的做法是：</p>
+<ul>
+<li><strong>父图 State</strong>：只保留跨子图流转的”最小上下文”，例如 <code>user_query</code>、<code>session_id</code>、<code>final_answer</code>。</li>
+<li><strong>子图 State</strong>：保留子图内部需要的临时字段，例如 <code>retrieved_docs</code>、<code>generated_code</code>、<code>validation_errors</code>。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 父图状态：极简</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ParentState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    user_query: <span class="built_in">str</span></span><br><span class="line">    session_id: <span class="built_in">str</span></span><br><span class="line">    final_answer: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 记忆检索子图状态</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MemorySubgraphState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    query: <span class="built_in">str</span></span><br><span class="line">    retrieved_docs: <span class="type">List</span>[<span class="built_in">dict</span>]</span><br><span class="line">    summary: <span class="built_in">str</span></span><br></pre></td></tr></table></figure>
+
+<p>这种设计与数据库 Schema 设计非常相似：父图是”事实表”，子图是”明细表”，通过外键（字段名）关联。</p>
+<h3 id="4-在父图中嵌入子图"><a href="#4-在父图中嵌入子图" class="headerlink" title="4. 在父图中嵌入子图"></a>4. 在父图中嵌入子图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, END</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 定义子图</span></span><br><span class="line">memory_builder = StateGraph(MemorySubgraphState)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 子图节点：检索 + 总结</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">state: MemorySubgraphState</span>):</span><br><span class="line">    <span class="comment"># 模拟从向量数据库检索</span></span><br><span class="line">    docs = [</span><br><span class="line">        &#123;<span class="string">&quot;content&quot;</span>: <span class="string">f&quot;doc about <span class="subst">&#123;state[<span class="string">&#x27;query&#x27;</span>]&#125;</span>&quot;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;content&quot;</span>: <span class="string">&quot;another relevant doc&quot;</span>&#125;,</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;retrieved_docs&quot;</span>: docs&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">summarize</span>(<span class="params">state: MemorySubgraphState</span>):</span><br><span class="line">    summary = <span class="string">&quot;; &quot;</span>.join(d[<span class="string">&quot;content&quot;</span>] <span class="keyword">for</span> d <span class="keyword">in</span> state[<span class="string">&quot;retrieved_docs&quot;</span>])</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;summary&quot;</span>: summary&#125;</span><br><span class="line"></span><br><span class="line">memory_builder.add_node(<span class="string">&quot;retrieve&quot;</span>, retrieve)</span><br><span class="line">memory_builder.add_node(<span class="string">&quot;summarize&quot;</span>, summarize)</span><br><span class="line">memory_builder.add_edge(START, <span class="string">&quot;retrieve&quot;</span>)</span><br><span class="line">memory_builder.add_edge(<span class="string">&quot;retrieve&quot;</span>, <span class="string">&quot;summarize&quot;</span>)</span><br><span class="line">memory_builder.add_edge(<span class="string">&quot;summarize&quot;</span>, END)</span><br><span class="line"></span><br><span class="line">memory_graph = memory_builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 定义父图</span></span><br><span class="line">parent_builder = StateGraph(ParentState)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">entry_node</span>(<span class="params">state: ParentState</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 父图节点：调用子图</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">memory_node</span>(<span class="params">state: ParentState</span>):</span><br><span class="line">    <span class="comment"># 把父图状态映射到子图状态</span></span><br><span class="line">    sub_input = &#123;<span class="string">&quot;query&quot;</span>: state[<span class="string">&quot;user_query&quot;</span>]&#125;</span><br><span class="line">    sub_result = memory_graph.invoke(sub_input)</span><br><span class="line">    <span class="comment"># 把子图结果写回父图状态</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;final_answer&quot;</span>: <span class="string">f&quot;基于记忆：<span class="subst">&#123;sub_result[<span class="string">&#x27;summary&#x27;</span>]&#125;</span>&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">final_node</span>(<span class="params">state: ParentState</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;final_answer&quot;</span>: state[<span class="string">&quot;final_answer&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line">parent_builder.add_node(<span class="string">&quot;entry&quot;</span>, entry_node)</span><br><span class="line">parent_builder.add_node(<span class="string">&quot;memory&quot;</span>, memory_node)</span><br><span class="line">parent_builder.add_node(<span class="string">&quot;final&quot;</span>, final_node)</span><br><span class="line">parent_builder.add_edge(START, <span class="string">&quot;entry&quot;</span>)</span><br><span class="line">parent_builder.add_edge(<span class="string">&quot;entry&quot;</span>, <span class="string">&quot;memory&quot;</span>)</span><br><span class="line">parent_builder.add_edge(<span class="string">&quot;memory&quot;</span>, <span class="string">&quot;final&quot;</span>)</span><br><span class="line">parent_builder.add_edge(<span class="string">&quot;final&quot;</span>, END)</span><br><span class="line"></span><br><span class="line">parent_graph = parent_builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行</span></span><br><span class="line">result = parent_graph.invoke(&#123;</span><br><span class="line">    <span class="string">&quot;user_query&quot;</span>: <span class="string">&quot;如何优化 PostgreSQL 慢查询？&quot;</span>,</span><br><span class="line">    <span class="string">&quot;session_id&quot;</span>: <span class="string">&quot;sess-001&quot;</span>,</span><br><span class="line">    <span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&quot;final_answer&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<p>这段代码展示了子图的核心模式：<strong>状态映射 → 子图调用 → 结果回写</strong>。父图不需要知道子图内部有几个节点、经历了几次循环。</p>
+<h3 id="5-子图的事件流与可观测性"><a href="#5-子图的事件流与可观测性" class="headerlink" title="5. 子图的事件流与可观测性"></a>5. 子图的事件流与可观测性</h3><p>当父图调用子图时，LangGraph 的 <code>stream</code> 机制会同时返回父图和子图的事件。你可以通过 <code>subgraphs=True</code> 参数获取嵌套事件流：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> event <span class="keyword">in</span> parent_graph.stream(</span><br><span class="line">    &#123;<span class="string">&quot;user_query&quot;</span>: <span class="string">&quot;如何优化 PostgreSQL 慢查询？&quot;</span>, <span class="string">&quot;session_id&quot;</span>: <span class="string">&quot;sess-001&quot;</span>, <span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;&quot;</span>&#125;,</span><br><span class="line">    subgraphs=<span class="literal">True</span>,</span><br><span class="line">):</span><br><span class="line">    <span class="built_in">print</span>(event)</span><br></pre></td></tr></table></figure>
+
+<p>输出大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(&quot;__parent__&quot;, &#123;&quot;entry&quot;: &#123;&quot;final_answer&quot;: &quot;&quot;&#125;&#125;)</span><br><span class="line">((&quot;parent&quot;, &quot;memory&quot;), &#123;&quot;retrieve&quot;: &#123;&quot;retrieved_docs&quot;: [...]&#125;&#125;)</span><br><span class="line">((&quot;parent&quot;, &quot;memory&quot;), &#123;&quot;summarize&quot;: &#123;&quot;summary&quot;: &quot;...&quot;&#125;&#125;)</span><br><span class="line">(&quot;__parent__&quot;, &#123;&quot;final&quot;: &#123;&quot;final_answer&quot;: &quot;基于记忆：...&quot;&#125;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>这种嵌套事件流对于生产排障非常关键：你可以清楚地看到子图内部每一步的状态变化，而不必侵入子图代码。</p>
+<h3 id="6-远程可调用图：把子图变成服务"><a href="#6-远程可调用图：把子图变成服务" class="headerlink" title="6. 远程可调用图：把子图变成服务"></a>6. 远程可调用图：把子图变成服务</h3><p>子图解决的是”同一进程内”的模块化问题。当你需要：</p>
+<ul>
+<li>让不同团队独立开发、部署自己的 Agent 能力；</li>
+<li>对某个子图单独扩缩容；</li>
+<li>在多个父图之间复用同一个能力；</li>
+</ul>
+<p>就需要把子图发布为<strong>远程可调用图</strong>。</p>
+<p>远程可调用图的核心抽象是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">父图 --HTTP/gRPC--&gt; 远程子图服务</span><br><span class="line">       请求：&#123;state_snapshot&#125;</span><br><span class="line">       响应：&#123;updated_state&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LangGraph 提供了 <code>RemoteGraph</code> 客户端来调用远程图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph_sdk <span class="keyword">import</span> get_client</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> RemoteGraph</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接到 LangGraph Server</span></span><br><span class="line">client = get_client(url=<span class="string">&quot;http://localhost:8123&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把远程图当作本地节点使用</span></span><br><span class="line">remote_memory = RemoteGraph(<span class="string">&quot;memory_subgraph&quot;</span>, client=client)</span><br><span class="line"></span><br><span class="line">parent_builder = StateGraph(ParentState)</span><br><span class="line">parent_builder.add_node(<span class="string">&quot;memory&quot;</span>, remote_memory)</span><br><span class="line"><span class="comment"># ... 其余边定义</span></span><br></pre></td></tr></table></figure>
+
+<p>在远程服务侧，你需要用 <code>langgraph-api</code> 或 LangGraph Cloud 把子图暴露为 HTTP 服务。部署后，远程图会有独立的线程、持久化存储和可观测性链路。</p>
+<h3 id="7-子图-vs-远程图：决策矩阵"><a href="#7-子图-vs-远程图：决策矩阵" class="headerlink" title="7. 子图 vs 远程图：决策矩阵"></a>7. 子图 vs 远程图：决策矩阵</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本地子图</th>
+<th>远程可调用图</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>延迟</td>
+<td>低（内存调用）</td>
+<td>高（网络往返）</td>
+</tr>
+<tr>
+<td>部署复杂度</td>
+<td>低（同进程）</td>
+<td>高（独立服务）</td>
+</tr>
+<tr>
+<td>团队边界</td>
+<td>弱</td>
+<td>强</td>
+</tr>
+<tr>
+<td>独立扩缩容</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>状态持久化</td>
+<td>共享父图存储</td>
+<td>可独立配置</td>
+</tr>
+<tr>
+<td>故障隔离</td>
+<td>子图崩溃影响父图</td>
+<td>网络超时可控</td>
+</tr>
+<tr>
+<td>适用阶段</td>
+<td>原型 &#x2F; 同团队</td>
+<td>生产 &#x2F; 跨团队</td>
+</tr>
+</tbody></table>
+<h3 id="8-常见陷阱"><a href="#8-常见陷阱" class="headerlink" title="8. 常见陷阱"></a>8. 常见陷阱</h3><ol>
+<li><strong>状态映射过于复杂</strong>：如果父图需要为每个子图写大量转换逻辑，说明边界划分不合理。</li>
+<li><strong>子图深度嵌套</strong>：子图里再套子图会让调试和可观测性急剧恶化，建议最多两层。</li>
+<li><strong>忽略远程图超时</strong>：网络调用可能失败，父图必须配置 <code>timeout</code> 和 <code>retry</code> 策略。</li>
+<li><strong>循环依赖</strong>：两个子图互相调用会导致死锁，设计时要有清晰的单向依赖。</li>
+</ol>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><h3 id="类比-1：子图-≈-PostgreSQL-Schema"><a href="#类比-1：子图-≈-PostgreSQL-Schema" class="headerlink" title="类比 1：子图 ≈ PostgreSQL Schema"></a>类比 1：子图 ≈ PostgreSQL Schema</h3><p>在 PostgreSQL 中，我们用 Schema 把表、函数、视图按业务域分组：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> SCHEMA memory;</span><br><span class="line"><span class="keyword">CREATE</span> SCHEMA planner;</span><br><span class="line"><span class="keyword">CREATE</span> SCHEMA code_gen;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 不同 Schema 下可以有同名对象</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> memory.sessions (...);</span><br><span class="line"><span class="keyword">CREATE TABLE</span> planner.tasks (...);</span><br></pre></td></tr></table></figure>
+
+<p>LangGraph 的子图就是 Agent 编排层的 Schema：</p>
+<ul>
+<li>Schema 提供<strong>命名空间隔离</strong> → 子图提供<strong>状态与节点隔离</strong>。</li>
+<li>Schema 允许跨 Schema 查询 → 父图通过状态字段与子图交互。</li>
+<li>Schema 可以单独授权 → 远程图可以单独鉴权与限流。</li>
+</ul>
+<h3 id="类比-2：远程可调用图-≈-微服务-RPC"><a href="#类比-2：远程可调用图-≈-微服务-RPC" class="headerlink" title="类比 2：远程可调用图 ≈ 微服务 &#x2F; RPC"></a>类比 2：远程可调用图 ≈ 微服务 &#x2F; RPC</h3><p>远程可调用图很像一个 gRPC 服务：</p>
+<table>
+<thead>
+<tr>
+<th>后端概念</th>
+<th>LangGraph 概念</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>gRPC Service</td>
+<td>远程图定义</td>
+</tr>
+<tr>
+<td>.proto 消息定义</td>
+<td>State TypedDict &#x2F; Pydantic</td>
+</tr>
+<tr>
+<td>Stub 客户端</td>
+<td><code>RemoteGraph(..., client=client)</code></td>
+</tr>
+<tr>
+<td>服务端实现</td>
+<td><code>langgraph-api</code> 部署的子图</td>
+</tr>
+<tr>
+<td>负载均衡</td>
+<td>LangGraph Cloud 的自动扩缩容</td>
+</tr>
+<tr>
+<td>熔断&#x2F;重试</td>
+<td>父图节点的 <code>retry</code> 配置</td>
+</tr>
+</tbody></table>
+<h3 id="类比-3：状态映射-≈-ETL-视图"><a href="#类比-3：状态映射-≈-ETL-视图" class="headerlink" title="类比 3：状态映射 ≈ ETL &#x2F; 视图"></a>类比 3：状态映射 ≈ ETL &#x2F; 视图</h3><p>父图把 <code>ParentState</code> 映射到子图的 <code>MemorySubgraphState</code>，本质上是一次小型的 ETL：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sub_input = &#123;<span class="string">&quot;query&quot;</span>: state[<span class="string">&quot;user_query&quot;</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应 SQL 中的视图：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> memory.subgraph_input <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span> user_query <span class="keyword">AS</span> query</span><br><span class="line"><span class="keyword">FROM</span> parent.sessions;</span><br></pre></td></tr></table></figure>
+
+<p>如果映射逻辑复杂，可以考虑在父图和子图之间引入一个<strong>适配器节点</strong>（Adapter Node），专门负责状态转换，就像数据仓库里的 Staging 层。</p>
+<h3 id="类比-4：子图持久化-≈-独立数据库实例"><a href="#类比-4：子图持久化-≈-独立数据库实例" class="headerlink" title="类比 4：子图持久化 ≈ 独立数据库实例"></a>类比 4：子图持久化 ≈ 独立数据库实例</h3><p>本地子图的状态由父图统一持久化，相当于”同一个 PostgreSQL 实例里的不同 Schema”。远程可调用图则可以有自己的数据库、自己的连接池、自己的备份策略，相当于”独立的 PostgreSQL 实例”。</p>
+<h2 id="🛠️-微实战"><a href="#🛠️-微实战" class="headerlink" title="🛠️ 微实战"></a>🛠️ 微实战</h2><p>目标：构建一个”分层客服 Agent”，包含两个本地子图和一个远程可调用图占位。</p>
+<h3 id="完整可运行代码"><a href="#完整可运行代码" class="headerlink" title="完整可运行代码"></a>完整可运行代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># subgraph_demo.py</span></span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, <span class="type">List</span></span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, END</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 子图 1：意图识别 ==========</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IntentState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    query: <span class="built_in">str</span></span><br><span class="line">    intent: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line">intent_builder = StateGraph(IntentState)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify_intent</span>(<span class="params">state: IntentState</span>):</span><br><span class="line">    q = state[<span class="string">&quot;query&quot;</span>].lower()</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;价格&quot;</span> <span class="keyword">in</span> q <span class="keyword">or</span> <span class="string">&quot;多少钱&quot;</span> <span class="keyword">in</span> q:</span><br><span class="line">        intent = <span class="string">&quot;pricing&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> <span class="string">&quot;怎么使用&quot;</span> <span class="keyword">in</span> q <span class="keyword">or</span> <span class="string">&quot;教程&quot;</span> <span class="keyword">in</span> q:</span><br><span class="line">        intent = <span class="string">&quot;tutorial&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> <span class="string">&quot;故障&quot;</span> <span class="keyword">in</span> q <span class="keyword">or</span> <span class="string">&quot;报错&quot;</span> <span class="keyword">in</span> q:</span><br><span class="line">        intent = <span class="string">&quot;troubleshooting&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        intent = <span class="string">&quot;general&quot;</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: intent&#125;</span><br><span class="line"></span><br><span class="line">intent_builder.add_node(<span class="string">&quot;classify&quot;</span>, classify_intent)</span><br><span class="line">intent_builder.add_edge(START, <span class="string">&quot;classify&quot;</span>)</span><br><span class="line">intent_builder.add_edge(<span class="string">&quot;classify&quot;</span>, END)</span><br><span class="line">intent_graph = intent_builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 子图 2：定价策略 ==========</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PricingState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    intent: <span class="built_in">str</span></span><br><span class="line">    query: <span class="built_in">str</span></span><br><span class="line">    answer: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line">pricing_builder = StateGraph(PricingState)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pricing_answer</span>(<span class="params">state: PricingState</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">&quot;我们的 Pro 计划每月 29 美元，包含无限量 API 调用与 7×24 支持。&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">pricing_builder.add_node(<span class="string">&quot;answer&quot;</span>, pricing_answer)</span><br><span class="line">pricing_builder.add_edge(START, <span class="string">&quot;answer&quot;</span>)</span><br><span class="line">pricing_builder.add_edge(<span class="string">&quot;answer&quot;</span>, END)</span><br><span class="line">pricing_graph = pricing_builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 父图 ==========</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ParentState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    user_query: <span class="built_in">str</span></span><br><span class="line">    intent: <span class="built_in">str</span></span><br><span class="line">    final_answer: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line">parent_builder = StateGraph(ParentState)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">intent_subgraph_node</span>(<span class="params">state: ParentState</span>):</span><br><span class="line">    result = intent_graph.invoke(&#123;<span class="string">&quot;query&quot;</span>: state[<span class="string">&quot;user_query&quot;</span>]&#125;)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: result[<span class="string">&quot;intent&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dispatch</span>(<span class="params">state: ParentState</span>):</span><br><span class="line">    <span class="comment"># 这里只演示 pricing 分支，其他分支留给读者扩展</span></span><br><span class="line">    <span class="keyword">if</span> state[<span class="string">&quot;intent&quot;</span>] == <span class="string">&quot;pricing&quot;</span>:</span><br><span class="line">        sub_result = pricing_graph.invoke(&#123;</span><br><span class="line">            <span class="string">&quot;intent&quot;</span>: state[<span class="string">&quot;intent&quot;</span>],</span><br><span class="line">            <span class="string">&quot;query&quot;</span>: state[<span class="string">&quot;user_query&quot;</span>],</span><br><span class="line">            <span class="string">&quot;answer&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;final_answer&quot;</span>: sub_result[<span class="string">&quot;answer&quot;</span>]&#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;已收到您的问题，正在转接人工客服。&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">parent_builder.add_node(<span class="string">&quot;intent&quot;</span>, intent_subgraph_node)</span><br><span class="line">parent_builder.add_node(<span class="string">&quot;dispatch&quot;</span>, dispatch)</span><br><span class="line">parent_builder.add_edge(START, <span class="string">&quot;intent&quot;</span>)</span><br><span class="line">parent_builder.add_edge(<span class="string">&quot;intent&quot;</span>, <span class="string">&quot;dispatch&quot;</span>)</span><br><span class="line">parent_builder.add_edge(<span class="string">&quot;dispatch&quot;</span>, END)</span><br><span class="line"></span><br><span class="line">parent_graph = parent_builder.<span class="built_in">compile</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 运行与流式观察 ==========</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    query = <span class="string">&quot;Pro 计划多少钱？&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;用户问题：<span class="subst">&#123;query&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> event <span class="keyword">in</span> parent_graph.stream(</span><br><span class="line">        &#123;<span class="string">&quot;user_query&quot;</span>: query, <span class="string">&quot;intent&quot;</span>: <span class="string">&quot;&quot;</span>, <span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;&quot;</span>&#125;,</span><br><span class="line">        subgraphs=<span class="literal">True</span>,</span><br><span class="line">    ):</span><br><span class="line">        <span class="built_in">print</span>(event)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n最终结果：&quot;</span>)</span><br><span class="line">    final = parent_graph.invoke(&#123;<span class="string">&quot;user_query&quot;</span>: query, <span class="string">&quot;intent&quot;</span>: <span class="string">&quot;&quot;</span>, <span class="string">&quot;final_answer&quot;</span>: <span class="string">&quot;&quot;</span>&#125;)</span><br><span class="line">    <span class="built_in">print</span>(final[<span class="string">&quot;final_answer&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">用户问题：Pro 计划多少钱？</span><br><span class="line"></span><br><span class="line">(&#x27;__parent__&#x27;, &#123;&#x27;intent&#x27;: &#123;&#x27;intent&#x27;: &#x27;pricing&#x27;&#125;&#125;)</span><br><span class="line">((&#x27;parent&#x27;, &#x27;dispatch&#x27;), &#123;&#x27;answer&#x27;: &#123;&#x27;answer&#x27;: &#x27;我们的 Pro 计划每月 29 美元...&#x27;&#125;&#125;)</span><br><span class="line"></span><br><span class="line">最终结果：</span><br><span class="line">我们的 Pro 计划每月 29 美元，包含无限量 API 调用与 7×24 支持。</span><br></pre></td></tr></table></figure>
+
+<h3 id="进阶挑战"><a href="#进阶挑战" class="headerlink" title="进阶挑战"></a>进阶挑战</h3><ol>
+<li>把 <code>pricing_graph</code> 改写为远程可调用图，用 <code>RemoteGraph</code> 调用。</li>
+<li>在 <code>dispatch</code> 节点增加更多分支（tutorial、troubleshooting）。</li>
+<li>为每个子图添加 <code>retry</code> 与 <code>timeout</code> 配置，模拟生产环境容错。</li>
+</ol>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ol>
+<li><p><strong>LangGraph 0.2.x 子图 API 增强</strong>：近期版本对子图的事件流、检查点共享和错误传播做了大量优化，建议关注官方 Migration Guide。</p>
+</li>
+<li><p><strong>LangGraph Platform &#x2F; Cloud</strong>：如果你希望把子图一键部署为远程服务，LangGraph Cloud 提供了托管方案，支持自动扩缩容、持久化和可观测性。</p>
+</li>
+<li><p><strong>MCP（Model Context Protocol）</strong>：Anthropic 推动的开放协议，允许 LLM 通过标准化接口访问外部数据源和工具。MCP 与 LangGraph 远程图有相似之处，但更偏向”工具发现”而非”完整图编排”。</p>
+</li>
+<li><p><strong>论文《Routing Agentic Systems》</strong>：研究如何在多个 Specialist Agent 之间做智能路由，与子图调度高度相关。</p>
+</li>
+<li><p><strong>OpenAI Swarm</strong>：OpenAI 发布的轻量级多 Agent 编排实验项目，强调 Agent 之间的 hand-off 机制。与 LangGraph 相比，Swarm 更轻量、约束更少，适合快速原型。</p>
+</li>
+<li><p><strong>国内动态</strong>：阿里云百炼、字节 Coze 等平台都在推动”Agent 能力复用”，支持把单个 Agent 发布为 API 供其他 Agent 调用，这与远程可调用图的理念一致。</p>
+</li>
+</ol>
+<hr>
+<blockquote>
+<p>明日预告：Week 4 Day 16 将深入 <strong>LangGraph 检查点持久化与跨会话状态恢复</strong>，探讨如何把子图和远程图的状态可靠地保存到 PostgreSQL 等后端存储。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/">https://dive2cloud-bmz.github.io/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/LangGraph/">
+                                    <span class="chip bg-color">LangGraph</span>
+                                </a>
+                            
+                                <a href="/tags/Multi-Agent/">
+                                    <span class="chip bg-color">Multi-Agent</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Subgraph/">
+                                    <span class="chip bg-color">Subgraph</span>
+                                </a>
+                            
+                                <a href="/tags/Remote-Callable-Graph/">
+                                    <span class="chip bg-color">Remote-Callable-Graph</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战">
+                        
+                        <span class="card-title">从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Multi-Agent/">
+                        <span class="chip bg-color">Multi-Agent</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Subgraph/">
+                        <span class="chip bg-color">Subgraph</span>
+                    </a>
+                    
+                    <a href="/tags/Remote-Callable-Graph/">
+                        <span class="chip bg-color">Remote-Callable-Graph</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹">
+                        
+                        <span class="card-title">LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-06
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Time-Travel/">
+                        <span class="chip bg-color">Time-Travel</span>
+                    </a>
+                    
+                    <a href="/tags/Checkpoint/">
+                        <span class="chip bg-color">Checkpoint</span>
+                    </a>
+                    
+                    <a href="/tags/Branch-Replay/">
+                        <span class="chip bg-color">Branch-Replay</span>
+                    </a>
+                    
+                    <a href="/tags/Observability/">
+                        <span class="chip bg-color">Observability</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">269.6k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
