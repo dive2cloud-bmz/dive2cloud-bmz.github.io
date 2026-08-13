@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-09T03:03:01.196Z</updated>
+  <updated>2026-08-13T03:04:59.720Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/</id>
+    <published>2026-08-13T03:01:02.000Z</published>
+    <updated>2026-08-13T03:04:59.720Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启&quot;&gt;&lt;a href=&quot;#LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启&quot; class=&quot;headerlink&quot; title=&quot;LangGraph</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
+    
+    <category term="Persistence" scheme="https://dive2cloud-bmz.github.io/tags/Persistence/"/>
+    
+    <category term="Cross-Session-Recovery" scheme="https://dive2cloud-bmz.github.io/tags/Cross-Session-Recovery/"/>
+    
+  </entry>
   
   <entry>
     <title>从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战</title>
@@ -655,41 +690,6 @@
     <category term="LLM" scheme="https://dive2cloud-bmz.github.io/tags/LLM/"/>
     
     <category term="长期记忆" scheme="https://dive2cloud-bmz.github.io/tags/%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>模型迭代也需要 DevOps：LLM 应用 CI/CD、A/B 测试与版本管理实战</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/24/week3-day8-llm-cicd-ab-testing-model-versioning/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/24/week3-day8-llm-cicd-ab-testing-model-versioning/</id>
-    <published>2026-07-24T03:01:39.000Z</published>
-    <updated>2026-07-24T03:04:47.218Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;模型迭代也需要-DevOps：LLM-应用-CI-CD、A-B-测试与版本管理实战&quot;&gt;&lt;a href=&quot;#模型迭代也需要-DevOps：LLM-应用-CI-CD、A-B-测试与版本管理实战&quot; class=&quot;headerlink&quot; title=&quot;模型迭代也需要</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
-    
-    <category term="CI-CD" scheme="https://dive2cloud-bmz.github.io/tags/CI-CD/"/>
-    
-    <category term="AB-Testing" scheme="https://dive2cloud-bmz.github.io/tags/AB-Testing/"/>
-    
-    <category term="Model-Versioning" scheme="https://dive2cloud-bmz.github.io/tags/Model-Versioning/"/>
-    
-    <category term="MLOps" scheme="https://dive2cloud-bmz.github.io/tags/MLOps/"/>
     
   </entry>
   

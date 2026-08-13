@@ -1,0 +1,1385 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启, BMZ BLOG">
+    <meta name="description" content="LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启
+后端工程师转型 AI 应用工程师 · Week 4 Day 16主题：LangGraph Checkpoint 持久化、长事务状态保持与跨会话恢复
+
+前面三">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/LangGraph/">
+                                <span class="chip bg-color">LangGraph</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Checkpoint/">
+                                <span class="chip bg-color">Checkpoint</span>
+                            </a>
+                        
+                            <a href="/tags/Persistence/">
+                                <span class="chip bg-color">Persistence</span>
+                            </a>
+                        
+                            <a href="/tags/Cross-Session-Recovery/">
+                                <span class="chip bg-color">Cross-Session-Recovery</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-13
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-13
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    5.3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    21 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启"><a href="#LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启" class="headerlink" title="LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启"></a>LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</h1><blockquote>
+<p>后端工程师转型 AI 应用工程师 · Week 4 Day 16<br>主题：LangGraph Checkpoint 持久化、长事务状态保持与跨会话恢复</p>
+</blockquote>
+<p>前面三篇我们把 LangGraph 的状态机、时间旅行、子图与远程可调用图逐一拆开。今天要解决的是一个更底层、也更贴近生产的问题：<strong>当 Agent 流程需要运行几小时、几天，甚至跨越多次用户交互时，状态怎么不丢？</strong></p>
+<p>如果说 Day 13 回答了”LangGraph 能把状态存起来”，Day 14 回答了”存下来的状态可以回放和分支”，Day 15 回答了”多个图之间如何协作”，那么今天就是要把这些能力拧成一股绳，回答：<strong>当进程崩溃、容器重启、用户明天再来时，Agent 怎么从断点继续？</strong></p>
+<h2 id="🚀-核心洞察"><a href="#🚀-核心洞察" class="headerlink" title="🚀 核心洞察"></a>🚀 核心洞察</h2><p>作为 PostgreSQL 后端工程师，你大概会被一个词训练出条件反射：<strong>持久化（Durability）</strong>。ACID 里的 D 意味着，只要事务提交成功，即使数据库立即宕机，数据也不会丢。PostgreSQL 通过 WAL（Write-Ahead Log）把这个保证做到了极致：任何修改先写日志，再写数据页；崩溃恢复时，从最后一个 checkpoint 开始重放 WAL。</p>
+<p>传统 LLM 应用却往往没有这个保证。一次 <code>chat.completions.create()</code> 就像一次无状态 HTTP 调用：客户端把完整上下文塞进去，服务端返回结果，然后两边一拍两散。ReAct、Plan-and-Execute 这些模式为了”看起来有记忆”，不得不在每次请求时把整条历史重新塞进 prompt。一旦服务重启、上下文超长、或者用户第二天再来，游戏就结束了。</p>
+<p>LangGraph 的检查点机制本质上是在 AI 应用里重建了一个 WAL 层：</p>
+<ul>
+<li><strong>State</strong> 是事务进行中的工作区；</li>
+<li><strong>Checkpoint</strong> 是 WAL 记录，每个节点执行后落盘；</li>
+<li><strong>Thread ID</strong> 是事务会话标识，让跨进程、跨重启的恢复成为可能；</li>
+<li><strong>Checkpoint Saver</strong> 是底层的存储后端，决定日志写在哪里、写多久、怎么查。</li>
+</ul>
+<p>这个视角下，LangGraph 不再只是一个”Agent 编排框架”，而是一个<strong>带持久化语义的状态机引擎</strong>。它让我们可以严肃地讨论长事务、崩溃恢复、状态归档、并发隔离这些后端工程师熟悉的主题。</p>
+<h2 id="🧠-核心概念"><a href="#🧠-核心概念" class="headerlink" title="🧠 核心概念"></a>🧠 核心概念</h2><h3 id="1-Checkpoint-的存储后端对比"><a href="#1-Checkpoint-的存储后端对比" class="headerlink" title="1. Checkpoint 的存储后端对比"></a>1. Checkpoint 的存储后端对比</h3><p>LangGraph 的检查点存储是可插拔的。官方和社区提供了多种实现，适用于不同的阶段和规模：</p>
+<table>
+<thead>
+<tr>
+<th>后端</th>
+<th>适用阶段</th>
+<th>持久化</th>
+<th>并发</th>
+<th>可观测性</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MemorySaver</code></td>
+<td>本地开发 &#x2F; 单元测试</td>
+<td>否</td>
+<td>单进程</td>
+<td>低</td>
+<td>重启即丢，和 dict 没本质区别</td>
+</tr>
+<tr>
+<td><code>SqliteSaver</code></td>
+<td>单机原型 &#x2F; 小工具</td>
+<td>是</td>
+<td>单文件锁</td>
+<td>中</td>
+<td>零依赖，适合 demo</td>
+</tr>
+<tr>
+<td><code>PostgresSaver</code></td>
+<td>生产环境</td>
+<td>是</td>
+<td>高</td>
+<td>高</td>
+<td>可 SQL 审计、可备份、可分区</td>
+</tr>
+<tr>
+<td><code>RedisSaver</code></td>
+<td>低延迟 &#x2F; 缓存友好</td>
+<td>是（看配置）</td>
+<td>高</td>
+<td>中</td>
+<td>TTL 天然支持过期策略</td>
+</tr>
+</tbody></table>
+<p>对后端工程师来说，选型思路非常清晰：</p>
+<ul>
+<li><strong>开发阶段</strong>：<code>MemorySaver</code> 或 <code>SqliteSaver</code>，快速验证图逻辑。</li>
+<li><strong>生产阶段</strong>：<code>PostgresSaver</code>，复用现有数据库基础设施，获得备份、PITR、监控、权限控制等能力。</li>
+<li><strong>高并发短会话</strong>：<code>RedisSaver</code>，配合 TTL 自动清理短期状态。</li>
+</ul>
+<h3 id="2-PostgresSaver-的表结构与字段语义"><a href="#2-PostgresSaver-的表结构与字段语义" class="headerlink" title="2. PostgresSaver 的表结构与字段语义"></a>2. PostgresSaver 的表结构与字段语义</h3><p>使用 <code>PostgresSaver</code> 时，LangGraph 会在数据库里创建若干张表。最核心的 <code>checkpoints</code> 表结构类似这样：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> checkpoints (</span><br><span class="line">    thread_id TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    checkpoint_ns TEXT <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    checkpoint_id TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    parent_checkpoint_id TEXT,</span><br><span class="line">    type TEXT,</span><br><span class="line">    checkpoint BYTEA,</span><br><span class="line">    metadata BYTEA,</span><br><span class="line">    <span class="keyword">PRIMARY KEY</span> (thread_id, checkpoint_ns, checkpoint_id)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>每个字段都有明确的后端含义：</p>
+<ul>
+<li><code>thread_id</code>：会话标识。一个业务会话（比如一次客服工单、一次理赔申请）对应一个 thread。它是跨进程恢复的关键。</li>
+<li><code>checkpoint_ns</code>：命名空间，用于区分同一 thread 下的不同子图或不同运行上下文。可以理解为 schema 级别的隔离。</li>
+<li><code>checkpoint_id</code>：单次状态快照的唯一 ID。它在同一个 thread 内通常是单调递增的，类似 LSN。</li>
+<li><code>parent_checkpoint_id</code>：父快照 ID，构成链表&#x2F;树结构，支持分支和时间旅行。</li>
+<li><code>checkpoint</code>：序列化后的状态字节。LangGraph 默认使用 msgpack 或 pickle 序列化。</li>
+<li><code>metadata</code>：写入该 checkpoint 时的元数据，例如节点名称、步骤索引、时间戳等。</li>
+</ul>
+<p>看到这张表，DBA 的本能反应会是：这表需要按 <code>thread_id</code> 和 <code>checkpoint_id</code> 设计索引，并且随着时间的增长，需要分区或归档策略。</p>
+<h3 id="3-跨会话恢复的生命周期"><a href="#3-跨会话恢复的生命周期" class="headerlink" title="3. 跨会话恢复的生命周期"></a>3. 跨会话恢复的生命周期</h3><p>跨会话恢复不是魔法，而是基于一个简单约定：<strong>只要你知道 thread_id，就能在任何时间、任何进程中加载该 thread 的最新状态并继续执行</strong>。</p>
+<p>生命周期大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as 用户 / 客户端</span><br><span class="line">    participant P1 as 进程 A</span><br><span class="line">    participant DB as Checkpoint DB</span><br><span class="line">    participant P2 as 进程 B</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;P1: 启动流程，thread_id=&quot;case-2026-0813-001&quot;</span><br><span class="line">    P1-&gt;&gt;DB: 写入 checkpoint-1</span><br><span class="line">    P1-&gt;&gt;DB: 写入 checkpoint-2</span><br><span class="line">    Note over P1: 进程 A 崩溃或滚动发布</span><br><span class="line">    U-&gt;&gt;P2: 明天再次打开会话</span><br><span class="line">    P2-&gt;&gt;DB: 按 thread_id 查询最新 checkpoint</span><br><span class="line">    DB--&gt;&gt;P2: 返回 checkpoint-2</span><br><span class="line">    P2-&gt;&gt;P2: 恢复 State</span><br><span class="line">    P2-&gt;&gt;DB: 继续写入 checkpoint-3</span><br><span class="line">    P2--&gt;&gt;U: 返回最终结果</span><br></pre></td></tr></table></figure>
+
+<p>关键点是：</p>
+<ol>
+<li><strong>thread_id 必须稳定</strong>。它通常来自业务主键，比如工单号、订单号、用户会话 ID。</li>
+<li><strong>状态必须可序列化</strong>。State 里的字段不能包含无法被 pickle&#x2F;msgpack 序列化的对象，比如数据库连接、文件句柄。</li>
+<li><strong>节点应尽量幂等</strong>。恢复后重新执行某个节点时，如果该节点已经产生过副作用（如扣款、发邮件），需要幂等键保证不会重复。</li>
+<li><strong>恢复动作是显式的</strong>。LangGraph 不会自动恢复，而是需要调用方提供相同的 <code>thread_id</code> 并重新调用 <code>graph.invoke()</code> 或 <code>graph.stream()</code>。</li>
+</ol>
+<h3 id="4-长事务：等待外部事件"><a href="#4-长事务：等待外部事件" class="headerlink" title="4. 长事务：等待外部事件"></a>4. 长事务：等待外部事件</h3><p>很多业务流程不是”一次跑完”的。例如：</p>
+<ul>
+<li>理赔 Agent 提交资料后，需要等待人工审核，审核可能发生在三天后。</li>
+<li>销售 Agent 发送报价单后，需要等待客户点击链接或回复邮件。</li>
+<li>运维 Agent 触发一个慢查询优化任务后，需要等待 DBA 确认。</li>
+</ul>
+<p>在传统后端里，这类场景通常用<strong>工作流引擎</strong>（Camunda、Temporal）或<strong>状态机 + 事件驱动架构</strong>来实现。LangGraph 的检查点机制让它也能胜任：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.types <span class="keyword">import</span> interrupt, Command</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">wait_for_audit</span>(<span class="params">state: ClaimState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;等待人工审核结果。&quot;&quot;&quot;</span></span><br><span class="line">    audit_result = interrupt(&#123;</span><br><span class="line">        <span class="string">&quot;claim_id&quot;</span>: state[<span class="string">&quot;claim_id&quot;</span>],</span><br><span class="line">        <span class="string">&quot;submitted_docs&quot;</span>: state[<span class="string">&quot;docs&quot;</span>],</span><br><span class="line">        <span class="string">&quot;status&quot;</span>: <span class="string">&quot;pending_audit&quot;</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;audit_result&quot;</span>: audit_result&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当图运行到 <code>wait_for_audit</code> 节点时，它会抛出 <code>GraphInterrupt</code>，并把当前状态持久化到数据库。然后这个进程可以优雅退出，甚至不需要保持运行。三天后，当人工审核完成，另一个进程可以用 <code>Command(resume=&#123;&quot;approved&quot;: True&#125;)</code> 从同一个 thread_id 继续：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">graph.invoke(</span><br><span class="line">    Command(resume=&#123;<span class="string">&quot;approved&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;auditor&quot;</span>: <span class="string">&quot;zhangsan&quot;</span>&#125;),</span><br><span class="line">    config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;claim-2026-0813-001&quot;</span>&#125;&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这种模式下，LangGraph 不再是一个”实时对话 Agent”，而是一个<strong>事件驱动的长事务状态机</strong>。</p>
+<h3 id="5-Checkpoint-的保留、归档与清理"><a href="#5-Checkpoint-的保留、归档与清理" class="headerlink" title="5. Checkpoint 的保留、归档与清理"></a>5. Checkpoint 的保留、归档与清理</h3><p>生产环境里，checkpoint 表会不断增长。如果不加控制，几个月后可能膨胀到 TB 级别。必须有保留策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>实现方式</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>按时间 TTL</strong></td>
+<td>PostgreSQL 分区 + 自动删除旧分区；Redis 设置 TTL</td>
+<td>短期会话、客服对话</td>
+</tr>
+<tr>
+<td><strong>按状态归档</strong></td>
+<td>把已完成的 thread 的完整 checkpoint 链压缩后转存对象存储</td>
+<td>审计、合规、长期复盘</td>
+</tr>
+<tr>
+<td><strong>仅保留最新</strong></td>
+<td>删除中间 checkpoint，只保留最终状态</td>
+<td>对历史轨迹不敏感的任务</td>
+</tr>
+<tr>
+<td><strong>分层存储</strong></td>
+<td>热数据在 Redis &#x2F; Postgres，冷数据在 S3 &#x2F; MinIO</td>
+<td>成本和性能平衡</td>
+</tr>
+</tbody></table>
+<p>LangGraph 的 <code>PostgresSaver</code> 本身不强制 TTL，但你可以用 PostgreSQL 的事件触发器或 pg_cron 定期清理。例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 删除 30 天前已完成的 checkpoint</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;status&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;completed&#x27;</span></span><br><span class="line">  <span class="keyword">AND</span> (metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;timestamp&#x27;</span>)::timestamptz <span class="operator">&lt;</span> now() <span class="operator">-</span> <span class="type">interval</span> <span class="string">&#x27;30 days&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>更稳妥的做法是按月分区，每月初把上个月的完整分区 detach 并转存到对象存储。这和传统日志表的归档策略完全一致。</p>
+<h3 id="6-并发与隔离：一个-thread-同一时刻只能跑一个实例吗？"><a href="#6-并发与隔离：一个-thread-同一时刻只能跑一个实例吗？" class="headerlink" title="6. 并发与隔离：一个 thread 同一时刻只能跑一个实例吗？"></a>6. 并发与隔离：一个 thread 同一时刻只能跑一个实例吗？</h3><p>这是一个经常被忽视的问题。如果同一个 <code>thread_id</code> 的两个请求同时到达，LangGraph 默认不会自动加锁。两个进程可能同时读取同一个最新 checkpoint，分别计算，然后各自写入新的 checkpoint。结果会出现”分叉”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    CP1[checkpoint-2] --&gt; P1[进程 A]</span><br><span class="line">    CP1 --&gt; P2[进程 B]</span><br><span class="line">    P1 --&gt; CP2A[checkpoint-3a]</span><br><span class="line">    P2 --&gt; CP2B[checkpoint-3b]</span><br><span class="line">    CP2A --&gt; CP4[checkpoint-4 ???]</span><br><span class="line">    CP2B --&gt; CP4</span><br></pre></td></tr></table></figure>
+
+<p>在某些场景下，分叉是期望的（例如 A&#x2F;B 探索）；但在大多数业务流程中，同一个 thread 应该是线性推进的。解决方案有：</p>
+<ol>
+<li><strong>应用层分布式锁</strong>：在调用 <code>graph.invoke()</code> 前，用 Redis Redlock 或 PostgreSQL advisory lock 锁定 <code>thread_id</code>。</li>
+<li><strong>数据库唯一约束</strong>：把 “next checkpoint ID” 的生成和业务状态更新放在同一事务里，利用唯一约束检测冲突。</li>
+<li><strong>乐观并发控制</strong>：每个 checkpoint 带版本号，写入时检查版本号是否匹配。</li>
+</ol>
+<p>LangGraph 本身提供了 <code>checkpointer</code> 的写入语义，但在高并发生产环境中，建议额外加一层锁，尤其是在涉及金钱、订单、库存等关键业务时。</p>
+<h3 id="7-错误边界与部分恢复"><a href="#7-错误边界与部分恢复" class="headerlink" title="7. 错误边界与部分恢复"></a>7. 错误边界与部分恢复</h3><p>不是所有的崩溃都能完美恢复。LangGraph 的 <code>retry_policy</code> 可以配置节点失败时的重试行为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.pregel <span class="keyword">import</span> RetryPolicy</span><br><span class="line"></span><br><span class="line">builder.add_node(</span><br><span class="line">    <span class="string">&quot;call_payment_api&quot;</span>,</span><br><span class="line">    call_payment_api,</span><br><span class="line">    retry=RetryPolicy(max_attempts=<span class="number">3</span>, retry_delay=<span class="number">2.0</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>但重试解决不了所有问题。更高级的做法是设计<strong>错误边界（Error Boundary）</strong>：</p>
+<ul>
+<li>把可能失败的节点放在一个子图内；</li>
+<li>子图失败时，父图捕获异常并把状态推进到一个”待人工处理”节点；</li>
+<li>人工修复后，从失败节点继续，而不是从头开始。</li>
+</ul>
+<p>这和 PostgreSQL 的 <code>SAVEPOINT</code> + 异常处理是同一套思想：局部失败不应该让整个事务回滚。</p>
+<h2 id="🔗-后端桥接"><a href="#🔗-后端桥接" class="headerlink" title="🔗 后端桥接"></a>🔗 后端桥接</h2><h3 id="Checkpoint-就是-AI-世界的-WAL"><a href="#Checkpoint-就是-AI-世界的-WAL" class="headerlink" title="Checkpoint 就是 AI 世界的 WAL"></a>Checkpoint 就是 AI 世界的 WAL</h3><p>PostgreSQL 的 WAL 记录了每一次数据修改，崩溃恢复时从 checkpoint 开始重放。LangGraph 的检查点做了一样的事：它记录了 Agent 运行过程中的每一次状态变迁。两者的映射关系非常自然：</p>
+<table>
+<thead>
+<tr>
+<th>PostgreSQL</th>
+<th>LangGraph</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WAL 记录</td>
+<td>Checkpoint</td>
+<td>一次状态变更的持久化记录</td>
+</tr>
+<tr>
+<td>LSN</td>
+<td>checkpoint_id</td>
+<td>单调递增的记录标识</td>
+</tr>
+<tr>
+<td>prev LSN</td>
+<td>parent_checkpoint_id</td>
+<td>前一条记录的引用</td>
+</tr>
+<tr>
+<td>崩溃恢复</td>
+<td>cross-session resume</td>
+<td>从持久化记录恢复运行状态</td>
+</tr>
+<tr>
+<td>pg_waldump</td>
+<td>get_state_history()</td>
+<td>查看完整历史轨迹</td>
+</tr>
+</tbody></table>
+<h3 id="Thread-ID-就是-Session-ID"><a href="#Thread-ID-就是-Session-ID" class="headerlink" title="Thread ID 就是 Session ID"></a>Thread ID 就是 Session ID</h3><p>PostgreSQL 里，每个客户端连接对应一个 backend 进程，有自己的事务上下文。连接断开后，session 状态就消失了——除非应用把它显式存到数据库里。</p>
+<p>LangGraph 的 <code>thread_id</code> 把这种”显式存储”做到了框架层。它让 session 状态不再绑定到某个进程或连接，而是绑定到一个业务标识。这意味着：</p>
+<ul>
+<li>服务滚动发布时，用户不会感知到重启；</li>
+<li>负载均衡器可以把同一个用户的后续请求路由到任意实例；</li>
+<li>甚至可以把长时间等待的任务完全下线，等事件触发时再启动新实例处理。</li>
+</ul>
+<h3 id="Checkpoint-表就是审计日志表"><a href="#Checkpoint-表就是审计日志表" class="headerlink" title="Checkpoint 表就是审计日志表"></a>Checkpoint 表就是审计日志表</h3><p>很多系统会单独维护一张 <code>audit_log</code> 表来记录关键操作。LangGraph 的 checkpoint 表天然就是一张更完整的审计日志：</p>
+<ul>
+<li>它记录了每个时间点的完整状态，而不仅是”谁做了什么”；</li>
+<li>它记录了思考过程、工具调用参数、中间结果；</li>
+<li>它可以被只读副本、数据仓库、BI 工具直接查询。</li>
+</ul>
+<p>DBA 可以写一些标准查询来分析 Agent 行为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 某个 thread 的执行路径</span></span><br><span class="line"><span class="keyword">SELECT</span> checkpoint_id,</span><br><span class="line">       metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;step&#x27;</span> <span class="keyword">AS</span> step,</span><br><span class="line">       metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;node&#x27;</span> <span class="keyword">AS</span> node,</span><br><span class="line">       metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;timestamp&#x27;</span> <span class="keyword">AS</span> ts</span><br><span class="line"><span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> thread_id <span class="operator">=</span> <span class="string">&#x27;claim-2026-0813-001&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> checkpoint_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 哪些节点最容易导致 interrupt</span></span><br><span class="line"><span class="keyword">SELECT</span> metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;node&#x27;</span> <span class="keyword">AS</span> node, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> interrupt_count</span><br><span class="line"><span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;type&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;interrupt&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;node&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> interrupt_count <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="状态序列化-≈-行序列化"><a href="#状态序列化-≈-行序列化" class="headerlink" title="状态序列化 ≈ 行序列化"></a>状态序列化 ≈ 行序列化</h3><p>PostgreSQL 里，一行数据由多个字段组成，每个字段有自己的类型和约束。LangGraph 的 State 本质上也是一张”只有一行的表”：</p>
+<ul>
+<li><code>TypedDict</code> 或 Pydantic 模型定义 schema；</li>
+<li>节点函数读取和更新字段；</li>
+<li>checkpoint 把整行序列化后存到 BYTEA 字段。</li>
+</ul>
+<p>区别在于：LangGraph 的”行”会在每个节点执行后被重新写入一次，形成历史版本。所以它更像是一张<strong>带版本控制的宽表</strong>，或者一个<strong>不可变状态日志</strong>。</p>
+<h3 id="保留策略-≈-表分区和-TTL"><a href="#保留策略-≈-表分区和-TTL" class="headerlink" title="保留策略 ≈ 表分区和 TTL"></a>保留策略 ≈ 表分区和 TTL</h3><p>后端工程师对大数据表的清理并不陌生。checkpoint 表的清理策略可以直接借鉴：</p>
+<ul>
+<li><strong>按时间分区</strong>：每月一个分区，过期后 detach + 归档。</li>
+<li><strong>按状态标记清理</strong>：只删除 <code>completed</code> &#x2F; <code>failed</code> 的 thread，保留 <code>pending</code> 的。</li>
+<li><strong>冷热分层</strong>：近期 checkpoint 在 Postgres，历史压缩后在 S3。</li>
+</ul>
+<p>不要小看这一步。一个运行了几个月的 Agent 系统，checkpoint 表很容易成为最大的单表，影响备份窗口和查询性能。</p>
+<h2 id="🛠️-微实战：跨进程恢复的理赔助手"><a href="#🛠️-微实战：跨进程恢复的理赔助手" class="headerlink" title="🛠️ 微实战：跨进程恢复的理赔助手"></a>🛠️ 微实战：跨进程恢复的理赔助手</h2><p>下面是一个可以本地运行的例子。它模拟一个理赔处理 Agent：</p>
+<ol>
+<li>接收理赔资料；</li>
+<li>自动初审；</li>
+<li>中断，等待人工审核（模拟跨会话等待）；</li>
+<li>人工审核通过后，计算赔付金额并结束。</li>
+</ol>
+<p>你可以先运行前半段，关闭进程，再运行后半段，观察状态如何跨进程恢复。</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langgraph langgraph-checkpoint-postgres psycopg_pool</span><br></pre></td></tr></table></figure>
+
+<p>假设本地已经有一个 PostgreSQL 实例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">createdb langgraph_recovery_demo</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Annotated, TypedDict</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> operator</span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.postgres <span class="keyword">import</span> PostgresSaver</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> END, START, StateGraph</span><br><span class="line"><span class="keyword">from</span> langgraph.types <span class="keyword">import</span> Command, interrupt</span><br><span class="line"><span class="keyword">from</span> psycopg_pool <span class="keyword">import</span> ConnectionPool</span><br><span class="line"></span><br><span class="line">DB_URI = os.getenv(<span class="string">&quot;DATABASE_URL&quot;</span>, <span class="string">&quot;postgresql://localhost:5432/langgraph_recovery_demo&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ClaimState</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    claim_id: <span class="built_in">str</span></span><br><span class="line">    documents: <span class="built_in">list</span>[<span class="built_in">str</span>]</span><br><span class="line">    auto_review_result: <span class="built_in">dict</span> | <span class="literal">None</span></span><br><span class="line">    audit_result: <span class="built_in">dict</span> | <span class="literal">None</span></span><br><span class="line">    payout: <span class="built_in">float</span> | <span class="literal">None</span></span><br><span class="line">    logs: Annotated[<span class="built_in">list</span>[<span class="built_in">str</span>], operator.add]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">submit_documents</span>(<span class="params">state: ClaimState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;提交理赔资料。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;logs&quot;</span>: [<span class="string">f&quot;[<span class="subst">&#123;state[<span class="string">&#x27;claim_id&#x27;</span>]&#125;</span>] 收到 <span class="subst">&#123;<span class="built_in">len</span>(state[<span class="string">&#x27;documents&#x27;</span>])&#125;</span> 份资料&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">auto_review</span>(<span class="params">state: ClaimState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;自动初审：简单规则引擎。&quot;&quot;&quot;</span></span><br><span class="line">    docs = state[<span class="string">&quot;documents&quot;</span>]</span><br><span class="line">    approved = <span class="built_in">all</span>(</span><br><span class="line">        <span class="built_in">any</span>(keyword <span class="keyword">in</span> doc.lower() <span class="keyword">for</span> keyword <span class="keyword">in</span> [<span class="string">&quot;发票&quot;</span>, <span class="string">&quot;病历&quot;</span>, <span class="string">&quot;费用清单&quot;</span>])</span><br><span class="line">        <span class="keyword">for</span> doc <span class="keyword">in</span> docs</span><br><span class="line">    )</span><br><span class="line">    result = &#123;</span><br><span class="line">        <span class="string">&quot;passed&quot;</span>: approved,</span><br><span class="line">        <span class="string">&quot;reason&quot;</span>: <span class="string">&quot;资料齐全&quot;</span> <span class="keyword">if</span> approved <span class="keyword">else</span> <span class="string">&quot;缺少必要单据&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;auto_review_result&quot;</span>: result,</span><br><span class="line">        <span class="string">&quot;logs&quot;</span>: [<span class="string">f&quot;自动初审结果: <span class="subst">&#123;result&#125;</span>&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">wait_for_audit</span>(<span class="params">state: ClaimState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;中断，等待人工审核。这是跨会话恢复的关键节点。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> state.get(<span class="string">&quot;audit_result&quot;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 已经有人工审核结果，直接跳过</span></span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    action = interrupt(&#123;</span><br><span class="line">        <span class="string">&quot;claim_id&quot;</span>: state[<span class="string">&quot;claim_id&quot;</span>],</span><br><span class="line">        <span class="string">&quot;auto_review&quot;</span>: state[<span class="string">&quot;auto_review_result&quot;</span>],</span><br><span class="line">        <span class="string">&quot;message&quot;</span>: <span class="string">&quot;请人工审核该理赔申请&quot;</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;audit_result&quot;</span>: action,</span><br><span class="line">        <span class="string">&quot;logs&quot;</span>: [<span class="string">f&quot;人工审核结果: <span class="subst">&#123;action&#125;</span>&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_payout</span>(<span class="params">state: ClaimState</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;计算赔付金额。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> state[<span class="string">&quot;audit_result&quot;</span>].get(<span class="string">&quot;approved&quot;</span>):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;payout&quot;</span>: <span class="number">0.0</span>, <span class="string">&quot;logs&quot;</span>: [<span class="string">&quot;审核未通过，赔付金额为 0&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 简化逻辑：按发票金额赔付 80%</span></span><br><span class="line">    amount = state[<span class="string">&quot;audit_result&quot;</span>].get(<span class="string">&quot;invoice_amount&quot;</span>, <span class="number">1000</span>)</span><br><span class="line">    payout = amount * <span class="number">0.8</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;payout&quot;</span>: payout, <span class="string">&quot;logs&quot;</span>: [<span class="string">f&quot;核定赔付金额: <span class="subst">&#123;payout:<span class="number">.2</span>f&#125;</span>&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">build_graph</span>(<span class="params">checkpointer</span>):</span><br><span class="line">    builder = StateGraph(ClaimState)</span><br><span class="line">    builder.add_node(<span class="string">&quot;submit_documents&quot;</span>, submit_documents)</span><br><span class="line">    builder.add_node(<span class="string">&quot;auto_review&quot;</span>, auto_review)</span><br><span class="line">    builder.add_node(<span class="string">&quot;wait_for_audit&quot;</span>, wait_for_audit)</span><br><span class="line">    builder.add_node(<span class="string">&quot;calculate_payout&quot;</span>, calculate_payout)</span><br><span class="line"></span><br><span class="line">    builder.add_edge(START, <span class="string">&quot;submit_documents&quot;</span>)</span><br><span class="line">    builder.add_edge(<span class="string">&quot;submit_documents&quot;</span>, <span class="string">&quot;auto_review&quot;</span>)</span><br><span class="line">    builder.add_edge(<span class="string">&quot;auto_review&quot;</span>, <span class="string">&quot;wait_for_audit&quot;</span>)</span><br><span class="line">    builder.add_edge(<span class="string">&quot;wait_for_audit&quot;</span>, <span class="string">&quot;calculate_payout&quot;</span>)</span><br><span class="line">    builder.add_edge(<span class="string">&quot;calculate_payout&quot;</span>, END)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> builder.<span class="built_in">compile</span>(checkpointer=checkpointer)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_first_half</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;第一次运行：提交资料 + 自动初审，然后中断等待人工审核。&quot;&quot;&quot;</span></span><br><span class="line">    pool = ConnectionPool(conninfo=DB_URI, max_size=<span class="number">5</span>, kwargs=&#123;<span class="string">&quot;autocommit&quot;</span>: <span class="literal">True</span>&#125;)</span><br><span class="line">    checkpointer = PostgresSaver(pool)</span><br><span class="line">    checkpointer.setup()</span><br><span class="line"></span><br><span class="line">    graph = build_graph(checkpointer)</span><br><span class="line">    claim_id = <span class="string">&quot;claim-2026-0813-001&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = graph.invoke(</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;claim_id&quot;</span>: claim_id,</span><br><span class="line">                <span class="string">&quot;documents&quot;</span>: [<span class="string">&quot;门诊发票.pdf&quot;</span>, <span class="string">&quot;病历.pdf&quot;</span>, <span class="string">&quot;费用清单.pdf&quot;</span>],</span><br><span class="line">            &#125;,</span><br><span class="line">            config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: claim_id&#125;&#125;</span><br><span class="line">        )</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;流程直接完成:&quot;</span>, result)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;流程已中断，等待人工审核。可以关闭进程。&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;错误类型: <span class="subst">&#123;<span class="built_in">type</span>(e).__name__&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    pool.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_second_half</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;恢复运行：模拟三天后人工审核通过。&quot;&quot;&quot;</span></span><br><span class="line">    pool = ConnectionPool(conninfo=DB_URI, max_size=<span class="number">5</span>, kwargs=&#123;<span class="string">&quot;autocommit&quot;</span>: <span class="literal">True</span>&#125;)</span><br><span class="line">    checkpointer = PostgresSaver(pool)</span><br><span class="line"></span><br><span class="line">    graph = build_graph(checkpointer)</span><br><span class="line">    claim_id = <span class="string">&quot;claim-2026-0813-001&quot;</span></span><br><span class="line"></span><br><span class="line">    result = graph.invoke(</span><br><span class="line">        Command(resume=&#123;<span class="string">&quot;approved&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;invoice_amount&quot;</span>: <span class="number">2500</span>, <span class="string">&quot;auditor&quot;</span>: <span class="string">&quot;张三&quot;</span>&#125;),</span><br><span class="line">        config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: claim_id&#125;&#125;</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;恢复运行结果:&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(json.dumps(result, ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br><span class="line">    pool.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> sys</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) &gt; <span class="number">1</span> <span class="keyword">and</span> sys.argv[<span class="number">1</span>] == <span class="string">&quot;resume&quot;</span>:</span><br><span class="line">        run_second_half()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        run_first_half()</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行步骤"><a href="#运行步骤" class="headerlink" title="运行步骤"></a>运行步骤</h3><p><strong>第一步：启动前半段</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python claim_agent.py</span><br></pre></td></tr></table></figure>
+
+<p>输出类似：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">流程已中断，等待人工审核。可以关闭进程。</span><br><span class="line">错误类型: GraphInterrupt</span><br></pre></td></tr></table></figure>
+
+<p>此时进程结束，但状态已经持久化到 PostgreSQL。你可以验证：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> thread_id, checkpoint_id, metadata<span class="operator">-</span><span class="operator">&gt;&gt;</span><span class="string">&#x27;node&#x27;</span> <span class="keyword">AS</span> node</span><br><span class="line"><span class="keyword">FROM</span> checkpoints</span><br><span class="line"><span class="keyword">WHERE</span> thread_id <span class="operator">=</span> <span class="string">&#x27;claim-2026-0813-001&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> checkpoint_id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：模拟三天后恢复</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python claim_agent.py resume</span><br></pre></td></tr></table></figure>
+
+<p>输出类似：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;claim_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;claim-2026-0813-001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;documents&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;门诊发票.pdf&quot;</span><span class="punctuation">,</span> <span class="string">&quot;病历.pdf&quot;</span><span class="punctuation">,</span> <span class="string">&quot;费用清单.pdf&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;auto_review_result&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;passed&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span> <span class="attr">&quot;reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;资料齐全&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;audit_result&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;approved&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span> <span class="attr">&quot;invoice_amount&quot;</span><span class="punctuation">:</span> <span class="number">2500</span><span class="punctuation">,</span> <span class="attr">&quot;auditor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;张三&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;payout&quot;</span><span class="punctuation">:</span> <span class="number">2000.0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;logs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;[claim-2026-0813-001] 收到 3 份资料&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;自动初审结果: &#123;&#x27;passed&#x27;: true, &#x27;reason&#x27;: &#x27;资料齐全&#x27;&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;人工审核结果: &#123;&#x27;approved&#x27;: true, &#x27;invoice_amount&#x27;: 2500, &#x27;auditor&#x27;: &#x27;张三&#x27;&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;核定赔付金额: 2000.00&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="关键观察"><a href="#关键观察" class="headerlink" title="关键观察"></a>关键观察</h3><ol>
+<li><strong>进程结束不影响状态</strong>：第一次运行结束后，即使关闭终端，<code>checkpoints</code> 表里仍然保存了完整状态。</li>
+<li><strong>thread_id 是恢复钥匙</strong>：第二次运行使用相同的 <code>thread_id</code>，LangGraph 自动找到最新 checkpoint。</li>
+<li><strong>Command(resume&#x3D;…)</strong> 把外部事件注入到中断点，图从那里继续推进。</li>
+<li><strong>节点幂等性</strong>：<code>wait_for_audit</code> 里加了提前返回逻辑，防止重复注入 <code>audit_result</code>。</li>
+</ol>
+<h3 id="扩展到生产"><a href="#扩展到生产" class="headerlink" title="扩展到生产"></a>扩展到生产</h3><p>在真实生产中，你可能不会用命令行触发 <code>resume</code>，而是用一个事件监听器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 监听人工审核完成事件队列</span></span><br><span class="line"><span class="keyword">for</span> event <span class="keyword">in</span> audit_queue.consume():</span><br><span class="line">    thread_id = event[<span class="string">&quot;claim_id&quot;</span>]</span><br><span class="line">    graph.invoke(</span><br><span class="line">        Command(resume=event[<span class="string">&quot;audit_result&quot;</span>]),</span><br><span class="line">        config=&#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: thread_id&#125;&#125;</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>这个事件可以是 Kafka 消息、Webhook、数据库变更捕获（CDC），或者一个定时轮询任务。</p>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ul>
+<li><strong>LangGraph 1.0 候选版本</strong>：LangChain 团队在 2025 下半年持续推动 LangGraph 向 1.0 演进，核心方向是稳定 checkpoint API、改进 <code>RemoteGraph</code> 的鉴权与流式传输、以及提供更好的服务端可观测性。生产使用前建议锁定版本并阅读迁移指南。</li>
+<li><strong>PostgreSQL 作为 LLM 状态存储</strong>：随着 AI 应用对持久化要求提高，PostgreSQL 不再只是向量数据库（pgvector）的宿主，也越来越多地承担起 checkpoint、trace、audit log 的职责。”PG 是所有 AI 应用的状态底盘”这一趋势正在加强。</li>
+<li><strong>Temporal + LangGraph 的混合架构</strong>：对于需要严格 saga 补偿、定时器、重试策略的复杂业务流程，社区出现了把 LangGraph 作为”AI 决策层”、Temporal 作为”工作流执行层”的混合方案。LangGraph 负责不确定性推理，Temporal 负责确定性编排和持久化。</li>
+<li><strong>持久化层的成本意识</strong>：随着 Agent 运行轨迹越来越长，checkpoint 存储成本成为真实问题。2025 年以来，多个项目开始探索 checkpoint 压缩、差分存储、以及只保留关键节点快照的策略。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>LangGraph 的检查点机制把 AI Agent 从”一次性对话脚本”升级成了”可持久化、可恢复、可审计的长事务状态机”。对 PostgreSQL 后端工程师来说，这套概念并不陌生：checkpoint 是 WAL，thread_id 是 session，checkpoint_id 是 LSN，保留策略是表分区与归档。</p>
+<p>真正需要牢记的是：<strong>持久化不是框架自动帮你做好的最后一公里，而是需要你在业务层做设计决策的工程问题</strong>。thread_id 怎么生成？节点是否幂等？checkpoint 保留多久？并发时怎么隔离？这些都是从 demo 走向生产时必须回答的问题。</p>
+<p>下一篇，我们将把视角从 LangGraph 的内部机制拉出来，看看 Agent 系统在真实生产环境里如何设计<strong>可观测性、告警与 SLA</strong>。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/">https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/LangGraph/">
+                                    <span class="chip bg-color">LangGraph</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Checkpoint/">
+                                    <span class="chip bg-color">Checkpoint</span>
+                                </a>
+                            
+                                <a href="/tags/Persistence/">
+                                    <span class="chip bg-color">Persistence</span>
+                                </a>
+                            
+                                <a href="/tags/Cross-Session-Recovery/">
+                                    <span class="chip bg-color">Cross-Session-Recovery</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启">
+                        
+                        <span class="card-title">LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Checkpoint/">
+                        <span class="chip bg-color">Checkpoint</span>
+                    </a>
+                    
+                    <a href="/tags/Persistence/">
+                        <span class="chip bg-color">Persistence</span>
+                    </a>
+                    
+                    <a href="/tags/Cross-Session-Recovery/">
+                        <span class="chip bg-color">Cross-Session-Recovery</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战">
+                        
+                        <span class="card-title">从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LangGraph/">
+                        <span class="chip bg-color">LangGraph</span>
+                    </a>
+                    
+                    <a href="/tags/Multi-Agent/">
+                        <span class="chip bg-color">Multi-Agent</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Subgraph/">
+                        <span class="chip bg-color">Subgraph</span>
+                    </a>
+                    
+                    <a href="/tags/Remote-Callable-Graph/">
+                        <span class="chip bg-color">Remote-Callable-Graph</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">274.9k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
