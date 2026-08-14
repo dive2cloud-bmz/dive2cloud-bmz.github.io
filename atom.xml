@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-13T03:04:59.720Z</updated>
+  <updated>2026-08-14T03:04:57.664Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>像运维数据库一样运维 Agent：可观测性、告警与 SLA 设计</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/14/week4-day17-agent-observability-alerting-sla/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/14/week4-day17-agent-observability-alerting-sla/</id>
+    <published>2026-08-14T03:00:00.000Z</published>
+    <updated>2026-08-14T03:04:57.664Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;像运维数据库一样运维-Agent：可观测性、告警与-SLA-设计&quot;&gt;&lt;a href=&quot;#像运维数据库一样运维-Agent：可观测性、告警与-SLA-设计&quot; class=&quot;headerlink&quot; title=&quot;像运维数据库一样运维 Agent：可观测性、告警与</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Agent-Observability" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Observability/"/>
+    
+    <category term="OpenTelemetry" scheme="https://dive2cloud-bmz.github.io/tags/OpenTelemetry/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Alerting" scheme="https://dive2cloud-bmz.github.io/tags/Alerting/"/>
+    
+    <category term="SLA" scheme="https://dive2cloud-bmz.github.io/tags/SLA/"/>
+    
+  </entry>
   
   <entry>
     <title>LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</title>
@@ -370,9 +407,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
@@ -657,39 +694,6 @@
     <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
     
     <category term="记忆分类" scheme="https://dive2cloud-bmz.github.io/tags/%E8%AE%B0%E5%BF%86%E5%88%86%E7%B1%BB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 记忆系列（01）· 为什么无状态的 LLM，走不通真实业务？</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/27/week4-day1-agent-memory-why-stateless-llm-fails/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/27/week4-day1-agent-memory-why-stateless-llm-fails/</id>
-    <published>2026-07-27T03:55:00.000Z</published>
-    <updated>2026-07-29T09:22:26.347Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;Agent-记忆系列（01）·-为什么无状态的-LLM，走不通真实业务？&quot;&gt;&lt;a href=&quot;#Agent-记忆系列（01）·-为什么无状态的-LLM，走不通真实业务？&quot; class=&quot;headerlink&quot; title=&quot;Agent 记忆系列（01）·</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="LLM" scheme="https://dive2cloud-bmz.github.io/tags/LLM/"/>
-    
-    <category term="长期记忆" scheme="https://dive2cloud-bmz.github.io/tags/%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86/"/>
     
   </entry>
   
