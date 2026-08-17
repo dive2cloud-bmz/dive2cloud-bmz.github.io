@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-14T03:04:57.664Z</updated>
+  <updated>2026-08-17T03:05:13.551Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Agent 成本优化与延迟治理：像调优 PostgreSQL 一样精打细算 LLM 调用</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/17/week4-day18-agent-cost-optimization-latency-governance/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/17/week4-day18-agent-cost-optimization-latency-governance/</id>
+    <published>2026-08-17T03:00:00.000Z</published>
+    <updated>2026-08-17T03:05:13.551Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;今日一句话：Agent 的每一次 LLM 调用都是一次数据库事务——有 I&amp;#x2F;O、有计算、有并发、有预算上限；后端工程师已经习惯了为 SQL</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Agent" scheme="https://dive2cloud-bmz.github.io/tags/Agent/"/>
+    
+    <category term="Cost-Optimization" scheme="https://dive2cloud-bmz.github.io/tags/Cost-Optimization/"/>
+    
+    <category term="Production-Engineering" scheme="https://dive2cloud-bmz.github.io/tags/Production-Engineering/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Latency" scheme="https://dive2cloud-bmz.github.io/tags/Latency/"/>
+    
+    <category term="Token-Budget" scheme="https://dive2cloud-bmz.github.io/tags/Token-Budget/"/>
+    
+  </entry>
   
   <entry>
     <title>像运维数据库一样运维 Agent：可观测性、告警与 SLA 设计</title>
@@ -407,9 +445,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
-    
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
+    
+    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
@@ -661,39 +699,6 @@
     <category term="Knowledge-Graph" scheme="https://dive2cloud-bmz.github.io/tags/Knowledge-Graph/"/>
     
     <category term="MemGPT" scheme="https://dive2cloud-bmz.github.io/tags/MemGPT/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 记忆系列（02）· 一张分类地图，看懂记忆的三个正交维度</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/27/week4-day2-agent-memory-taxonomy-map/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/27/week4-day2-agent-memory-taxonomy-map/</id>
-    <published>2026-07-27T12:40:00.000Z</published>
-    <updated>2026-07-29T09:22:34.994Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;Agent-记忆系列（02）·-一张分类地图，看懂记忆的三个正交维度&quot;&gt;&lt;a href=&quot;#Agent-记忆系列（02）·-一张分类地图，看懂记忆的三个正交维度&quot; class=&quot;headerlink&quot; title=&quot;Agent 记忆系列（02）·</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
-    
-    <category term="记忆分类" scheme="https://dive2cloud-bmz.github.io/tags/%E8%AE%B0%E5%BF%86%E5%88%86%E7%B1%BB/"/>
     
   </entry>
   
