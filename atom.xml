@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-17T03:05:13.551Z</updated>
+  <updated>2026-08-18T03:04:22.480Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4-Day19｜Agent 安全与访问控制：多租户环境下的工具与数据权限隔离</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/18/week4-day19-agent-security-access-control-multi-tenant/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/18/week4-day19-agent-security-access-control-multi-tenant/</id>
+    <published>2026-08-18T03:00:47.000Z</published>
+    <updated>2026-08-18T03:04:22.480Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Agent-安全与访问控制：多租户环境下的工具与数据权限隔离&quot;&gt;&lt;a href=&quot;#Agent-安全与访问控制：多租户环境下的工具与数据权限隔离&quot; class=&quot;headerlink&quot; title=&quot;Agent</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Multi-Tenant" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Tenant/"/>
+    
+    <category term="Access-Control" scheme="https://dive2cloud-bmz.github.io/tags/Access-Control/"/>
+    
+    <category term="RLS" scheme="https://dive2cloud-bmz.github.io/tags/RLS/"/>
+    
+    <category term="Tool-Authorization" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Authorization/"/>
+    
+  </entry>
   
   <entry>
     <title>Agent 成本优化与延迟治理：像调优 PostgreSQL 一样精打细算 LLM 调用</title>
@@ -445,11 +482,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
-    
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -480,11 +517,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Production" scheme="https://dive2cloud-bmz.github.io/tags/Production/"/>
-    
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
     <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
+    
+    <category term="Production" scheme="https://dive2cloud-bmz.github.io/tags/Production/"/>
     
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
@@ -664,41 +701,6 @@
     <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
     
     <category term="认知架构" scheme="https://dive2cloud-bmz.github.io/tags/%E8%AE%A4%E7%9F%A5%E6%9E%B6%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 记忆系列（03）· 存储架构与选型：上下文拼接、向量库、知识图谱与 KV</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/28/week4-day3-agent-memory-storage-architecture/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/28/week4-day3-agent-memory-storage-architecture/</id>
-    <published>2026-07-28T13:00:00.000Z</published>
-    <updated>2026-07-29T09:52:18.618Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;Agent-记忆系列（03）·-存储架构与选型：上下文拼接、向量库、知识图谱与-KV&quot;&gt;&lt;a href=&quot;#Agent-记忆系列（03）·-存储架构与选型：上下文拼接、向量库、知识图谱与-KV&quot; class=&quot;headerlink&quot; title=&quot;Agent</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Vector-DB" scheme="https://dive2cloud-bmz.github.io/tags/Vector-DB/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="Knowledge-Graph" scheme="https://dive2cloud-bmz.github.io/tags/Knowledge-Graph/"/>
-    
-    <category term="MemGPT" scheme="https://dive2cloud-bmz.github.io/tags/MemGPT/"/>
     
   </entry>
   
