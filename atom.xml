@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-19T03:07:00.109Z</updated>
+  <updated>2026-08-20T03:06:11.269Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4-Day21｜Agent 可解释性与对齐：让 Agent 不仅安全，还能被理解和信任</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/20/week4-day21-agent-explainability-alignment/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/20/week4-day21-agent-explainability-alignment/</id>
+    <published>2026-08-20T03:00:00.000Z</published>
+    <updated>2026-08-20T03:06:11.269Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Agent-可解释性与对齐：让-Agent-不仅安全，还能被理解和信任&quot;&gt;&lt;a href=&quot;#Agent-可解释性与对齐：让-Agent-不仅安全，还能被理解和信任&quot; class=&quot;headerlink&quot; title=&quot;Agent 可解释性与对齐：让 Agent</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Agent-Explainability" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Explainability/"/>
+    
+    <category term="Alignment" scheme="https://dive2cloud-bmz.github.io/tags/Alignment/"/>
+    
+    <category term="Interpretability" scheme="https://dive2cloud-bmz.github.io/tags/Interpretability/"/>
+    
+    <category term="RLHF" scheme="https://dive2cloud-bmz.github.io/tags/RLHF/"/>
+    
+    <category term="Trustworthy-AI" scheme="https://dive2cloud-bmz.github.io/tags/Trustworthy-AI/"/>
+    
+  </entry>
   
   <entry>
     <title>Week4-Day20｜Agent 安全纵深防御：提示注入检测、输出护栏与供应链安全</title>
@@ -39,13 +76,13 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
-    
     <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
     
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
+    
+    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
     <category term="Supply-Chain-Security" scheme="https://dive2cloud-bmz.github.io/tags/Supply-Chain-Security/"/>
     
@@ -226,9 +263,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -265,9 +302,9 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
-    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
-    
     <category term="Time-Travel" scheme="https://dive2cloud-bmz.github.io/tags/Time-Travel/"/>
+    
+    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
     
     <category term="Branch-Replay" scheme="https://dive2cloud-bmz.github.io/tags/Branch-Replay/"/>
     
@@ -331,11 +368,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -519,11 +556,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
     <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
     
     <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -668,43 +705,6 @@
     <category term="Memory-Architecture" scheme="https://dive2cloud-bmz.github.io/tags/Memory-Architecture/"/>
     
     <category term="Recall-Optimization" scheme="https://dive2cloud-bmz.github.io/tags/Recall-Optimization/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 记忆系列（05）· 技术雷达：从 CoALA 论文到产业落地的三年演进</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/28/week4-day5-agent-memory-tech-radar/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/28/week4-day5-agent-memory-tech-radar/</id>
-    <published>2026-07-28T14:00:00.000Z</published>
-    <updated>2026-07-29T09:23:01.240Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;Agent-记忆系列（05）·-技术雷达：从-CoALA-论文到产业落地的三年演进&quot;&gt;&lt;a href=&quot;#Agent-记忆系列（05）·-技术雷达：从-CoALA-论文到产业落地的三年演进&quot; class=&quot;headerlink&quot; title=&quot;Agent</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="CoALA" scheme="https://dive2cloud-bmz.github.io/tags/CoALA/"/>
-    
-    <category term="技术雷达" scheme="https://dive2cloud-bmz.github.io/tags/%E6%8A%80%E6%9C%AF%E9%9B%B7%E8%BE%BE/"/>
-    
-    <category term="mem0" scheme="https://dive2cloud-bmz.github.io/tags/mem0/"/>
-    
-    <category term="Zep" scheme="https://dive2cloud-bmz.github.io/tags/Zep/"/>
     
   </entry>
   
