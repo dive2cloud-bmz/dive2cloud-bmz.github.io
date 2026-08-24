@@ -1,0 +1,1350 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环, BMZ BLOG">
+    <meta name="description" content="
+本文目标阅读时长：20 分钟。适合已经写过 evaluate.py、跑过几个 LLM-as-Judge 脚本，却发现「评测结果散在 Excel 里、bad case 修完又复发、线上出了问题才想起来补评测」的后端工程师。
+
+
+🚀 核心洞">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/Agent-Evaluation/">
+                                <span class="chip bg-color">Agent-Evaluation</span>
+                            </a>
+                        
+                            <a href="/tags/Bad-Case-Ops/">
+                                <span class="chip bg-color">Bad-Case-Ops</span>
+                            </a>
+                        
+                            <a href="/tags/Evaluation-Platform/">
+                                <span class="chip bg-color">Evaluation-Platform</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-24
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-24
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.6k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    20 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>本文目标阅读时长：20 分钟。适合已经写过 <code>evaluate.py</code>、跑过几个 LLM-as-Judge 脚本，却发现「评测结果散在 Excel 里、bad case 修完又复发、线上出了问题才想起来补评测」的后端工程师。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：从-PostgreSQL-慢查询日志到-Agent-评测平台"><a href="#🚀-核心洞察：从-PostgreSQL-慢查询日志到-Agent-评测平台" class="headerlink" title="🚀 核心洞察：从 PostgreSQL 慢查询日志到 Agent 评测平台"></a>🚀 核心洞察：从 PostgreSQL 慢查询日志到 Agent 评测平台</h2><p>作为 RDS PostgreSQL 后端工程师，你对下面这套流程一定不陌生：</p>
+<ol>
+<li><code>log_min_duration_statement = 100ms</code>，慢查询被自动捕获；</li>
+<li><code>pg_stat_statements</code> 聚合 top SQL；</li>
+<li>把慢 SQL 丢进待办队列，分析执行计划、加索引、改写法；</li>
+<li>灰度发布后，再跑一轮 <code>EXPLAIN ANALYZE</code> 做回归验证；</li>
+<li>把典型案例沉淀到「SQL Review Checklist」，防止同类问题再次进入生产环境。</li>
+</ol>
+<p>这套机制之所以有效，是因为它形成了一个<strong>可观测 → 可定位 → 可修复 → 可回归 → 可预防</strong>的闭环。遗憾的是，很多 AI 应用的评测至今还停在第一步：写个 <code>evaluate.py</code>，在本地跑一遍，把 F1、Accuracy、GPT-4 Judge 分数截个图发到群里，任务结束。</p>
+<p>当模型、Prompt、工具、RAG 知识库、Agent 链路中任意一环发生变更，你根本没法回答三个灵魂问题：</p>
+<ul>
+<li><strong>这次改动让哪些指标变好了？哪些变差了？</strong>（可量化）</li>
+<li><strong>上一个版本的 bad case，这个版本真的修好了吗？</strong>（可回归）</li>
+<li><strong>为什么线上用户投诉的问题，评测集里完全没有覆盖？</strong>（可预防）</li>
+</ul>
+<p>今天的主题就是把后端工程师熟悉的「慢查询治理」思路迁移到 Agent 评测领域，搭建一套**可扩展的评测平台（Evaluation Platform）**和 <strong>bad case 运营体系</strong>。它不需要你立刻采购商业工具，核心思想是：把评测从「一次性脚本」升级为「持续运行的数据基础设施」。</p>
+<hr>
+<h2 id="🧠-核心概念：评测平台的五层架构"><a href="#🧠-核心概念：评测平台的五层架构" class="headerlink" title="🧠 核心概念：评测平台的五层架构"></a>🧠 核心概念：评测平台的五层架构</h2><h3 id="1-为什么脚本不够了？"><a href="#1-为什么脚本不够了？" class="headerlink" title="1. 为什么脚本不够了？"></a>1. 为什么脚本不够了？</h3><p>脚本的问题不是「不准」，而是<strong>不可持续</strong>。对比一张表就能看清楚：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本地 <code>evaluate.py</code></th>
+<th>评测平台</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据集管理</td>
+<td>硬编码在 <code>test_cases.json</code></td>
+<td>版本化、标签化、支持采样与分层</td>
+</tr>
+<tr>
+<td>执行调度</td>
+<td>串行、本地跑</td>
+<td>异步队列、并发控制、失败重试</td>
+</tr>
+<tr>
+<td>指标计算</td>
+<td>自定义函数，口径不统一</td>
+<td>插件化 Judge、指标注册中心</td>
+</tr>
+<tr>
+<td>结果存储</td>
+<td>stdout &#x2F; Excel</td>
+<td>结构化落库、可追踪到单次调用</td>
+</tr>
+<tr>
+<td>回归验证</td>
+<td>靠人眼 diff</td>
+<td>自动对比基线、告警阈值</td>
+</tr>
+<tr>
+<td>bad case 运营</td>
+<td>群里截图</td>
+<td>工单流转、标签归因、修复闭环</td>
+</tr>
+</tbody></table>
+<p>如果只用脚本，你得到的是「一次体检报告」；如果做平台，你得到的是「持续健康监测 + 病历档案 + 治疗方案跟踪」。</p>
+<h3 id="2-五层参考架构"><a href="#2-五层参考架构" class="headerlink" title="2. 五层参考架构"></a>2. 五层参考架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[数据采集层&lt;br/&gt;Production Traces / 人工标注 / 合成数据] --&gt; B[数据集管理层&lt;br/&gt;Dataset Registry &amp; Versioning]</span><br><span class="line">    B --&gt; C[评测执行层&lt;br/&gt;Async Runner / Sandbox / Cache]</span><br><span class="line">    C --&gt; D[指标与裁判层&lt;br/&gt;Rule-based / LLM-as-Judge / Human Review]</span><br><span class="line">    D --&gt; E[结果与可视化层&lt;br/&gt;Report / Diff / Dashboard]</span><br><span class="line">    E --&gt; F[Bad Case 运营层&lt;br/&gt;Triage / Label / Fix / Regression]</span><br><span class="line">    F --&gt; A</span><br></pre></td></tr></table></figure>
+
+<p><strong>数据采集层</strong>不要只盯着人工写 case。线上真实 trace 是更宝贵的数据源：用户的原始问题、Agent 的思考链（如果可导出）、调用的工具与参数、最终输出、用户反馈（👍&#x2F;👎）。把它们脱敏后回流到评测池，才能做到「线上问题驱动评测集生长」。</p>
+<p><strong>数据集管理层</strong>要回答：这个数据集是哪个版本的？覆盖了多少意图类别？有没有重复？是否包含已知的 hard cases？推荐参考 Hugging Face <code>datasets</code> 的版本化思路，以及 DVC&#x2F; lakeFS 的数据版本控制理念。</p>
+<p><strong>评测执行层</strong>的核心是<strong>可复现</strong>。同一份数据集 + 同一套配置 + 同一个模型版本，两次跑出来的结果必须一致。要做到这一点，需要：固定随机种子、隔离环境（Docker&#x2F;Sandbox）、缓存外部调用（VCR、LLM 调用缓存）、记录依赖版本（模型名、Prompt 版本、工具 schema）。</p>
+<p><strong>指标与裁判层</strong>是平台的大脑。不要把所有指标都塞给一个 GPT-4 Judge。建议拆成三层：</p>
+<ol>
+<li><strong>硬性规则</strong>：JSON schema 校验、正则匹配、SQL 可执行性检查、输出长度限制；</li>
+<li><strong>语义裁判</strong>：Embedding 相似度、BERTScore、LLM-as-Judge（ Rubric + Few-shot + Chain-of-Thought）；</li>
+<li><strong>业务裁判</strong>：用户满意度、转化率、任务完成率、人工终审。</li>
+</ol>
+<p><strong>结果与可视化层</strong>要支持「跨版本对比」。后端同学可以联想 <code>pgbench</code> 的 report：TPS、Latency P50&#x2F;P95&#x2F;P99、随时间变化曲线。评测报告也一样：总体通过率、各维度分数分布、错误类型饼图、单次 case 的详细 trace。</p>
+<p><strong>Bad Case 运营层</strong>是今天最强调的部分。它的目标是把「评测失败」变成「产品改进工单」。</p>
+<h3 id="3-Bad-Case-生命周期"><a href="#3-Bad-Case-生命周期" class="headerlink" title="3. Bad Case 生命周期"></a>3. Bad Case 生命周期</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">stateDiagram-v2</span><br><span class="line">    [*] --&gt; Discovered : 评测失败 / 线上投诉</span><br><span class="line">    Discovered --&gt; Triage : 初步分类</span><br><span class="line">    Triage --&gt; Labeled : 打标签&lt;br/&gt;[模型/Prompt/工具/RAG/产品]</span><br><span class="line">    Labeled --&gt; Fixed : 分配修复</span><br><span class="line">    Fixed --&gt; Regression : 入回归集</span><br><span class="line">    Regression --&gt; Verified : 连续 N 次通过</span><br><span class="line">    Verified --&gt; [*]</span><br><span class="line">    Labeled --&gt; Rejected : 非 bug / 标注错误</span><br><span class="line">    Rejected --&gt; [*]</span><br></pre></td></tr></table></figure>
+
+<p><strong>标签体系</strong>建议按「错误根因」设计，而不是按「现象」。例如：</p>
+<ul>
+<li><code>model_hallucination</code>：模型编造不存在的事实或工具参数；</li>
+<li><code>prompt_ambiguity</code>：Prompt 没有明确约束输出格式或边界条件；</li>
+<li><code>tool_schema_mismatch</code>：工具定义与实际 API 不一致；</li>
+<li><code>retrieval_noise</code>：RAG 召回到了无关文档；</li>
+<li><code>planning_error</code>：多步计划顺序或依赖关系错误；</li>
+<li><code>user_intent_misclassify</code>：用户真实意图被分类器误判。</li>
+</ul>
+<p>标签打得越细，后期的 pareto 分析越有价值。你会发现 80% 的 bad case 可能集中在 2-3 个根因上，集中火力解决它们，比广撒网有效得多。</p>
+<h3 id="4-LLM-as-Judge-的工程化要点"><a href="#4-LLM-as-Judge-的工程化要点" class="headerlink" title="4. LLM-as-Judge 的工程化要点"></a>4. LLM-as-Judge 的工程化要点</h3><p>把 GPT-4&#x2F;Claude 当裁判看似简单，实则暗藏陷阱：</p>
+<p><strong>偏见（Position Bias）</strong>：模型倾向于给放在第一个的答案更高分。解决方案：交换答案顺序跑两次取平均，或设计成强制单选并随机排序。</p>
+<p><strong>长度偏见（Length Bias）</strong>：模型可能偏爱更长的回答。解决方案：在 rubric 中明确「简洁得分」维度，或增加长度惩罚项。</p>
+<p><strong>自我增强（Self-Preference）</strong>：模型可能更偏爱自己生成的答案。解决方案：使用第三方模型做裁判，或匿名化模型来源。</p>
+<p><strong>评分尺度漂移</strong>：不同日期、不同 temperature、不同 Prompt 版本会导致分数不可比。解决方案：固定裁判 Prompt 版本，引入锚点 case（anchor set）做标准化。</p>
+<p>推荐把 Judge 设计成一个<strong>可插拔接口</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Judge</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line"><span class="meta">    @abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">self, input_data: <span class="built_in">dict</span>, prediction: <span class="built_in">dict</span>, reference: <span class="built_in">dict</span> | <span class="literal">None</span> = <span class="literal">None</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        返回统一的评分结构：</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            &quot;passed&quot;: bool,</span></span><br><span class="line"><span class="string">            &quot;score&quot;: float,          # 0-1</span></span><br><span class="line"><span class="string">            &quot;dimensions&quot;: &#123;&quot;accuracy&quot;: 0.8, &quot;format&quot;: 1.0&#125;,</span></span><br><span class="line"><span class="string">            &quot;reasoning&quot;: &quot;...&quot;,</span></span><br><span class="line"><span class="string">            &quot;metadata&quot;: &#123;&quot;judge_model&quot;: &quot;gpt-4o&quot;, &quot;prompt_version&quot;: &quot;v2.1&quot;&#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
+
+<p>这样你可以在平台里同时挂载：规则 Judge、Embedding Judge、LLM Judge、人工 Judge，按场景组合使用。</p>
+<hr>
+<h2 id="🔗-后端桥接：用-PostgreSQL-后端概念类比-AI-评测"><a href="#🔗-后端桥接：用-PostgreSQL-后端概念类比-AI-评测" class="headerlink" title="🔗 后端桥接：用 PostgreSQL&#x2F;后端概念类比 AI 评测"></a>🔗 后端桥接：用 PostgreSQL&#x2F;后端概念类比 AI 评测</h2><p>把 AI 概念翻译成熟悉的后端词汇，会大幅降低设计难度。</p>
+<h3 id="1-评测集-≈-测试数据库-索引"><a href="#1-评测集-≈-测试数据库-索引" class="headerlink" title="1. 评测集 ≈ 测试数据库 + 索引"></a>1. 评测集 ≈ 测试数据库 + 索引</h3><p>评测集里的每一条 case 就像数据库里的一行测试数据。为了高效覆盖不同场景，你需要：</p>
+<ul>
+<li><strong>主键</strong>：case_id，全局唯一；</li>
+<li><strong>索引</strong>：按 intent、difficulty、标签、来源建立索引，方便分层采样；</li>
+<li><strong>约束</strong>：必须有 input、必须有期望输出或评分标准、不能有重复；</li>
+<li><strong>版本控制</strong>：评测集的变更要走 PR Review，避免「随便删 case 让指标好看」。</li>
+</ul>
+<h3 id="2-评测运行-≈-CI-Pipeline-压测任务"><a href="#2-评测运行-≈-CI-Pipeline-压测任务" class="headerlink" title="2. 评测运行 ≈ CI Pipeline &#x2F; 压测任务"></a>2. 评测运行 ≈ CI Pipeline &#x2F; 压测任务</h3><p>一次 <code>eval run</code> 就像一次 CI build：</p>
+<ul>
+<li>触发条件：代码提交、模型版本更新、Prompt 变更、定时任务；</li>
+<li>执行环境：Docker 容器，保证可复现；</li>
+<li>产物：报告、日志、覆盖率、错误列表；</li>
+<li>门禁：关键指标低于阈值时阻断发布。</li>
+</ul>
+<p>你可以直接把评测任务接入现有的 CI&#x2F;CD 系统（GitHub Actions &#x2F; GitLab CI &#x2F; Jenkins），让 Agent 应用也拥有「单元测试 → 集成测试 → 线上监控」的完整质量关卡。</p>
+<h3 id="3-Bad-Case-队列-≈-死信队列（DLQ）"><a href="#3-Bad-Case-队列-≈-死信队列（DLQ）" class="headerlink" title="3. Bad Case 队列 ≈ 死信队列（DLQ）"></a>3. Bad Case 队列 ≈ 死信队列（DLQ）</h3><p>线上系统用 DLQ 存放处理失败的消息，Agent 评测平台也用类似机制存放失败 case：</p>
+<ul>
+<li>失败原因要标准化，方便聚合；</li>
+<li>支持重试（fix 后重新评测）；</li>
+<li>超过重试次数或长期未处理要告警；</li>
+<li>最终要形成「错误模式库」，类似 PostgreSQL 的 <code>pg_stat_statements</code> 知识库。</li>
+</ul>
+<h3 id="4-指标-≈-数据库执行指标"><a href="#4-指标-≈-数据库执行指标" class="headerlink" title="4. 指标 ≈ 数据库执行指标"></a>4. 指标 ≈ 数据库执行指标</h3><table>
+<thead>
+<tr>
+<th>AI 评测指标</th>
+<th>PG 对应概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pass Rate</td>
+<td>查询成功率</td>
+<td>通过的 case 占比</td>
+</tr>
+<tr>
+<td>Per-Dimension Score</td>
+<td>各维度耗时</td>
+<td>定位短板</td>
+</tr>
+<tr>
+<td>Regression Gap</td>
+<td>性能回退</td>
+<td>新版本比基线差多少</td>
+</tr>
+<tr>
+<td>Confidence Interval</td>
+<td>p50&#x2F;p95&#x2F;p99</td>
+<td>指标波动范围</td>
+</tr>
+<tr>
+<td>Anchor Set</td>
+<td>基准 SQL</td>
+<td>用于校准的标准 case</td>
+</tr>
+</tbody></table>
+<h3 id="5-LLM-as-Judge-≈-可配置的规则引擎"><a href="#5-LLM-as-Judge-≈-可配置的规则引擎" class="headerlink" title="5. LLM-as-Judge ≈ 可配置的规则引擎"></a>5. LLM-as-Judge ≈ 可配置的规则引擎</h3><p>把 Judge Prompt 想象成数据库里的「检查约束（CHECK constraint）」或触发器：定义了什么算通过、什么算失败。但它比普通约束更灵活，因为它可以处理自然语言的语义。工程上要做的是：把 Prompt 版本化、参数化、可审计，而不是散落在各个脚本里。</p>
+<hr>
+<h2 id="🛠️-微实战：用-Python-FastAPI-搭建最小可运行评测平台"><a href="#🛠️-微实战：用-Python-FastAPI-搭建最小可运行评测平台" class="headerlink" title="🛠️ 微实战：用 Python + FastAPI 搭建最小可运行评测平台"></a>🛠️ 微实战：用 Python + FastAPI 搭建最小可运行评测平台</h2><p>下面是一个<strong>单文件可运行</strong>的迷你评测平台。它包含：数据集注册、一次评测运行、规则 Judge + LLM Judge 接口、结果落库、bad case 标签管理。为了便于演示，使用 SQLite 做存储；生产环境可以无缝切换到 PostgreSQL。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mini_eval_platform.py</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> sqlite3</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br><span class="line"><span class="keyword">from</span> contextlib <span class="keyword">import</span> contextmanager</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI, HTTPException</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"></span><br><span class="line">DB_PATH = Path(<span class="string">&quot;eval_platform.db&quot;</span>)</span><br><span class="line">app = FastAPI(title=<span class="string">&quot;Mini Agent Eval Platform&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------ 数据模型 ------------------</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Case</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    case_id: <span class="built_in">str</span> = Field(default_factory=<span class="keyword">lambda</span>: <span class="built_in">str</span>(uuid.uuid4())[:<span class="number">8</span>])</span><br><span class="line">    input_text: <span class="built_in">str</span></span><br><span class="line">    expected: <span class="built_in">dict</span> | <span class="literal">None</span> = <span class="literal">None</span></span><br><span class="line">    tags: <span class="built_in">list</span>[<span class="built_in">str</span>] = []</span><br><span class="line">    difficulty: <span class="built_in">str</span> = <span class="string">&quot;medium&quot;</span></span><br><span class="line">    source: <span class="built_in">str</span> = <span class="string">&quot;manual&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dataset</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    name: <span class="built_in">str</span></span><br><span class="line">    cases: <span class="built_in">list</span>[Case]</span><br><span class="line">    version: <span class="built_in">str</span> = <span class="string">&quot;1.0.0&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RunConfig</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    dataset_name: <span class="built_in">str</span></span><br><span class="line">    agent_version: <span class="built_in">str</span></span><br><span class="line">    judge_names: <span class="built_in">list</span>[<span class="built_in">str</span>] = [<span class="string">&quot;rule&quot;</span>, <span class="string">&quot;llm_simulator&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BadCaseRecord</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    case_id: <span class="built_in">str</span></span><br><span class="line">    run_id: <span class="built_in">str</span></span><br><span class="line">    root_cause: <span class="built_in">str</span></span><br><span class="line">    owner: <span class="built_in">str</span> | <span class="literal">None</span> = <span class="literal">None</span></span><br><span class="line">    status: <span class="built_in">str</span> = <span class="string">&quot;open&quot;</span>  <span class="comment"># open | fixed | verified | rejected</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------ SQLite 基础设施 ------------------</span></span><br><span class="line">INIT_SQL = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE IF NOT EXISTS datasets (</span></span><br><span class="line"><span class="string">    name TEXT PRIMARY KEY,</span></span><br><span class="line"><span class="string">    version TEXT,</span></span><br><span class="line"><span class="string">    cases_json TEXT,</span></span><br><span class="line"><span class="string">    created_at TEXT</span></span><br><span class="line"><span class="string">);</span></span><br><span class="line"><span class="string">CREATE TABLE IF NOT EXISTS runs (</span></span><br><span class="line"><span class="string">    run_id TEXT PRIMARY KEY,</span></span><br><span class="line"><span class="string">    dataset_name TEXT,</span></span><br><span class="line"><span class="string">    agent_version TEXT,</span></span><br><span class="line"><span class="string">    config_json TEXT,</span></span><br><span class="line"><span class="string">    result_json TEXT,</span></span><br><span class="line"><span class="string">    created_at TEXT</span></span><br><span class="line"><span class="string">);</span></span><br><span class="line"><span class="string">CREATE TABLE IF NOT EXISTS bad_cases (</span></span><br><span class="line"><span class="string">    id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span><br><span class="line"><span class="string">    case_id TEXT,</span></span><br><span class="line"><span class="string">    run_id TEXT,</span></span><br><span class="line"><span class="string">    root_cause TEXT,</span></span><br><span class="line"><span class="string">    owner TEXT,</span></span><br><span class="line"><span class="string">    status TEXT,</span></span><br><span class="line"><span class="string">    created_at TEXT,</span></span><br><span class="line"><span class="string">    updated_at TEXT</span></span><br><span class="line"><span class="string">);</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@contextmanager</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_db</span>():</span><br><span class="line">    conn = sqlite3.connect(DB_PATH)</span><br><span class="line">    conn.row_factory = sqlite3.Row</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">yield</span> conn</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        conn.close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">init_db</span>():</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        conn.executescript(INIT_SQL)</span><br><span class="line">        conn.commit()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------ Judge 抽象与实现 ------------------</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Judge</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line"><span class="meta">    @abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">self, <span class="keyword">case</span>: Case, prediction: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RuleJudge</span>(<span class="title class_ inherited__">Judge</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;规则裁判：检查预测中是否包含必要字段，且 JSON 可解析。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">self, <span class="keyword">case</span>: Case, prediction: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        answer = prediction.get(<span class="string">&quot;answer&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">        passed = <span class="built_in">bool</span>(answer) <span class="keyword">and</span> <span class="built_in">isinstance</span>(answer, <span class="built_in">str</span>) <span class="keyword">and</span> <span class="built_in">len</span>(answer) &lt; <span class="number">500</span></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;passed&quot;</span>: passed,</span><br><span class="line">            <span class="string">&quot;score&quot;</span>: <span class="number">1.0</span> <span class="keyword">if</span> passed <span class="keyword">else</span> <span class="number">0.0</span>,</span><br><span class="line">            <span class="string">&quot;dimensions&quot;</span>: &#123;<span class="string">&quot;non_empty&quot;</span>: <span class="built_in">float</span>(<span class="built_in">bool</span>(answer)), <span class="string">&quot;length_ok&quot;</span>: <span class="built_in">float</span>(<span class="built_in">len</span>(answer) &lt; <span class="number">500</span>)&#125;,</span><br><span class="line">            <span class="string">&quot;reasoning&quot;</span>: <span class="string">&quot;Rule check passed&quot;</span> <span class="keyword">if</span> passed <span class="keyword">else</span> <span class="string">&quot;Answer empty or too long&quot;</span>,</span><br><span class="line">            <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;judge&quot;</span>: <span class="string">&quot;rule&quot;</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LLMSimulatorJudge</span>(<span class="title class_ inherited__">Judge</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟 LLM-as-Judge：用关键词匹配代替真实模型调用，方便本地跑通。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">self, <span class="keyword">case</span>: Case, prediction: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        answer = prediction.get(<span class="string">&quot;answer&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">        expected = <span class="keyword">case</span>.expected <span class="keyword">or</span> &#123;&#125;</span><br><span class="line">        keywords = expected.get(<span class="string">&quot;must_contain&quot;</span>, [])</span><br><span class="line">        matches = <span class="built_in">sum</span>(<span class="number">1</span> <span class="keyword">for</span> kw <span class="keyword">in</span> keywords <span class="keyword">if</span> kw.lower() <span class="keyword">in</span> answer.lower())</span><br><span class="line">        score = matches / <span class="built_in">max</span>(<span class="built_in">len</span>(keywords), <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;passed&quot;</span>: score &gt;= <span class="number">0.8</span>,</span><br><span class="line">            <span class="string">&quot;score&quot;</span>: score,</span><br><span class="line">            <span class="string">&quot;dimensions&quot;</span>: &#123;<span class="string">&quot;keyword_coverage&quot;</span>: score&#125;,</span><br><span class="line">            <span class="string">&quot;reasoning&quot;</span>: <span class="string">f&quot;Matched <span class="subst">&#123;matches&#125;</span>/<span class="subst">&#123;<span class="built_in">len</span>(keywords)&#125;</span> keywords&quot;</span>,</span><br><span class="line">            <span class="string">&quot;metadata&quot;</span>: &#123;<span class="string">&quot;judge&quot;</span>: <span class="string">&quot;llm_simulator&quot;</span>&#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">JUDGE_REGISTRY = &#123;</span><br><span class="line">    <span class="string">&quot;rule&quot;</span>: RuleJudge(),</span><br><span class="line">    <span class="string">&quot;llm_simulator&quot;</span>: LLMSimulatorJudge(),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------ API ------------------</span></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/datasets&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_dataset</span>(<span class="params">ds: Dataset</span>):</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        conn.execute(</span><br><span class="line">            <span class="string">&quot;INSERT OR REPLACE INTO datasets (name, version, cases_json, created_at) VALUES (?, ?, ?, ?)&quot;</span>,</span><br><span class="line">            (ds.name, ds.version, ds.model_dump_json(), datetime.now().isoformat())</span><br><span class="line">        )</span><br><span class="line">        conn.commit()</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;name&quot;</span>: ds.name, <span class="string">&quot;case_count&quot;</span>: <span class="built_in">len</span>(ds.cases)&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/datasets/&#123;name&#125;&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_dataset</span>(<span class="params">name: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        row = conn.execute(<span class="string">&quot;SELECT * FROM datasets WHERE name = ?&quot;</span>, (name,)).fetchone()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> row:</span><br><span class="line">        <span class="keyword">raise</span> HTTPException(status_code=<span class="number">404</span>, detail=<span class="string">&quot;Dataset not found&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> json.loads(row[<span class="string">&quot;cases_json&quot;</span>])</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/runs&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_evaluation</span>(<span class="params">config: RunConfig</span>):</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        row = conn.execute(<span class="string">&quot;SELECT cases_json FROM datasets WHERE name = ?&quot;</span>, (config.dataset_name,)).fetchone()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> row:</span><br><span class="line">        <span class="keyword">raise</span> HTTPException(status_code=<span class="number">404</span>, detail=<span class="string">&quot;Dataset not found&quot;</span>)</span><br><span class="line"></span><br><span class="line">    cases = [Case(**c) <span class="keyword">for</span> c <span class="keyword">in</span> json.loads(row[<span class="string">&quot;cases_json&quot;</span>])[<span class="string">&quot;cases&quot;</span>]]</span><br><span class="line">    run_id = <span class="built_in">str</span>(uuid.uuid4())[:<span class="number">8</span>]</span><br><span class="line">    results = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> cases:</span><br><span class="line">        <span class="comment"># 这里用确定性 mock agent：实际中替换为真实 Agent 调用</span></span><br><span class="line">        prediction = mock_agent_predict(<span class="keyword">case</span>)</span><br><span class="line">        case_results = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> judge_name <span class="keyword">in</span> config.judge_names:</span><br><span class="line">            judge = JUDGE_REGISTRY.get(judge_name)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> judge:</span><br><span class="line">                <span class="keyword">raise</span> HTTPException(status_code=<span class="number">400</span>, detail=<span class="string">f&quot;Unknown judge: <span class="subst">&#123;judge_name&#125;</span>&quot;</span>)</span><br><span class="line">            case_results[judge_name] = judge.evaluate(<span class="keyword">case</span>, prediction)</span><br><span class="line">        results.append(&#123;<span class="string">&quot;case_id&quot;</span>: <span class="keyword">case</span>.case_id, <span class="string">&quot;prediction&quot;</span>: prediction, <span class="string">&quot;judges&quot;</span>: case_results&#125;)</span><br><span class="line"></span><br><span class="line">    summary = summarize(results)</span><br><span class="line">    result_payload = &#123;<span class="string">&quot;summary&quot;</span>: summary, <span class="string">&quot;details&quot;</span>: results&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        conn.execute(</span><br><span class="line">            <span class="string">&quot;INSERT INTO runs (run_id, dataset_name, agent_version, config_json, result_json, created_at) VALUES (?, ?, ?, ?, ?, ?)&quot;</span>,</span><br><span class="line">            (run_id, config.dataset_name, config.agent_version, config.model_dump_json(), json.dumps(result_payload), datetime.now().isoformat())</span><br><span class="line">        )</span><br><span class="line">        conn.commit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;run_id&quot;</span>: run_id, <span class="string">&quot;summary&quot;</span>: summary&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/runs/&#123;run_id&#125;&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_run</span>(<span class="params">run_id: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        row = conn.execute(<span class="string">&quot;SELECT * FROM runs WHERE run_id = ?&quot;</span>, (run_id,)).fetchone()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> row:</span><br><span class="line">        <span class="keyword">raise</span> HTTPException(status_code=<span class="number">404</span>, detail=<span class="string">&quot;Run not found&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> json.loads(row[<span class="string">&quot;result_json&quot;</span>])</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/bad-cases&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_bad_case</span>(<span class="params">record: BadCaseRecord</span>):</span><br><span class="line">    now = datetime.now().isoformat()</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        conn.execute(</span><br><span class="line">            <span class="string">&quot;&quot;&quot;INSERT INTO bad_cases (case_id, run_id, root_cause, owner, status, created_at, updated_at)</span></span><br><span class="line"><span class="string">               VALUES (?, ?, ?, ?, ?, ?, ?)&quot;&quot;&quot;</span>,</span><br><span class="line">            (record.case_id, record.run_id, record.root_cause, record.owner, record.status, now, now)</span><br><span class="line">        )</span><br><span class="line">        conn.commit()</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;Bad case recorded&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/bad-cases&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">list_bad_cases</span>(<span class="params">status: <span class="built_in">str</span> | <span class="literal">None</span> = <span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">with</span> get_db() <span class="keyword">as</span> conn:</span><br><span class="line">        <span class="keyword">if</span> status:</span><br><span class="line">            rows = conn.execute(<span class="string">&quot;SELECT * FROM bad_cases WHERE status = ?&quot;</span>, (status,)).fetchall()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            rows = conn.execute(<span class="string">&quot;SELECT * FROM bad_cases&quot;</span>).fetchall()</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">dict</span>(r) <span class="keyword">for</span> r <span class="keyword">in</span> rows]</span><br><span class="line"></span><br><span class="line"><span class="comment"># ------------------ 辅助函数 ------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mock_agent_predict</span>(<span class="params"><span class="keyword">case</span>: Case</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;模拟 Agent：简单返回 input 加上固定前缀。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">f&quot;Answer for: <span class="subst">&#123;<span class="keyword">case</span>.input_text&#125;</span>&quot;</span>, <span class="string">&quot;tool_calls&quot;</span>: []&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">summarize</span>(<span class="params">results: <span class="built_in">list</span>[<span class="built_in">dict</span>]</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    total = <span class="built_in">len</span>(results)</span><br><span class="line">    passed = <span class="built_in">sum</span>(<span class="number">1</span> <span class="keyword">for</span> r <span class="keyword">in</span> results <span class="keyword">if</span> <span class="built_in">all</span>(v.get(<span class="string">&quot;passed&quot;</span>, <span class="literal">False</span>) <span class="keyword">for</span> v <span class="keyword">in</span> r[<span class="string">&quot;judges&quot;</span>].values()))</span><br><span class="line">    judge_scores = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> results:</span><br><span class="line">        <span class="keyword">for</span> name, res <span class="keyword">in</span> r[<span class="string">&quot;judges&quot;</span>].items():</span><br><span class="line">            judge_scores.setdefault(name, []).append(res.get(<span class="string">&quot;score&quot;</span>, <span class="number">0</span>))</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;total&quot;</span>: total,</span><br><span class="line">        <span class="string">&quot;passed&quot;</span>: passed,</span><br><span class="line">        <span class="string">&quot;pass_rate&quot;</span>: <span class="built_in">round</span>(passed / total, <span class="number">4</span>) <span class="keyword">if</span> total <span class="keyword">else</span> <span class="number">0</span>,</span><br><span class="line">        <span class="string">&quot;avg_scores&quot;</span>: &#123;k: <span class="built_in">round</span>(<span class="built_in">sum</span>(v) / <span class="built_in">len</span>(v), <span class="number">4</span>) <span class="keyword">for</span> k, v <span class="keyword">in</span> judge_scores.items()&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    init_db()</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何体验完整流程"><a href="#如何体验完整流程" class="headerlink" title="如何体验完整流程"></a>如何体验完整流程</h3><ol>
+<li>安装依赖：<code>pip install fastapi uvicorn pydantic</code>；</li>
+<li>启动服务：<code>python mini_eval_platform.py</code>；</li>
+<li>创建数据集：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST http://localhost:8000/datasets \</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;</span></span><br><span class="line"><span class="string">    &quot;name&quot;: &quot;faq_v1&quot;,</span></span><br><span class="line"><span class="string">    &quot;version&quot;: &quot;1.0.0&quot;,</span></span><br><span class="line"><span class="string">    &quot;cases&quot;: [</span></span><br><span class="line"><span class="string">      &#123;</span></span><br><span class="line"><span class="string">        &quot;input_text&quot;: &quot;如何重置 RDS PostgreSQL 密码？&quot;,</span></span><br><span class="line"><span class="string">        &quot;expected&quot;: &#123;&quot;must_contain&quot;: [&quot;控制台&quot;, &quot;重置密码&quot;]&#125;,</span></span><br><span class="line"><span class="string">        &quot;tags&quot;: [&quot;ops&quot;, &quot;password&quot;],</span></span><br><span class="line"><span class="string">        &quot;difficulty&quot;: &quot;easy&quot;</span></span><br><span class="line"><span class="string">      &#125;,</span></span><br><span class="line"><span class="string">      &#123;</span></span><br><span class="line"><span class="string">        &quot;input_text&quot;: &quot;Explain PostgreSQL vacuum 的作用&quot;,</span></span><br><span class="line"><span class="string">        &quot;expected&quot;: &#123;&quot;must_contain&quot;: [&quot;dead tuples&quot;, &quot;storage&quot;, &quot;MVCC&quot;]&#125;,</span></span><br><span class="line"><span class="string">        &quot;tags&quot;: [&quot;concept&quot;, &quot;vacuum&quot;],</span></span><br><span class="line"><span class="string">        &quot;difficulty&quot;: &quot;hard&quot;</span></span><br><span class="line"><span class="string">      &#125;</span></span><br><span class="line"><span class="string">    ]</span></span><br><span class="line"><span class="string">  &#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>运行评测：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST http://localhost:8000/runs \</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;&quot;dataset_name&quot;: &quot;faq_v1&quot;, &quot;agent_version&quot;: &quot;v0.1.0&quot;, &quot;judge_names&quot;: [&quot;rule&quot;, &quot;llm_simulator&quot;]&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>对失败的 case 记录 bad case：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST http://localhost:8000/bad-cases \</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;&quot;case_id&quot;: &quot;&lt;case_id&gt;&quot;, &quot;run_id&quot;: &quot;&lt;run_id&gt;&quot;, &quot;root_cause&quot;: &quot;retrieval_noise&quot;, &quot;owner&quot;: &quot;alice&quot;, &quot;status&quot;: &quot;open&quot;&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="从最小原型到生产平台的演进清单"><a href="#从最小原型到生产平台的演进清单" class="headerlink" title="从最小原型到生产平台的演进清单"></a>从最小原型到生产平台的演进清单</h3><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>最小原型</th>
+<th>生产增强</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>存储</td>
+<td>SQLite</td>
+<td>PostgreSQL + 分区表</td>
+</tr>
+<tr>
+<td>Agent 调用</td>
+<td>mock</td>
+<td>真实 Agent + 调用缓存</td>
+</tr>
+<tr>
+<td>Judge</td>
+<td>规则 + 模拟</td>
+<td>OpenAI&#x2F;Claude + 人工复核 + 众包</td>
+</tr>
+<tr>
+<td>并发</td>
+<td>单进程</td>
+<td>Celery&#x2F;RQ + Redis</td>
+</tr>
+<tr>
+<td>可观测</td>
+<td>print</td>
+<td>OpenTelemetry + Prometheus</td>
+</tr>
+<tr>
+<td>版本对比</td>
+<td>无</td>
+<td>基线 run diff + 趋势图</td>
+</tr>
+<tr>
+<td>权限</td>
+<td>无</td>
+<td>RBAC + 审计日志</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="📰-技术雷达：评测与-bad-case-运营工具生态"><a href="#📰-技术雷达：评测与-bad-case-运营工具生态" class="headerlink" title="📰 技术雷达：评测与 bad case 运营工具生态"></a>📰 技术雷达：评测与 bad case 运营工具生态</h2><h3 id="开源-半开源工具"><a href="#开源-半开源工具" class="headerlink" title="开源&#x2F;半开源工具"></a>开源&#x2F;半开源工具</h3><ul>
+<li><strong>Promptfoo</strong>：偏 Prompt 与模型对比，支持 red teaming、断言规则、CI 集成，适合把评测脚本迁到平台化的第一步。</li>
+<li><strong>LangSmith &#x2F; Langfuse &#x2F; Phoenix (Arize)</strong>：偏 trace 可观测与在线评测，能把线上 trace 直接转为评测 case。</li>
+<li><strong>Weave (Weights &amp; Biases)</strong>：实验跟踪 + 评测 + 模型注册一站式，适合研究团队。</li>
+<li><strong>Inspect (UK AI Safety Institute)</strong>：结构化评估框架，支持多模型、多 judge、沙箱执行，安全与对齐评测场景很强。</li>
+<li><strong>OpenEvals (OpenAI)</strong>：官方推出的评估库，提供常见任务的参考实现和 Judge 模板。</li>
+</ul>
+<h3 id="值得关注的研究方向"><a href="#值得关注的研究方向" class="headerlink" title="值得关注的研究方向"></a>值得关注的研究方向</h3><ol>
+<li><strong>Judge 的 Judge（Meta-Evaluation）</strong>：如何评估裁判本身是否稳定、无偏见。最新工作集中在使用一致性、交换测试、人工对齐度来校准 judge。</li>
+<li><strong>合成数据生成 for Eval</strong>：用模型生成对抗性 case、边界 case，降低人工标注成本，但要警惕分布漂移。</li>
+<li><strong>持续学习中的 Catastrophic Forgetting</strong>：Agent 修复一批 bad case 后，另一批 case 可能退化。需要在平台里维护「锚点集」做回归。</li>
+<li><strong>Multi-turn Evaluation</strong>：单轮问答评测已不够，Agent 评测需要支持多轮对话状态、工具调用链、人类模拟用户（User Simulators）。</li>
+</ol>
+<h3 id="一条实践建议"><a href="#一条实践建议" class="headerlink" title="一条实践建议"></a>一条实践建议</h3><p>不要试图一次性搭建完美的评测平台。推荐分三步走：</p>
+<ol>
+<li><strong>Week 1</strong>：把现有 <code>evaluate.py</code> 的结果写入数据库，至少能看到历史趋势；</li>
+<li><strong>Week 2-4</strong>：接入真实线上 trace，建立 bad case 标签与工单流转；</li>
+<li><strong>Month 2+</strong>：引入多 Judge、A&#x2F;B 回归、自动告警、与 CI&#x2F;CD 打通。</li>
+</ol>
+<hr>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>评测平台不是「AI 团队专属的数据玩具」，而是 Agent 应用的<strong>质量基础设施</strong>。它和后端工程师熟悉的监控、CI、慢查询治理、DLQ 体系在本质上是同一套思想：把问题显式化、结构化、流程化。</p>
+<p>当你下次再写 <code>evaluate.py</code> 时，不妨多问一句：</p>
+<blockquote>
+<p>这个脚本跑出来的失败 case，一个月之后还会有人记得修复吗？</p>
+</blockquote>
+<p>如果答案不确定，就是时候开始搭建你的评测平台了。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/">https://dive2cloud-bmz.github.io/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/Agent-Evaluation/">
+                                    <span class="chip bg-color">Agent-Evaluation</span>
+                                </a>
+                            
+                                <a href="/tags/Bad-Case-Ops/">
+                                    <span class="chip bg-color">Bad-Case-Ops</span>
+                                </a>
+                            
+                                <a href="/tags/Evaluation-Platform/">
+                                    <span class="chip bg-color">Evaluation-Platform</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环">
+                        
+                        <span class="card-title">别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-24
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Evaluation/">
+                        <span class="chip bg-color">Agent-Evaluation</span>
+                    </a>
+                    
+                    <a href="/tags/Bad-Case-Ops/">
+                        <span class="chip bg-color">Bad-Case-Ops</span>
+                    </a>
+                    
+                    <a href="/tags/Evaluation-Platform/">
+                        <span class="chip bg-color">Evaluation-Platform</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/21/week4-day22-agent-evaluation-iteration-metrics-ab-testing/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="Week4-Day22｜Agent 评测与持续迭代：从离线指标到在线 A/B 测试的完整闭环">
+                        
+                        <span class="card-title">Week4-Day22｜Agent 评测与持续迭代：从离线指标到在线 A/B 测试的完整闭环</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-21
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/LLM-as-Judge/">
+                        <span class="chip bg-color">LLM-as-Judge</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/AB-Testing/">
+                        <span class="chip bg-color">AB-Testing</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Evaluation/">
+                        <span class="chip bg-color">Agent-Evaluation</span>
+                    </a>
+                    
+                    <a href="/tags/Continuous-Iteration/">
+                        <span class="chip bg-color">Continuous-Iteration</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">315.8k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
