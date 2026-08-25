@@ -1,0 +1,1312 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）, BMZ BLOG">
+    <meta name="description" content="
+本文目标阅读时长：20 分钟。适合已经走完 RAG、Agent、生产化三条线，准备把零散知识串成「能讲 45 分钟」的架构故事的后端工程师。
+
+
+🚀 核心洞察：从 PostgreSQL 架构图到 AI 系统设计作为 RDS Postgr">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构） | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Week-4/">
+                                <span class="chip bg-color">Week-4</span>
+                            </a>
+                        
+                            <a href="/tags/System-Design/">
+                                <span class="chip bg-color">System-Design</span>
+                            </a>
+                        
+                            <a href="/tags/Interview-Prep/">
+                                <span class="chip bg-color">Interview-Prep</span>
+                            </a>
+                        
+                            <a href="/tags/RAG-Agent-Platform/">
+                                <span class="chip bg-color">RAG-Agent-Platform</span>
+                            </a>
+                        
+                            <a href="/tags/Capstone/">
+                                <span class="chip bg-color">Capstone</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-25
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-25
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.5k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    14 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>本文目标阅读时长：20 分钟。适合已经走完 RAG、Agent、生产化三条线，准备把零散知识串成「能讲 45 分钟」的架构故事的后端工程师。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：从-PostgreSQL-架构图到-AI-系统设计"><a href="#🚀-核心洞察：从-PostgreSQL-架构图到-AI-系统设计" class="headerlink" title="🚀 核心洞察：从 PostgreSQL 架构图到 AI 系统设计"></a>🚀 核心洞察：从 PostgreSQL 架构图到 AI 系统设计</h2><p>作为 RDS PostgreSQL 后端工程师，你大概率画过这样的图：客户端 → 连接池 → 查询解析器 → 优化器 → 执行器 → 缓存 &#x2F; 索引 &#x2F; WAL → 存储引擎。面试官问你「为什么 Postgres 能扛住高并发」时，你会从连接管理、执行计划、锁机制、复制、可观测性几个维度展开，而不是背诵每个参数。</p>
+<p>设计一个生产级 RAG-Agent 平台，本质上也是画一张<strong>数据流 + 控制流 + 状态流</strong>的图，并回答三组问题：</p>
+<ol>
+<li><strong>功能边界</strong>：它是聊天机器人、知识库问答、工具助手，还是多 Agent 协作系统？支持哪些输入输出模态？</li>
+<li><strong>非功能约束</strong>：延迟要 &lt; 1s 还是 &lt; 5s？成本上限是多少？多租户如何隔离？如何保证输出安全？</li>
+<li><strong>可演进性</strong>：模型换版本、Prompt 迭代、工具增减、知识库更新时，系统如何不崩、可回滚、可评估？</li>
+</ol>
+<p>今天的目标不是罗列所有组件，而是把过去 23 天学过的 Embedding、Chunking、Vector DB、Retrieval、ReAct、LangGraph、Guardrails、Observability、Evaluation 拼成一份<strong>可以写进简历、可以面试讲、可以落地为 Capstone 项目</strong>的架构故事。</p>
+<hr>
+<h2 id="🧠-核心概念：生产级-RAG-Agent-平台的五层架构"><a href="#🧠-核心概念：生产级-RAG-Agent-平台的五层架构" class="headerlink" title="🧠 核心概念：生产级 RAG-Agent 平台的五层架构"></a>🧠 核心概念：生产级 RAG-Agent 平台的五层架构</h2><h3 id="1-把需求翻译成架构约束"><a href="#1-把需求翻译成架构约束" class="headerlink" title="1. 把需求翻译成架构约束"></a>1. 把需求翻译成架构约束</h3><p>面试时不要上来就画框。先澄清场景。以「面向企业内部的智能客服 + 数据分析助手」为例：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>典型要求</th>
+<th>架构启示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户规模</td>
+<td>1k~10k 企业员工</td>
+<td>不需要万亿参数大集群，但要做好多租户隔离</td>
+</tr>
+<tr>
+<td>响应延迟</td>
+<td>简单问答 &lt; 1.5s，复杂分析可接受 10s</td>
+<td>简单走同步流，复杂走异步 &#x2F; 长轮询</td>
+</tr>
+<tr>
+<td>正确性</td>
+<td>引用真实文档，不能编造价格 &#x2F; 政策</td>
+<td>RAG 必须带引用，输出需 guardrail 校验</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>员工 A 不能看到员工 B 的薪资数据</td>
+<td>检索侧做权限过滤，向量库按租户分 namespace</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>月度 API 预算有限</td>
+<td>LLM Gateway 做模型路由、缓存、token 预算</td>
+</tr>
+<tr>
+<td>可观测</td>
+<td>能回答「它为什么这么答」</td>
+<td>trace、prompt 版本、检索 top-k 全链路记录</td>
+</tr>
+</tbody></table>
+<p>把这些约束固定后，再进入分层设计。</p>
+<h3 id="2-五层参考架构"><a href="#2-五层参考架构" class="headerlink" title="2. 五层参考架构"></a>2. 五层参考架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    U[终端用户 / 企业应用] --&gt;|HTTP/SSE| GW[API Gateway&lt;br/&gt;Auth / Rate Limit / Routing]</span><br><span class="line">    GW --&gt; ORCH[编排层 Orchestrator&lt;br/&gt;LangGraph / ReAct / Plan-and-Execute]</span><br><span class="line">    ORCH --&gt; MEM[记忆层 Memory&lt;br/&gt;会话状态 / 长时记忆 / 用户画像]</span><br><span class="line">    ORCH --&gt; RET[RAG 检索层 Retriever&lt;br/&gt;Vector DB / 关键词 / 重排序]</span><br><span class="line">    ORCH --&gt; TOOL[工具层 Tool Sandbox&lt;br/&gt;API 工具 / SQL 工具 / 代码执行]</span><br><span class="line">    ORCH --&gt; LLMG[LLM Gateway&lt;br/&gt;路由 / fallback / 缓存 / 预算]</span><br><span class="line">    LLMG --&gt; M1[OpenAI / Claude]</span><br><span class="line">    LLMG --&gt; M2[开源模型 / 私有部署]</span><br><span class="line">    ORCH --&gt; G[护栏层 Guardrails&lt;br/&gt;输入 / 输出 / 工具 / 合规]</span><br><span class="line">    ORCH --&gt; OBS[可观测层 Observability&lt;br/&gt;Trace / Metrics / Cost]</span><br><span class="line">    ORCH --&gt; EVAL[评测层 Evaluation&lt;br/&gt;LLM-as-Judge / 回归 / Bad Case]</span><br><span class="line">    MEM -.-&gt;|pgvector / Postgres| DB[(PostgreSQL)]</span><br><span class="line">    RET -.-&gt;|HNSW / Inverted| VDB[(Vector DB)]</span><br><span class="line">    OBS -.-&gt;|异步写入| TS[(时序/日志库)]</span><br></pre></td></tr></table></figure>
+
+<p>这张图不是堆组件，而是表达三条核心主线：</p>
+<ul>
+<li><strong>控制主线</strong>：Gateway → Orchestrator → LLM Gateway → Model。 orchestrator 决定「想什么、查什么、调什么工具」。</li>
+<li><strong>数据主线</strong>：Retriever 提供上下文，Memory 提供状态，Tool 提供动作，最终流回 Orchestrator 生成响应。</li>
+<li><strong>治理主线</strong>：Guardrails、Observability、Evaluation 横切所有层，保证系统可控、可解释、可持续改进。</li>
+</ul>
+<h3 id="3-一条复杂请求的全链路"><a href="#3-一条复杂请求的全链路" class="headerlink" title="3. 一条复杂请求的全链路"></a>3. 一条复杂请求的全链路</h3><p>假设用户问：「帮我看看上季度华东区销售额同比下降的原因，并给出可执行的改进建议。」</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as 用户</span><br><span class="line">    participant GW as API Gateway</span><br><span class="line">    participant OR as Orchestrator</span><br><span class="line">    participant MEM as Memory</span><br><span class="line">    participant RET as Retriever</span><br><span class="line">    participant TOOL as Tool Sandbox</span><br><span class="line">    participant LLM as LLM Gateway</span><br><span class="line">    participant G as Guardrails</span><br><span class="line">    participant OBS as Observability</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;GW: 提问（thread_id, tenant_id）</span><br><span class="line">    GW-&gt;&gt;OR: 鉴权、限流、注入上下文</span><br><span class="line">    OR-&gt;&gt;MEM: 读取会话状态与用户画像</span><br><span class="line">    OR-&gt;&gt;OR: 规划：1）查报表 2）查知识库 3）生成建议</span><br><span class="line">    OR-&gt;&gt;RET: 检索「华东区销售额」「同比下降分析」</span><br><span class="line">    RET--&gt;&gt;OR: 返回 Top-K 文档片段 + 引用</span><br><span class="line">    OR-&gt;&gt;TOOL: 调用 SQL 工具查询 BI 数据库</span><br><span class="line">    TOOL--&gt;&gt;OR: 返回聚合数据</span><br><span class="line">    OR-&gt;&gt;LLM: 组装 Prompt + 上下文，请求生成</span><br><span class="line">    LLM--&gt;&gt;OR: 返回带引用标记的草稿</span><br><span class="line">    OR-&gt;&gt;G: 输出校验（事实、合规、敏感词）</span><br><span class="line">    G--&gt;&gt;OR: 通过 / 触发重写</span><br><span class="line">    OR-&gt;&gt;OBS: 写入 Trace（prompt, retrieval, tool, cost）</span><br><span class="line">    OR--&gt;&gt;U: SSE 流式返回 + 引用来源</span><br><span class="line">    OR-&gt;&gt;MEM: 保存新回合状态</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-六大关键设计决策"><a href="#4-六大关键设计决策" class="headerlink" title="4. 六大关键设计决策"></a>4. 六大关键设计决策</h3><table>
+<thead>
+<tr>
+<th>决策点</th>
+<th>方案 A</th>
+<th>方案 B</th>
+<th>选型建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>会话状态存储</td>
+<td>PostgreSQL + pgvector</td>
+<td>Redis + 持久化快照</td>
+<td>有强一致需求选 PG；高频临时状态选 Redis</td>
+</tr>
+<tr>
+<td>向量检索</td>
+<td>专用向量库（Milvus&#x2F;Pinecone）</td>
+<td>pgvector &#x2F; RDS PostgreSQL</td>
+<td>数据规模 &lt; 1000 万、团队熟悉 PG 时优先 pgvector</td>
+</tr>
+<tr>
+<td>调用模式</td>
+<td>同步 + SSE</td>
+<td>异步 + 回调 &#x2F; WebSocket</td>
+<td>简单问答同步；长任务异步</td>
+</tr>
+<tr>
+<td>模型路由</td>
+<td>单一最强模型</td>
+<td>LLM Gateway 按任务路由</td>
+<td>成本敏感场景必须做路由 + fallback</td>
+</tr>
+<tr>
+<td>工具执行</td>
+<td>同进程函数调用</td>
+<td>容器沙箱 &#x2F; 无函数</td>
+<td>不可信工具必须沙箱化</td>
+</tr>
+<tr>
+<td>记忆策略</td>
+<td>全量上下文</td>
+<td>摘要 + 关键实体 + 向量检索</td>
+<td>长会话必须分层记忆</td>
+</tr>
+</tbody></table>
+<h3 id="5-非功能性能力如何落地"><a href="#5-非功能性能力如何落地" class="headerlink" title="5. 非功能性能力如何落地"></a>5. 非功能性能力如何落地</h3><ul>
+<li><strong>延迟</strong>：在 Gateway 层设置「预算时间」，检索用并行 + 缓存，重排序用小模型，LLM 用流式响应。</li>
+<li><strong>成本</strong>：按任务路由模型（简单路由到轻量模型），Prompt 做版本化缓存，Tool 结果可缓存。</li>
+<li><strong>可靠性</strong>：工具调用必须幂等，LLM 调用加熔断和重试，Orchestrator 设置最大步数和 token 上限。</li>
+<li><strong>安全</strong>：输入侧做 prompt injection 检测，输出侧做 PII &#x2F; 敏感词过滤，工具侧做权限白名单。</li>
+<li><strong>可观测</strong>：每个请求生成唯一 trace_id，记录 prompt 版本、检索结果、工具调用、模型输出、延迟和费用。</li>
+<li><strong>可评估</strong>：线上 trace 自动入评测集，关键指标（正确性、引用率、用户满意度）做回归监控。</li>
+</ul>
+<hr>
+<h2 id="🔗-后端桥接：用-PostgreSQL-理解-AI-平台"><a href="#🔗-后端桥接：用-PostgreSQL-理解-AI-平台" class="headerlink" title="🔗 后端桥接：用 PostgreSQL 理解 AI 平台"></a>🔗 后端桥接：用 PostgreSQL 理解 AI 平台</h2><p>PG 后端工程师有一个巨大优势：你熟悉的很多概念可以直接映射到 AI 系统。</p>
+<table>
+<thead>
+<tr>
+<th>PostgreSQL 概念</th>
+<th>RAG-Agent 平台映射</th>
+<th>为什么这样类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>查询解析器 + 优化器</strong></td>
+<td>Agent Planner &#x2F; ReAct</td>
+<td>先理解意图，再决定走索引还是全表扫，Agent 先规划再走检索或工具</td>
+</tr>
+<tr>
+<td><strong>执行器 + 索引（B-tree &#x2F; GIN &#x2F; GiST）</strong></td>
+<td>Retriever + Reranker + HNSW</td>
+<td>索引加速近似查找，Reranker 类似二次过滤，HNSW 是高维空间的 GiST</td>
+</tr>
+<tr>
+<td><strong>WAL + Checkpoint</strong></td>
+<td>LangGraph Checkpoint &#x2F; 状态持久化</td>
+<td>保证崩溃后可恢复到一致状态，支持 time travel 和 human-in-the-loop</td>
+</tr>
+<tr>
+<td><strong>pg_stat_statements</strong></td>
+<td>LLM Observability &#x2F; Cost Tracking</td>
+<td>记录每条「查询」的成本、延迟、调用路径，用于优化</td>
+</tr>
+<tr>
+<td><strong>连接池（PgBouncer）</strong></td>
+<td>LLM Gateway &#x2F; Rate Limiter</td>
+<td>防止突发流量打爆后端，统一做排队、限流、超时</td>
+</tr>
+<tr>
+<td><strong>Row Level Security（RLS）</strong></td>
+<td>检索&#x2F;工具侧租户隔离</td>
+<td>用户只能看到被授权的数据片段</td>
+</tr>
+<tr>
+<td><strong>VACUUM &#x2F; 自动清理</strong></td>
+<td>Memory Forgetting &#x2F; Consolidation</td>
+<td>定期清理过期记忆，合并重复会话，防止记忆膨胀</td>
+</tr>
+<tr>
+<td><strong>逻辑复制 + CDC</strong></td>
+<td>知识库增量更新</td>
+<td>业务库变更实时同步到向量库，保证答案不过期</td>
+</tr>
+</tbody></table>
+<p>面试时如果你能说出「这个 RAG 检索层本质上就是 PG 的查询优化器选了一条高维近似索引扫描」，面试官会立刻意识到你不是只会调 API 的脚本工程师。</p>
+<hr>
+<h2 id="🛠️-微实战：一个可运行的最小-RAG-Agent-骨架"><a href="#🛠️-微实战：一个可运行的最小-RAG-Agent-骨架" class="headerlink" title="🛠️ 微实战：一个可运行的最小 RAG-Agent 骨架"></a>🛠️ 微实战：一个可运行的最小 RAG-Agent 骨架</h2><p>下面的脚本不依赖任何外部 LLM API，用 Python 标准库实现了一个<strong>文档检索 → 意图规划 → 工具调用 → 输出生成 → 护栏检查 → 状态持久化</strong>的最小闭环。你可以直接运行，也可以把其中的 LLM 换成真实 API。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mini_rag_agent_platform.py</span></span><br><span class="line"><span class="keyword">import</span> json, re, math, sqlite3, datetime</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line">DOCS = [</span><br><span class="line">    <span class="string">&quot;PostgreSQL 使用 EXPLAIN ANALYZE 查看真实执行计划，避免只看估计成本。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;RAG 系统的检索质量取决于 chunk 边界、embedding 质量和重排序。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;LangGraph 通过 checkpoint 实现状态持久化，支持断点续跑和 human-in-the-loop。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;LLM Gateway 通过模型路由、缓存和 fallback 降低 API 成本并提升可用性。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;prompt injection 防护应在输入侧、输出侧和工具侧多层部署。&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">BLOCKED_WORDS = &#123;<span class="string">&quot;密码&quot;</span>, <span class="string">&quot;私钥&quot;</span>, <span class="string">&quot;secret&quot;</span>, <span class="string">&quot;password&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tokenize</span>(<span class="params">text: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">return</span> re.findall(<span class="string">r&quot;\b\w+\b&quot;</span>, text.lower())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">vec</span>(<span class="params">text: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">return</span> Counter(tokenize(text))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cosine</span>(<span class="params">a: Counter, b: Counter</span>):</span><br><span class="line">    num = <span class="built_in">sum</span>(a[k] * b[k] <span class="keyword">for</span> k <span class="keyword">in</span> a <span class="keyword">if</span> k <span class="keyword">in</span> b)</span><br><span class="line">    den = math.sqrt(<span class="built_in">sum</span>(v * v <span class="keyword">for</span> v <span class="keyword">in</span> a.values())) * math.sqrt(<span class="built_in">sum</span>(v * v <span class="keyword">for</span> v <span class="keyword">in</span> b.values()))</span><br><span class="line">    <span class="keyword">return</span> num / den <span class="keyword">if</span> den <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">query: <span class="built_in">str</span>, top_k: <span class="built_in">int</span> = <span class="number">2</span></span>):</span><br><span class="line">    qv = vec(query)</span><br><span class="line">    scored = [(cosine(qv, vec(d)), d) <span class="keyword">for</span> d <span class="keyword">in</span> DOCS]</span><br><span class="line">    scored.sort(reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> scored[:top_k]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">query: <span class="built_in">str</span>, docs: <span class="built_in">list</span></span>):</span><br><span class="line">    q = query.lower()</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> q <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">&quot;性能&quot;</span>, <span class="string">&quot;执行计划&quot;</span>, <span class="string">&quot;explain&quot;</span>, <span class="string">&quot;慢查询&quot;</span>]):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;performance_analysis&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;tool&quot;</span>: <span class="string">&quot;get_pg_tips&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> q <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">&quot;架构&quot;</span>, <span class="string">&quot;设计&quot;</span>, <span class="string">&quot;系统&quot;</span>]):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;architecture_qa&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;tool&quot;</span>: <span class="literal">None</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;general_qa&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;tool&quot;</span>: <span class="literal">None</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">execute_tool</span>(<span class="params">tool: <span class="built_in">str</span>, query: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">if</span> tool == <span class="string">&quot;get_pg_tips&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;建议：开启 log_min_duration_statement，使用 pg_stat_statements 定位 top SQL，再用 EXPLAIN ANALYZE 验证。&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">guardrail</span>(<span class="params">response: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> response.lower() <span class="keyword">for</span> w <span class="keyword">in</span> BLOCKED_WORDS):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span>, <span class="string">&quot;输出包含敏感词，已拦截。&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(response) &gt; <span class="number">300</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span>, <span class="string">&quot;输出过长，建议拆分。&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span>, <span class="string">&quot;通过&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">query: <span class="built_in">str</span>, docs: <span class="built_in">list</span>, tool_result: <span class="built_in">str</span></span>):</span><br><span class="line">    context = <span class="string">&quot;\n&quot;</span>.join(<span class="string">f&quot;- <span class="subst">&#123;d[<span class="number">1</span>]&#125;</span>&quot;</span> <span class="keyword">for</span> d <span class="keyword">in</span> docs)</span><br><span class="line">    parts = [<span class="string">&quot;基于检索到的内容：&quot;</span>, context]</span><br><span class="line">    <span class="keyword">if</span> tool_result:</span><br><span class="line">        parts.append(<span class="string">f&quot;\n工具调用结果：\n<span class="subst">&#123;tool_result&#125;</span>&quot;</span>)</span><br><span class="line">    parts.append(<span class="string">f&quot;\n问题：<span class="subst">&#123;query&#125;</span>\n回答：&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;\n&quot;</span>.join(parts)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">persist_run</span>(<span class="params">conn: sqlite3.Connection, thread_id: <span class="built_in">str</span>, query: <span class="built_in">str</span>, result: <span class="built_in">dict</span></span>):</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        CREATE TABLE IF NOT EXISTS runs (</span></span><br><span class="line"><span class="string">            id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span><br><span class="line"><span class="string">            thread_id TEXT,</span></span><br><span class="line"><span class="string">            query TEXT,</span></span><br><span class="line"><span class="string">            result JSON,</span></span><br><span class="line"><span class="string">            created_at TEXT</span></span><br><span class="line"><span class="string">        )</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">    )</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;INSERT INTO runs (thread_id, query, result, created_at) VALUES (?, ?, ?, ?)&quot;</span>,</span><br><span class="line">        (thread_id, query, json.dumps(result, ensure_ascii=<span class="literal">False</span>), datetime.datetime.now().isoformat()),</span><br><span class="line">    )</span><br><span class="line">    conn.commit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_agent</span>(<span class="params">query: <span class="built_in">str</span>, thread_id: <span class="built_in">str</span> = <span class="string">&quot;demo&quot;</span></span>):</span><br><span class="line">    conn = sqlite3.connect(<span class="string">&quot;agent_runs.db&quot;</span>)</span><br><span class="line">    docs = retrieve(query)</span><br><span class="line">    plan_result = plan(query, docs)</span><br><span class="line">    tool_result = execute_tool(plan_result[<span class="string">&quot;tool&quot;</span>], query) <span class="keyword">if</span> plan_result[<span class="string">&quot;needs_tool&quot;</span>] <span class="keyword">else</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    draft = generate(query, docs, tool_result)</span><br><span class="line">    ok, msg = guardrail(draft)</span><br><span class="line">    result = &#123;</span><br><span class="line">        <span class="string">&quot;intent&quot;</span>: plan_result[<span class="string">&quot;intent&quot;</span>],</span><br><span class="line">        <span class="string">&quot;retrieved&quot;</span>: [d[<span class="number">1</span>] <span class="keyword">for</span> d <span class="keyword">in</span> docs],</span><br><span class="line">        <span class="string">&quot;tool_result&quot;</span>: tool_result,</span><br><span class="line">        <span class="string">&quot;draft&quot;</span>: draft <span class="keyword">if</span> ok <span class="keyword">else</span> <span class="string">&quot;[被拦截]&quot;</span>,</span><br><span class="line">        <span class="string">&quot;guardrail&quot;</span>: msg,</span><br><span class="line">    &#125;</span><br><span class="line">    persist_run(conn, thread_id, query, result)</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    q = <span class="string">&quot;我的 Postgres 查询变慢了，应该从哪几个维度排查？&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(json.dumps(run_agent(q), ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行结果会展示：</p>
+<ul>
+<li>检索出与 Postgres 性能相关的片段；</li>
+<li>规划器识别出 <code>performance_analysis</code> 意图并调用工具；</li>
+<li>生成带上下文的回答；</li>
+<li>护栏检查通过；</li>
+<li>运行记录写入 SQLite。</li>
+</ul>
+<h3 id="把它扩展成-Capstone-项目"><a href="#把它扩展成-Capstone-项目" class="headerlink" title="把它扩展成 Capstone 项目"></a>把它扩展成 Capstone 项目</h3><p>如果把它做成面试作品，可以按以下路径升级：</p>
+<ol>
+<li><strong>替换模拟模块</strong>：Embedding 用 <code>sentence-transformers</code>，LLM 用真实 API 或本地 vLLM，Vector DB 用 <code>pgvector</code>。</li>
+<li><strong>引入 LangGraph</strong>：把 <code>plan → retrieve → tool → generate → guardrail</code> 改成状态图，支持 checkpoint 和 human-in-the-loop。</li>
+<li><strong>接入 FastAPI</strong>：提供 <code>/chat</code> 同步流式接口和 <code>/tasks/&#123;id&#125;</code> 异步任务接口。</li>
+<li><strong>部署 PostgreSQL + Redis</strong>：用 <code>docker-compose</code> 一键拉起，状态、向量、缓存分离存储。</li>
+<li><strong>加上评测</strong>：用 RAGAS &#x2F; ARES 跑正确性、召回率、引用率，并接入 CI 做回归。</li>
+</ol>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ul>
+<li><strong>《The Evolution of Agentic AI Software Architecture》</strong>（arXiv 2602.10479v1）提出 Agentic AI 是一种架构范式转移：把 LLM 作为「认知内核」，外层是控制、记忆、工具与治理层。生产落地需要强调治理内建、可靠性边界、安全沙箱和可观测审计。该论文还给出了一份企业级加固检查清单，非常适合准备系统设计面试时引用。</li>
+<li><strong>Firecrawl 2026 最佳开源 RAG 框架清单</strong> 涵盖了 LangChain、LlamaIndex、RAGFlow、Dify、DSPy、RAGAS、mem0、R2R、LightRAG 等项目。值得关注的是 <strong>RAGFlow</strong>（深度文档理解 + GraphRAG）、<strong>Dify</strong>（可视化工作流与 Agent 编排）、<strong>mem0</strong>（跨会话智能记忆层）和 <strong>RAGAS</strong>（RAG 评测基线），它们正好对应今天架构中的检索、编排、记忆、评测四层。</li>
+<li><strong>LLM Gateway 与模型路由</strong> 正在从「可选组件」变成「基础设施」。LiteLLM、Portkey、OpenRouter 等网关统一了多供应商接口、fallback、缓存和成本分摊，是控制成本和可用性的关键。</li>
+<li><strong>多 Agent 系统</strong> 的拓扑正在收敛到几种可描述模式：Orchestrator-Worker、Router-Solver、Hierarchical Command、Swarm&#x2F;Market。设计面试中如果能说明自己系统的拓扑属于哪一种，并解释其失败模式与缓解策略，会显著提升说服力。</li>
+</ul>
+<hr>
+<h2 id="今日小结"><a href="#今日小结" class="headerlink" title="今日小结"></a>今日小结</h2><p>今天我们完成了从「知识点」到「架构故事」的跨越。一个生产级 RAG-Agent 平台不是把 LangChain、Vector DB 和 LLM API 串起来，而是要在<strong>控制流、数据流、治理流</strong>三条线上同时给出答案。作为 PostgreSQL 后端工程师，你可以把查询优化器、索引、WAL、连接池、RLS 等经验直接迁移到 AI 系统设计中，这是转型路上最独特的差异化优势。</p>
+<p>下一步，不妨把上面的 <code>mini_rag_agent_platform.py</code> 升级为一个带 FastAPI + PostgreSQL + LangGraph + 评测的 Capstone 仓库，并准备一段 10 分钟的面试讲述：从需求澄清到分层架构，再到关键决策与回滚方案。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/25/week4-day24-system-design-interview-rag-agent-platform/">https://dive2cloud-bmz.github.io/2026/08/25/week4-day24-system-design-interview-rag-agent-platform/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Week-4/">
+                                    <span class="chip bg-color">Week-4</span>
+                                </a>
+                            
+                                <a href="/tags/System-Design/">
+                                    <span class="chip bg-color">System-Design</span>
+                                </a>
+                            
+                                <a href="/tags/Interview-Prep/">
+                                    <span class="chip bg-color">Interview-Prep</span>
+                                </a>
+                            
+                                <a href="/tags/RAG-Agent-Platform/">
+                                    <span class="chip bg-color">RAG-Agent-Platform</span>
+                                </a>
+                            
+                                <a href="/tags/Capstone/">
+                                    <span class="chip bg-color">Capstone</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/25/week4-day24-system-design-interview-rag-agent-platform/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）">
+                        
+                        <span class="card-title">面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-25
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/System-Design/">
+                        <span class="chip bg-color">System-Design</span>
+                    </a>
+                    
+                    <a href="/tags/Interview-Prep/">
+                        <span class="chip bg-color">Interview-Prep</span>
+                    </a>
+                    
+                    <a href="/tags/RAG-Agent-Platform/">
+                        <span class="chip bg-color">RAG-Agent-Platform</span>
+                    </a>
+                    
+                    <a href="/tags/Capstone/">
+                        <span class="chip bg-color">Capstone</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环">
+                        
+                        <span class="card-title">别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-24
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Agent-Evaluation/">
+                        <span class="chip bg-color">Agent-Evaluation</span>
+                    </a>
+                    
+                    <a href="/tags/Bad-Case-Ops/">
+                        <span class="chip bg-color">Bad-Case-Ops</span>
+                    </a>
+                    
+                    <a href="/tags/Evaluation-Platform/">
+                        <span class="chip bg-color">Evaluation-Platform</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">319.3k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

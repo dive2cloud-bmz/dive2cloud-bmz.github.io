@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）</title>
+      <link href="/2026/08/25/week4-day24-system-design-interview-rag-agent-platform/"/>
+      <url>/2026/08/25/week4-day24-system-design-interview-rag-agent-platform/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>本文目标阅读时长：20 分钟。适合已经走完 RAG、Agent、生产化三条线，准备把零散知识串成「能讲 45 分钟」的架构故事的后端工程师。</p></blockquote><hr><h2 id="🚀-核心洞察：从-PostgreSQL-架构图到-AI-系统设计"><a href="#🚀-核心洞察：从-PostgreSQL-架构图到-AI-系统设计" class="headerlink" title="🚀 核心洞察：从 PostgreSQL 架构图到 AI 系统设计"></a>🚀 核心洞察：从 PostgreSQL 架构图到 AI 系统设计</h2><p>作为 RDS PostgreSQL 后端工程师，你大概率画过这样的图：客户端 → 连接池 → 查询解析器 → 优化器 → 执行器 → 缓存 &#x2F; 索引 &#x2F; WAL → 存储引擎。面试官问你「为什么 Postgres 能扛住高并发」时，你会从连接管理、执行计划、锁机制、复制、可观测性几个维度展开，而不是背诵每个参数。</p><p>设计一个生产级 RAG-Agent 平台，本质上也是画一张<strong>数据流 + 控制流 + 状态流</strong>的图，并回答三组问题：</p><ol><li><strong>功能边界</strong>：它是聊天机器人、知识库问答、工具助手，还是多 Agent 协作系统？支持哪些输入输出模态？</li><li><strong>非功能约束</strong>：延迟要 &lt; 1s 还是 &lt; 5s？成本上限是多少？多租户如何隔离？如何保证输出安全？</li><li><strong>可演进性</strong>：模型换版本、Prompt 迭代、工具增减、知识库更新时，系统如何不崩、可回滚、可评估？</li></ol><p>今天的目标不是罗列所有组件，而是把过去 23 天学过的 Embedding、Chunking、Vector DB、Retrieval、ReAct、LangGraph、Guardrails、Observability、Evaluation 拼成一份<strong>可以写进简历、可以面试讲、可以落地为 Capstone 项目</strong>的架构故事。</p><hr><h2 id="🧠-核心概念：生产级-RAG-Agent-平台的五层架构"><a href="#🧠-核心概念：生产级-RAG-Agent-平台的五层架构" class="headerlink" title="🧠 核心概念：生产级 RAG-Agent 平台的五层架构"></a>🧠 核心概念：生产级 RAG-Agent 平台的五层架构</h2><h3 id="1-把需求翻译成架构约束"><a href="#1-把需求翻译成架构约束" class="headerlink" title="1. 把需求翻译成架构约束"></a>1. 把需求翻译成架构约束</h3><p>面试时不要上来就画框。先澄清场景。以「面向企业内部的智能客服 + 数据分析助手」为例：</p><table><thead><tr><th>维度</th><th>典型要求</th><th>架构启示</th></tr></thead><tbody><tr><td>用户规模</td><td>1k~10k 企业员工</td><td>不需要万亿参数大集群，但要做好多租户隔离</td></tr><tr><td>响应延迟</td><td>简单问答 &lt; 1.5s，复杂分析可接受 10s</td><td>简单走同步流，复杂走异步 &#x2F; 长轮询</td></tr><tr><td>正确性</td><td>引用真实文档，不能编造价格 &#x2F; 政策</td><td>RAG 必须带引用，输出需 guardrail 校验</td></tr><tr><td>安全</td><td>员工 A 不能看到员工 B 的薪资数据</td><td>检索侧做权限过滤，向量库按租户分 namespace</td></tr><tr><td>成本</td><td>月度 API 预算有限</td><td>LLM Gateway 做模型路由、缓存、token 预算</td></tr><tr><td>可观测</td><td>能回答「它为什么这么答」</td><td>trace、prompt 版本、检索 top-k 全链路记录</td></tr></tbody></table><p>把这些约束固定后，再进入分层设计。</p><h3 id="2-五层参考架构"><a href="#2-五层参考架构" class="headerlink" title="2. 五层参考架构"></a>2. 五层参考架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    U[终端用户 / 企业应用] --&gt;|HTTP/SSE| GW[API Gateway&lt;br/&gt;Auth / Rate Limit / Routing]</span><br><span class="line">    GW --&gt; ORCH[编排层 Orchestrator&lt;br/&gt;LangGraph / ReAct / Plan-and-Execute]</span><br><span class="line">    ORCH --&gt; MEM[记忆层 Memory&lt;br/&gt;会话状态 / 长时记忆 / 用户画像]</span><br><span class="line">    ORCH --&gt; RET[RAG 检索层 Retriever&lt;br/&gt;Vector DB / 关键词 / 重排序]</span><br><span class="line">    ORCH --&gt; TOOL[工具层 Tool Sandbox&lt;br/&gt;API 工具 / SQL 工具 / 代码执行]</span><br><span class="line">    ORCH --&gt; LLMG[LLM Gateway&lt;br/&gt;路由 / fallback / 缓存 / 预算]</span><br><span class="line">    LLMG --&gt; M1[OpenAI / Claude]</span><br><span class="line">    LLMG --&gt; M2[开源模型 / 私有部署]</span><br><span class="line">    ORCH --&gt; G[护栏层 Guardrails&lt;br/&gt;输入 / 输出 / 工具 / 合规]</span><br><span class="line">    ORCH --&gt; OBS[可观测层 Observability&lt;br/&gt;Trace / Metrics / Cost]</span><br><span class="line">    ORCH --&gt; EVAL[评测层 Evaluation&lt;br/&gt;LLM-as-Judge / 回归 / Bad Case]</span><br><span class="line">    MEM -.-&gt;|pgvector / Postgres| DB[(PostgreSQL)]</span><br><span class="line">    RET -.-&gt;|HNSW / Inverted| VDB[(Vector DB)]</span><br><span class="line">    OBS -.-&gt;|异步写入| TS[(时序/日志库)]</span><br></pre></td></tr></table></figure><p>这张图不是堆组件，而是表达三条核心主线：</p><ul><li><strong>控制主线</strong>：Gateway → Orchestrator → LLM Gateway → Model。 orchestrator 决定「想什么、查什么、调什么工具」。</li><li><strong>数据主线</strong>：Retriever 提供上下文，Memory 提供状态，Tool 提供动作，最终流回 Orchestrator 生成响应。</li><li><strong>治理主线</strong>：Guardrails、Observability、Evaluation 横切所有层，保证系统可控、可解释、可持续改进。</li></ul><h3 id="3-一条复杂请求的全链路"><a href="#3-一条复杂请求的全链路" class="headerlink" title="3. 一条复杂请求的全链路"></a>3. 一条复杂请求的全链路</h3><p>假设用户问：「帮我看看上季度华东区销售额同比下降的原因，并给出可执行的改进建议。」</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant U as 用户</span><br><span class="line">    participant GW as API Gateway</span><br><span class="line">    participant OR as Orchestrator</span><br><span class="line">    participant MEM as Memory</span><br><span class="line">    participant RET as Retriever</span><br><span class="line">    participant TOOL as Tool Sandbox</span><br><span class="line">    participant LLM as LLM Gateway</span><br><span class="line">    participant G as Guardrails</span><br><span class="line">    participant OBS as Observability</span><br><span class="line"></span><br><span class="line">    U-&gt;&gt;GW: 提问（thread_id, tenant_id）</span><br><span class="line">    GW-&gt;&gt;OR: 鉴权、限流、注入上下文</span><br><span class="line">    OR-&gt;&gt;MEM: 读取会话状态与用户画像</span><br><span class="line">    OR-&gt;&gt;OR: 规划：1）查报表 2）查知识库 3）生成建议</span><br><span class="line">    OR-&gt;&gt;RET: 检索「华东区销售额」「同比下降分析」</span><br><span class="line">    RET--&gt;&gt;OR: 返回 Top-K 文档片段 + 引用</span><br><span class="line">    OR-&gt;&gt;TOOL: 调用 SQL 工具查询 BI 数据库</span><br><span class="line">    TOOL--&gt;&gt;OR: 返回聚合数据</span><br><span class="line">    OR-&gt;&gt;LLM: 组装 Prompt + 上下文，请求生成</span><br><span class="line">    LLM--&gt;&gt;OR: 返回带引用标记的草稿</span><br><span class="line">    OR-&gt;&gt;G: 输出校验（事实、合规、敏感词）</span><br><span class="line">    G--&gt;&gt;OR: 通过 / 触发重写</span><br><span class="line">    OR-&gt;&gt;OBS: 写入 Trace（prompt, retrieval, tool, cost）</span><br><span class="line">    OR--&gt;&gt;U: SSE 流式返回 + 引用来源</span><br><span class="line">    OR-&gt;&gt;MEM: 保存新回合状态</span><br></pre></td></tr></table></figure><h3 id="4-六大关键设计决策"><a href="#4-六大关键设计决策" class="headerlink" title="4. 六大关键设计决策"></a>4. 六大关键设计决策</h3><table><thead><tr><th>决策点</th><th>方案 A</th><th>方案 B</th><th>选型建议</th></tr></thead><tbody><tr><td>会话状态存储</td><td>PostgreSQL + pgvector</td><td>Redis + 持久化快照</td><td>有强一致需求选 PG；高频临时状态选 Redis</td></tr><tr><td>向量检索</td><td>专用向量库（Milvus&#x2F;Pinecone）</td><td>pgvector &#x2F; RDS PostgreSQL</td><td>数据规模 &lt; 1000 万、团队熟悉 PG 时优先 pgvector</td></tr><tr><td>调用模式</td><td>同步 + SSE</td><td>异步 + 回调 &#x2F; WebSocket</td><td>简单问答同步；长任务异步</td></tr><tr><td>模型路由</td><td>单一最强模型</td><td>LLM Gateway 按任务路由</td><td>成本敏感场景必须做路由 + fallback</td></tr><tr><td>工具执行</td><td>同进程函数调用</td><td>容器沙箱 &#x2F; 无函数</td><td>不可信工具必须沙箱化</td></tr><tr><td>记忆策略</td><td>全量上下文</td><td>摘要 + 关键实体 + 向量检索</td><td>长会话必须分层记忆</td></tr></tbody></table><h3 id="5-非功能性能力如何落地"><a href="#5-非功能性能力如何落地" class="headerlink" title="5. 非功能性能力如何落地"></a>5. 非功能性能力如何落地</h3><ul><li><strong>延迟</strong>：在 Gateway 层设置「预算时间」，检索用并行 + 缓存，重排序用小模型，LLM 用流式响应。</li><li><strong>成本</strong>：按任务路由模型（简单路由到轻量模型），Prompt 做版本化缓存，Tool 结果可缓存。</li><li><strong>可靠性</strong>：工具调用必须幂等，LLM 调用加熔断和重试，Orchestrator 设置最大步数和 token 上限。</li><li><strong>安全</strong>：输入侧做 prompt injection 检测，输出侧做 PII &#x2F; 敏感词过滤，工具侧做权限白名单。</li><li><strong>可观测</strong>：每个请求生成唯一 trace_id，记录 prompt 版本、检索结果、工具调用、模型输出、延迟和费用。</li><li><strong>可评估</strong>：线上 trace 自动入评测集，关键指标（正确性、引用率、用户满意度）做回归监控。</li></ul><hr><h2 id="🔗-后端桥接：用-PostgreSQL-理解-AI-平台"><a href="#🔗-后端桥接：用-PostgreSQL-理解-AI-平台" class="headerlink" title="🔗 后端桥接：用 PostgreSQL 理解 AI 平台"></a>🔗 后端桥接：用 PostgreSQL 理解 AI 平台</h2><p>PG 后端工程师有一个巨大优势：你熟悉的很多概念可以直接映射到 AI 系统。</p><table><thead><tr><th>PostgreSQL 概念</th><th>RAG-Agent 平台映射</th><th>为什么这样类比</th></tr></thead><tbody><tr><td><strong>查询解析器 + 优化器</strong></td><td>Agent Planner &#x2F; ReAct</td><td>先理解意图，再决定走索引还是全表扫，Agent 先规划再走检索或工具</td></tr><tr><td><strong>执行器 + 索引（B-tree &#x2F; GIN &#x2F; GiST）</strong></td><td>Retriever + Reranker + HNSW</td><td>索引加速近似查找，Reranker 类似二次过滤，HNSW 是高维空间的 GiST</td></tr><tr><td><strong>WAL + Checkpoint</strong></td><td>LangGraph Checkpoint &#x2F; 状态持久化</td><td>保证崩溃后可恢复到一致状态，支持 time travel 和 human-in-the-loop</td></tr><tr><td><strong>pg_stat_statements</strong></td><td>LLM Observability &#x2F; Cost Tracking</td><td>记录每条「查询」的成本、延迟、调用路径，用于优化</td></tr><tr><td><strong>连接池（PgBouncer）</strong></td><td>LLM Gateway &#x2F; Rate Limiter</td><td>防止突发流量打爆后端，统一做排队、限流、超时</td></tr><tr><td><strong>Row Level Security（RLS）</strong></td><td>检索&#x2F;工具侧租户隔离</td><td>用户只能看到被授权的数据片段</td></tr><tr><td><strong>VACUUM &#x2F; 自动清理</strong></td><td>Memory Forgetting &#x2F; Consolidation</td><td>定期清理过期记忆，合并重复会话，防止记忆膨胀</td></tr><tr><td><strong>逻辑复制 + CDC</strong></td><td>知识库增量更新</td><td>业务库变更实时同步到向量库，保证答案不过期</td></tr></tbody></table><p>面试时如果你能说出「这个 RAG 检索层本质上就是 PG 的查询优化器选了一条高维近似索引扫描」，面试官会立刻意识到你不是只会调 API 的脚本工程师。</p><hr><h2 id="🛠️-微实战：一个可运行的最小-RAG-Agent-骨架"><a href="#🛠️-微实战：一个可运行的最小-RAG-Agent-骨架" class="headerlink" title="🛠️ 微实战：一个可运行的最小 RAG-Agent 骨架"></a>🛠️ 微实战：一个可运行的最小 RAG-Agent 骨架</h2><p>下面的脚本不依赖任何外部 LLM API，用 Python 标准库实现了一个<strong>文档检索 → 意图规划 → 工具调用 → 输出生成 → 护栏检查 → 状态持久化</strong>的最小闭环。你可以直接运行，也可以把其中的 LLM 换成真实 API。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mini_rag_agent_platform.py</span></span><br><span class="line"><span class="keyword">import</span> json, re, math, sqlite3, datetime</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line">DOCS = [</span><br><span class="line">    <span class="string">&quot;PostgreSQL 使用 EXPLAIN ANALYZE 查看真实执行计划，避免只看估计成本。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;RAG 系统的检索质量取决于 chunk 边界、embedding 质量和重排序。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;LangGraph 通过 checkpoint 实现状态持久化，支持断点续跑和 human-in-the-loop。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;LLM Gateway 通过模型路由、缓存和 fallback 降低 API 成本并提升可用性。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;prompt injection 防护应在输入侧、输出侧和工具侧多层部署。&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">BLOCKED_WORDS = &#123;<span class="string">&quot;密码&quot;</span>, <span class="string">&quot;私钥&quot;</span>, <span class="string">&quot;secret&quot;</span>, <span class="string">&quot;password&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tokenize</span>(<span class="params">text: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">return</span> re.findall(<span class="string">r&quot;\b\w+\b&quot;</span>, text.lower())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">vec</span>(<span class="params">text: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">return</span> Counter(tokenize(text))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cosine</span>(<span class="params">a: Counter, b: Counter</span>):</span><br><span class="line">    num = <span class="built_in">sum</span>(a[k] * b[k] <span class="keyword">for</span> k <span class="keyword">in</span> a <span class="keyword">if</span> k <span class="keyword">in</span> b)</span><br><span class="line">    den = math.sqrt(<span class="built_in">sum</span>(v * v <span class="keyword">for</span> v <span class="keyword">in</span> a.values())) * math.sqrt(<span class="built_in">sum</span>(v * v <span class="keyword">for</span> v <span class="keyword">in</span> b.values()))</span><br><span class="line">    <span class="keyword">return</span> num / den <span class="keyword">if</span> den <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">query: <span class="built_in">str</span>, top_k: <span class="built_in">int</span> = <span class="number">2</span></span>):</span><br><span class="line">    qv = vec(query)</span><br><span class="line">    scored = [(cosine(qv, vec(d)), d) <span class="keyword">for</span> d <span class="keyword">in</span> DOCS]</span><br><span class="line">    scored.sort(reverse=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> scored[:top_k]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">query: <span class="built_in">str</span>, docs: <span class="built_in">list</span></span>):</span><br><span class="line">    q = query.lower()</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> q <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">&quot;性能&quot;</span>, <span class="string">&quot;执行计划&quot;</span>, <span class="string">&quot;explain&quot;</span>, <span class="string">&quot;慢查询&quot;</span>]):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;performance_analysis&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;tool&quot;</span>: <span class="string">&quot;get_pg_tips&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> q <span class="keyword">for</span> w <span class="keyword">in</span> [<span class="string">&quot;架构&quot;</span>, <span class="string">&quot;设计&quot;</span>, <span class="string">&quot;系统&quot;</span>]):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;architecture_qa&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;tool&quot;</span>: <span class="literal">None</span>&#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;intent&quot;</span>: <span class="string">&quot;general_qa&quot;</span>, <span class="string">&quot;needs_tool&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;tool&quot;</span>: <span class="literal">None</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">execute_tool</span>(<span class="params">tool: <span class="built_in">str</span>, query: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">if</span> tool == <span class="string">&quot;get_pg_tips&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;建议：开启 log_min_duration_statement，使用 pg_stat_statements 定位 top SQL，再用 EXPLAIN ANALYZE 验证。&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">guardrail</span>(<span class="params">response: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">any</span>(w <span class="keyword">in</span> response.lower() <span class="keyword">for</span> w <span class="keyword">in</span> BLOCKED_WORDS):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span>, <span class="string">&quot;输出包含敏感词，已拦截。&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(response) &gt; <span class="number">300</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span>, <span class="string">&quot;输出过长，建议拆分。&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span>, <span class="string">&quot;通过&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">query: <span class="built_in">str</span>, docs: <span class="built_in">list</span>, tool_result: <span class="built_in">str</span></span>):</span><br><span class="line">    context = <span class="string">&quot;\n&quot;</span>.join(<span class="string">f&quot;- <span class="subst">&#123;d[<span class="number">1</span>]&#125;</span>&quot;</span> <span class="keyword">for</span> d <span class="keyword">in</span> docs)</span><br><span class="line">    parts = [<span class="string">&quot;基于检索到的内容：&quot;</span>, context]</span><br><span class="line">    <span class="keyword">if</span> tool_result:</span><br><span class="line">        parts.append(<span class="string">f&quot;\n工具调用结果：\n<span class="subst">&#123;tool_result&#125;</span>&quot;</span>)</span><br><span class="line">    parts.append(<span class="string">f&quot;\n问题：<span class="subst">&#123;query&#125;</span>\n回答：&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;\n&quot;</span>.join(parts)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">persist_run</span>(<span class="params">conn: sqlite3.Connection, thread_id: <span class="built_in">str</span>, query: <span class="built_in">str</span>, result: <span class="built_in">dict</span></span>):</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        CREATE TABLE IF NOT EXISTS runs (</span></span><br><span class="line"><span class="string">            id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span><br><span class="line"><span class="string">            thread_id TEXT,</span></span><br><span class="line"><span class="string">            query TEXT,</span></span><br><span class="line"><span class="string">            result JSON,</span></span><br><span class="line"><span class="string">            created_at TEXT</span></span><br><span class="line"><span class="string">        )</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">    )</span><br><span class="line">    conn.execute(</span><br><span class="line">        <span class="string">&quot;INSERT INTO runs (thread_id, query, result, created_at) VALUES (?, ?, ?, ?)&quot;</span>,</span><br><span class="line">        (thread_id, query, json.dumps(result, ensure_ascii=<span class="literal">False</span>), datetime.datetime.now().isoformat()),</span><br><span class="line">    )</span><br><span class="line">    conn.commit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_agent</span>(<span class="params">query: <span class="built_in">str</span>, thread_id: <span class="built_in">str</span> = <span class="string">&quot;demo&quot;</span></span>):</span><br><span class="line">    conn = sqlite3.connect(<span class="string">&quot;agent_runs.db&quot;</span>)</span><br><span class="line">    docs = retrieve(query)</span><br><span class="line">    plan_result = plan(query, docs)</span><br><span class="line">    tool_result = execute_tool(plan_result[<span class="string">&quot;tool&quot;</span>], query) <span class="keyword">if</span> plan_result[<span class="string">&quot;needs_tool&quot;</span>] <span class="keyword">else</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    draft = generate(query, docs, tool_result)</span><br><span class="line">    ok, msg = guardrail(draft)</span><br><span class="line">    result = &#123;</span><br><span class="line">        <span class="string">&quot;intent&quot;</span>: plan_result[<span class="string">&quot;intent&quot;</span>],</span><br><span class="line">        <span class="string">&quot;retrieved&quot;</span>: [d[<span class="number">1</span>] <span class="keyword">for</span> d <span class="keyword">in</span> docs],</span><br><span class="line">        <span class="string">&quot;tool_result&quot;</span>: tool_result,</span><br><span class="line">        <span class="string">&quot;draft&quot;</span>: draft <span class="keyword">if</span> ok <span class="keyword">else</span> <span class="string">&quot;[被拦截]&quot;</span>,</span><br><span class="line">        <span class="string">&quot;guardrail&quot;</span>: msg,</span><br><span class="line">    &#125;</span><br><span class="line">    persist_run(conn, thread_id, query, result)</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    q = <span class="string">&quot;我的 Postgres 查询变慢了，应该从哪几个维度排查？&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(json.dumps(run_agent(q), ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br></pre></td></tr></table></figure><p>运行结果会展示：</p><ul><li>检索出与 Postgres 性能相关的片段；</li><li>规划器识别出 <code>performance_analysis</code> 意图并调用工具；</li><li>生成带上下文的回答；</li><li>护栏检查通过；</li><li>运行记录写入 SQLite。</li></ul><h3 id="把它扩展成-Capstone-项目"><a href="#把它扩展成-Capstone-项目" class="headerlink" title="把它扩展成 Capstone 项目"></a>把它扩展成 Capstone 项目</h3><p>如果把它做成面试作品，可以按以下路径升级：</p><ol><li><strong>替换模拟模块</strong>：Embedding 用 <code>sentence-transformers</code>，LLM 用真实 API 或本地 vLLM，Vector DB 用 <code>pgvector</code>。</li><li><strong>引入 LangGraph</strong>：把 <code>plan → retrieve → tool → generate → guardrail</code> 改成状态图，支持 checkpoint 和 human-in-the-loop。</li><li><strong>接入 FastAPI</strong>：提供 <code>/chat</code> 同步流式接口和 <code>/tasks/&#123;id&#125;</code> 异步任务接口。</li><li><strong>部署 PostgreSQL + Redis</strong>：用 <code>docker-compose</code> 一键拉起，状态、向量、缓存分离存储。</li><li><strong>加上评测</strong>：用 RAGAS &#x2F; ARES 跑正确性、召回率、引用率，并接入 CI 做回归。</li></ol><hr><h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><ul><li><strong>《The Evolution of Agentic AI Software Architecture》</strong>（arXiv 2602.10479v1）提出 Agentic AI 是一种架构范式转移：把 LLM 作为「认知内核」，外层是控制、记忆、工具与治理层。生产落地需要强调治理内建、可靠性边界、安全沙箱和可观测审计。该论文还给出了一份企业级加固检查清单，非常适合准备系统设计面试时引用。</li><li><strong>Firecrawl 2026 最佳开源 RAG 框架清单</strong> 涵盖了 LangChain、LlamaIndex、RAGFlow、Dify、DSPy、RAGAS、mem0、R2R、LightRAG 等项目。值得关注的是 <strong>RAGFlow</strong>（深度文档理解 + GraphRAG）、<strong>Dify</strong>（可视化工作流与 Agent 编排）、<strong>mem0</strong>（跨会话智能记忆层）和 <strong>RAGAS</strong>（RAG 评测基线），它们正好对应今天架构中的检索、编排、记忆、评测四层。</li><li><strong>LLM Gateway 与模型路由</strong> 正在从「可选组件」变成「基础设施」。LiteLLM、Portkey、OpenRouter 等网关统一了多供应商接口、fallback、缓存和成本分摊，是控制成本和可用性的关键。</li><li><strong>多 Agent 系统</strong> 的拓扑正在收敛到几种可描述模式：Orchestrator-Worker、Router-Solver、Hierarchical Command、Swarm&#x2F;Market。设计面试中如果能说明自己系统的拓扑属于哪一种，并解释其失败模式与缓解策略，会显著提升说服力。</li></ul><hr><h2 id="今日小结"><a href="#今日小结" class="headerlink" title="今日小结"></a>今日小结</h2><p>今天我们完成了从「知识点」到「架构故事」的跨越。一个生产级 RAG-Agent 平台不是把 LangChain、Vector DB 和 LLM API 串起来，而是要在<strong>控制流、数据流、治理流</strong>三条线上同时给出答案。作为 PostgreSQL 后端工程师，你可以把查询优化器、索引、WAL、连接池、RLS 等经验直接迁移到 AI 系统设计中，这是转型路上最独特的差异化优势。</p><p>下一步，不妨把上面的 <code>mini_rag_agent_platform.py</code> 升级为一个带 FastAPI + PostgreSQL + LangGraph + 评测的 Capstone 仓库，并准备一段 10 分钟的面试讲述：从需求澄清到分层架构，再到关键决策与回滚方案。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI-Transition </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI-Learning </tag>
+            
+            <tag> Week-4 </tag>
+            
+            <tag> System-Design </tag>
+            
+            <tag> Interview-Prep </tag>
+            
+            <tag> RAG-Agent-Platform </tag>
+            
+            <tag> Capstone </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>别再让评测脚本裸跑：设计可扩展的 Agent 评测平台与 bad case 运营闭环</title>
       <link href="/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/"/>
       <url>/2026/08/24/week4-day23-agent-evaluation-platform-bad-case-ops/</url>
@@ -129,9 +164,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Evaluation </tag>
-            
             <tag> RAGAS </tag>
+            
+            <tag> Evaluation </tag>
             
             <tag> Week-3 </tag>
             
@@ -345,9 +380,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> LangGraph </tag>
-            
             <tag> Multi-Agent </tag>
+            
+            <tag> LangGraph </tag>
             
             <tag> Week-4 </tag>
             
@@ -384,9 +419,9 @@
             
             <tag> Week-4 </tag>
             
-            <tag> Time-Travel </tag>
-            
             <tag> Checkpoint </tag>
+            
+            <tag> Time-Travel </tag>
             
             <tag> Branch-Replay </tag>
             
@@ -450,11 +485,11 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> LangGraph </tag>
+            <tag> Multi-Agent </tag>
             
             <tag> Agent-Orchestration </tag>
             
-            <tag> Multi-Agent </tag>
+            <tag> LangGraph </tag>
             
             <tag> Week-4 </tag>
             
@@ -679,11 +714,11 @@
             
             <tag> AI-Learning </tag>
             
+            <tag> Production </tag>
+            
             <tag> Week-4 </tag>
             
             <tag> Agent-Memory </tag>
-            
-            <tag> Production </tag>
             
             <tag> System-Design </tag>
             
@@ -1373,11 +1408,11 @@
             
             <tag> Week-2 </tag>
             
-            <tag> LangGraph </tag>
+            <tag> Multi-Agent </tag>
             
             <tag> Agent-Orchestration </tag>
             
-            <tag> Multi-Agent </tag>
+            <tag> LangGraph </tag>
             
             <tag> CrewAI </tag>
             
@@ -1410,9 +1445,9 @@
             
             <tag> Week-1 </tag>
             
-            <tag> Evaluation </tag>
-            
             <tag> RAGAS </tag>
+            
+            <tag> Evaluation </tag>
             
         </tags>
       
@@ -1441,9 +1476,9 @@
             
             <tag> Week-2 </tag>
             
-            <tag> LangGraph </tag>
-            
             <tag> Agent-Orchestration </tag>
+            
+            <tag> LangGraph </tag>
             
             <tag> State-Machine </tag>
             
@@ -1482,11 +1517,11 @@
             
             <tag> Agent </tag>
             
+            <tag> LangGraph </tag>
+            
             <tag> Plan-and-Execute </tag>
             
             <tag> Reflection </tag>
-            
-            <tag> LangGraph </tag>
             
             <tag> Self-Correction </tag>
             
@@ -1517,11 +1552,11 @@
             
             <tag> Week-1 </tag>
             
-            <tag> Evaluation </tag>
+            <tag> RAG-Eval </tag>
             
             <tag> RAGAS </tag>
             
-            <tag> RAG-Eval </tag>
+            <tag> Evaluation </tag>
             
         </tags>
       
@@ -1795,6 +1830,8 @@
             
             <tag> Week-1 </tag>
             
+            <tag> RAG-Pipeline </tag>
+            
             <tag> Vector-DB </tag>
             
             <tag> pgvector </tag>
@@ -1802,8 +1839,6 @@
             <tag> Milvus </tag>
             
             <tag> Qdrant </tag>
-            
-            <tag> RAG-Pipeline </tag>
             
         </tags>
       
@@ -2189,9 +2224,9 @@
       
         <tags>
             
-            <tag> 3PC </tag>
-            
             <tag> 分布式 </tag>
+            
+            <tag> 3PC </tag>
             
         </tags>
       
@@ -2248,9 +2283,9 @@
       
         <tags>
             
-            <tag> 分布式 </tag>
-            
             <tag> 2PC </tag>
+            
+            <tag> 分布式 </tag>
             
         </tags>
       
