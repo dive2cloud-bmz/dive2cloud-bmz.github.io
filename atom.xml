@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-25T03:07:22.704Z</updated>
+  <updated>2026-08-26T03:04:04.202Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4 Day25｜模拟面试与 Capstone 复盘：把 RAG-Agent 项目讲成可落地的工程故事</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/26/week4-day25-mock-interview-capstone-review/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/26/week4-day25-mock-interview-capstone-review/</id>
+    <published>2026-08-26T01:00:00.000Z</published>
+    <updated>2026-08-26T03:04:04.202Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Week4-Day25｜模拟面试与-Capstone-复盘：把-RAG-Agent-项目讲成可落地的工程故事&quot;&gt;&lt;a href=&quot;#Week4-Day25｜模拟面试与-Capstone-复盘：把-RAG-Agent-项目讲成可落地的工程故事&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
+    <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
+    
+    <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
+    
+    <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
+    
+    <category term="Career-Transition" scheme="https://dive2cloud-bmz.github.io/tags/Career-Transition/"/>
+    
+  </entry>
   
   <entry>
     <title>面试冲刺：向面试官讲清楚一个生产级 RAG-Agent 平台（系统设计与 Capstone 架构）</title>
@@ -114,9 +149,9 @@
     
     <category term="LLM-as-Judge" scheme="https://dive2cloud-bmz.github.io/tags/LLM-as-Judge/"/>
     
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
     <category term="AB-Testing" scheme="https://dive2cloud-bmz.github.io/tags/AB-Testing/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
     <category term="Agent-Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Evaluation/"/>
     
@@ -406,9 +441,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -445,9 +480,9 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
-    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
-    
     <category term="Time-Travel" scheme="https://dive2cloud-bmz.github.io/tags/Time-Travel/"/>
+    
+    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
     
     <category term="Branch-Replay" scheme="https://dive2cloud-bmz.github.io/tags/Branch-Replay/"/>
     
@@ -511,11 +546,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -673,41 +708,6 @@
     <category term="IVF" scheme="https://dive2cloud-bmz.github.io/tags/IVF/"/>
     
     <category term="向量量化" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 的规划与工具调用（01）：从 Function Calling 到工具编排</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/30/week4-day10-tool-use-and-planning-patterns/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/30/week4-day10-tool-use-and-planning-patterns/</id>
-    <published>2026-07-30T03:01:39.000Z</published>
-    <updated>2026-07-30T03:05:18.794Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察：工具让-Agent-长出双手，规划让它知道先伸哪只手&quot;&gt;&lt;a href=&quot;#🚀-核心洞察：工具让-Agent-长出双手，规划让它知道先伸哪只手&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察：工具让 Agent</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Function-Calling" scheme="https://dive2cloud-bmz.github.io/tags/Function-Calling/"/>
-    
-    <category term="Tool-Use" scheme="https://dive2cloud-bmz.github.io/tags/Tool-Use/"/>
-    
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Planning" scheme="https://dive2cloud-bmz.github.io/tags/Planning/"/>
     
   </entry>
   
