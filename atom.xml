@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-26T03:04:04.202Z</updated>
+  <updated>2026-08-27T13:33:04.167Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,42 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>RAG 评估实战：用 RAGAS 与 ARES 搭建自动化评分流水线</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/27/week-3-day-5-rag-eval-ragas-ares-automation-pipeline/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/27/week-3-day-5-rag-eval-ragas-ares-automation-pipeline/</id>
+    <published>2026-08-27T13:02:29.000Z</published>
+    <updated>2026-08-27T13:33:04.167Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本文是 AI 学习引擎 Week 3 Day 5 的生成正文，目标读者是从 PostgreSQL &amp;#x2F; Backend 背景转向 AI 工程的开发者。阅读时长约 20 分钟，约 3000–4000</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="ARES" scheme="https://dive2cloud-bmz.github.io/tags/ARES/"/>
+    
+  </entry>
   
   <entry>
     <title>Week4 Day25｜模拟面试与 Capstone 复盘：把 RAG-Agent 项目讲成可落地的工程故事</title>
@@ -39,11 +75,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
-    
     <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
     
     <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
     <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
     
@@ -80,13 +116,13 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
     <category term="Interview-Prep" scheme="https://dive2cloud-bmz.github.io/tags/Interview-Prep/"/>
     
     <category term="RAG-Agent-Platform" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent-Platform/"/>
-    
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
   </entry>
   
@@ -677,37 +713,6 @@
     <category term="Tree-of-Thoughts" scheme="https://dive2cloud-bmz.github.io/tags/Tree-of-Thoughts/"/>
     
     <category term="Agent-Planning" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Planning/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>ANN 索引调优实战：在 recall、latency、memory 三角中做工程取舍</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/30/week-2-day-4-ann-tuning/</id>
-    <published>2026-07-30T13:00:43.000Z</published>
-    <updated>2026-07-30T13:33:00.318Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;今日主题&quot;&gt;&lt;a href=&quot;#今日主题&quot; class=&quot;headerlink&quot; title=&quot;今日主题&quot;&gt;&lt;/a&gt;今日主题&lt;/h2&gt;&lt;p&gt;ANN 索引调优与工程选型。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="Week-2" scheme="https://dive2cloud-bmz.github.io/tags/Week-2/"/>
-    
-    <category term="ANN" scheme="https://dive2cloud-bmz.github.io/tags/ANN/"/>
-    
-    <category term="HNSW" scheme="https://dive2cloud-bmz.github.io/tags/HNSW/"/>
-    
-    <category term="IVF" scheme="https://dive2cloud-bmz.github.io/tags/IVF/"/>
-    
-    <category term="向量量化" scheme="https://dive2cloud-bmz.github.io/tags/%E5%90%91%E9%87%8F%E9%87%8F%E5%8C%96/"/>
     
   </entry>
   
