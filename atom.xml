@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-27T13:33:04.167Z</updated>
+  <updated>2026-08-28T03:10:40.315Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/28/week4-day26-ai-transition-roadmap-final-review/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/28/week4-day26-ai-transition-roadmap-final-review/</id>
+    <published>2026-08-28T01:00:00.000Z</published>
+    <updated>2026-08-28T03:10:40.315Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Week4-Day26｜转型总复盘：26-周-AI-应用工程师学习路径全景图与下一步行动清单&quot;&gt;&lt;a href=&quot;#Week4-Day26｜转型总复盘：26-周-AI-应用工程师学习路径全景图与下一步行动清单&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
+    <category term="Career-Transition" scheme="https://dive2cloud-bmz.github.io/tags/Career-Transition/"/>
+    
+    <category term="Week-26" scheme="https://dive2cloud-bmz.github.io/tags/Week-26/"/>
+    
+    <category term="Roadmap" scheme="https://dive2cloud-bmz.github.io/tags/Roadmap/"/>
+    
+    <category term="Self-Assessment" scheme="https://dive2cloud-bmz.github.io/tags/Self-Assessment/"/>
+    
+  </entry>
   
   <entry>
     <title>RAG 评估实战：用 RAGAS 与 ARES 搭建自动化评分流水线</title>
@@ -75,11 +110,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
     <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
     
     <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
-    
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
     <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
     
@@ -116,13 +151,13 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
-    
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
     <category term="Interview-Prep" scheme="https://dive2cloud-bmz.github.io/tags/Interview-Prep/"/>
     
     <category term="RAG-Agent-Platform" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent-Platform/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
   </entry>
   
@@ -584,9 +619,9 @@
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
     <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
+    
+    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -678,41 +713,6 @@
     <category term="Agent Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
     
     <category term="GBrain" scheme="https://dive2cloud-bmz.github.io/tags/GBrain/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Agent 的规划与工具调用（02）：ReAct / Plan-and-Execute / ToT 的代码实现与选型</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/31/week4-day11-react-plan-and-execute-tot/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/31/week4-day11-react-plan-and-execute-tot/</id>
-    <published>2026-07-31T03:00:39.000Z</published>
-    <updated>2026-07-31T03:04:26.442Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察：规划不是预测未来，而是为不确定性预留分支&quot;&gt;&lt;a href=&quot;#🚀-核心洞察：规划不是预测未来，而是为不确定性预留分支&quot; class=&quot;headerlink&quot; title=&quot;🚀</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="ReAct" scheme="https://dive2cloud-bmz.github.io/tags/ReAct/"/>
-    
-    <category term="Plan-and-Execute" scheme="https://dive2cloud-bmz.github.io/tags/Plan-and-Execute/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Tree-of-Thoughts" scheme="https://dive2cloud-bmz.github.io/tags/Tree-of-Thoughts/"/>
-    
-    <category term="Agent-Planning" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Planning/"/>
     
   </entry>
   

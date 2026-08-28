@@ -1,0 +1,1359 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单, BMZ BLOG">
+    <meta name="description" content="Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单
+目标：把过去 25 天的学习压缩成一张可执行的 26 周路线图，建立从 RDS PostgreSQL 后端工程师到 AI 应用工程师的完整能力地图">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Capstone/">
+                                <span class="chip bg-color">Capstone</span>
+                            </a>
+                        
+                            <a href="/tags/Career-Transition/">
+                                <span class="chip bg-color">Career-Transition</span>
+                            </a>
+                        
+                            <a href="/tags/Week-26/">
+                                <span class="chip bg-color">Week-26</span>
+                            </a>
+                        
+                            <a href="/tags/Roadmap/">
+                                <span class="chip bg-color">Roadmap</span>
+                            </a>
+                        
+                            <a href="/tags/Self-Assessment/">
+                                <span class="chip bg-color">Self-Assessment</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-08-28
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-08-28
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.8k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    15 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Week4-Day26｜转型总复盘：26-周-AI-应用工程师学习路径全景图与下一步行动清单"><a href="#Week4-Day26｜转型总复盘：26-周-AI-应用工程师学习路径全景图与下一步行动清单" class="headerlink" title="Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单"></a>Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单</h1><blockquote>
+<p>目标：把过去 25 天的学习压缩成一张可执行的 26 周路线图，建立从 RDS PostgreSQL 后端工程师到 AI 应用工程师的完整能力地图，并拿到一份明天就能开始的行动清单。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：转型不是”学一个新框架”，而是升级你的心智模型"><a href="#🚀-核心洞察：转型不是”学一个新框架”，而是升级你的心智模型" class="headerlink" title="🚀 核心洞察：转型不是”学一个新框架”，而是升级你的心智模型"></a>🚀 核心洞察：转型不是”学一个新框架”，而是升级你的心智模型</h2><p>作为从 RDS PostgreSQL 后端转型 AI 应用工程师的工程师，你过去最擅长的是<strong>确定性系统</strong>：事务、索引、锁、主从复制、慢查询优化。这些经验在 AI 工程里不会被抛弃，反而会成为稀缺优势——因为今天的 AI 应用大多卡在生产化，而不是模型调用本身。</p>
+<p>AI 应用工程师的核心挑战是：<strong>如何把概率性、状态ful、多步骤、长延迟的 LLM 调用，封装成可用、可观测、可回滚、可扩展的在线服务</strong>。这和后端工程的思维是一脉相承的，只是组件换成了 Embedding、Vector DB、Agent、Guardrails、Eval Pipeline。</p>
+<p>过去 25 天，我们从 RAG Core 走到 Agent Orchestration、Production Engineering，再到 System Design 与 Mock Interview。今天这篇是整段旅程的”总复盘”：一张全景图、一份能力雷达、一个可执行的行动清单，以及一个用 Python 生成的个人技能雷达图工具。</p>
+<hr>
+<h2 id="🧠-核心概念：26-周-AI-应用工程师学习路径全景图"><a href="#🧠-核心概念：26-周-AI-应用工程师学习路径全景图" class="headerlink" title="🧠 核心概念：26 周 AI 应用工程师学习路径全景图"></a>🧠 核心概念：26 周 AI 应用工程师学习路径全景图</h2><h3 id="1-四阶段学习蓝图"><a href="#1-四阶段学习蓝图" class="headerlink" title="1. 四阶段学习蓝图"></a>1. 四阶段学习蓝图</h3><p>我把 6 个月（约 26 周）的转型路径划分为四个阶段。每个阶段都有明确的目标、关键技术与验收标准。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>周期</th>
+<th>核心目标</th>
+<th>关键技术</th>
+<th>验收标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Phase 1: RAG Core</strong></td>
+<td>W1-W8</td>
+<td>让 LLM 能说真话、能引用知识</td>
+<td>Embeddings、Chunking、Vector DB、Retrieval、Reranking、Evaluation</td>
+<td>搭建一个可评估的 RAG 系统，Recall@K &gt; 0.8</td>
+</tr>
+<tr>
+<td><strong>Phase 2: Agent Orchestration</strong></td>
+<td>W9-W16</td>
+<td>让 LLM 能做事、能规划、能协作</td>
+<td>Function Calling、Tool Use、ReAct、LangGraph、Multi-Agent</td>
+<td>实现一个能调用 3+ 工具并持久化状态的 Agent</td>
+</tr>
+<tr>
+<td><strong>Phase 3: Production Engineering</strong></td>
+<td>W17-W22</td>
+<td>让系统能上线、能省钱、能兜底</td>
+<td>Latency&#x2F;Cost Optimization、Security、Observability、Guardrails</td>
+<td>满足 P95 &lt; 2s、成本可控、有完整可观测链路</td>
+</tr>
+<tr>
+<td><strong>Phase 4: Advanced Architecture &amp; Interview Prep</strong></td>
+<td>W23-W26</td>
+<td>能设计平台、能讲清项目、能通过面试</td>
+<td>System Design、Scaling、Capstone、Mock Interview</td>
+<td>完成一个可演示的 Capstone，通过模拟面试</td>
+</tr>
+</tbody></table>
+<p>这四个阶段不是孤立的。RAG 是 Agent 的”知识层”，Agent 是生产系统的”决策层”，生产工程是”底座”，系统设计与面试是”输出层”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">    subgraph Phase1[&quot;Phase 1: RAG Core (W1-8)&quot;]</span><br><span class="line">        P1_E[Embeddings] --&gt; P1_C[Chunking]</span><br><span class="line">        P1_C --&gt; P1_V[Vector DB]</span><br><span class="line">        P1_V --&gt; P1_R[Retrieval]</span><br><span class="line">        P1_R --&gt; P1_Re[Reranking]</span><br><span class="line">        P1_Re --&gt; P1_Ev[Evaluation]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph Phase2[&quot;Phase 2: Agent Orchestration (W9-16)&quot;]</span><br><span class="line">        P2_FC[Function Calling] --&gt; P2_TU[Tool Use]</span><br><span class="line">        P2_TU --&gt; P2_Re[ReAct]</span><br><span class="line">        P2_Re --&gt; P2_LG[LangGraph]</span><br><span class="line">        P2_LG --&gt; P2_MA[Multi-Agent]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph Phase3[&quot;Phase 3: Production Engineering (W17-22)&quot;]</span><br><span class="line">        P3_L[Latency] --&gt; P3_C[Cost]</span><br><span class="line">        P3_C --&gt; P3_S[Security]</span><br><span class="line">        P3_S --&gt; P3_O[Observability]</span><br><span class="line">        P3_O --&gt; P3_G[Guardrails]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    subgraph Phase4[&quot;Phase 4: Architecture &amp; Interview (W23-26)&quot;]</span><br><span class="line">        P4_SD[System Design] --&gt; P4_Sc[Scaling]</span><br><span class="line">        P4_Sc --&gt; P4_Cap[Capstone]</span><br><span class="line">        P4_Cap --&gt; P4_MI[Mock Interview]</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    Phase1 --&gt;|为 Agent 提供知识| Phase2</span><br><span class="line">    Phase2 --&gt;|需要生产底座| Phase3</span><br><span class="line">    Phase3 --&gt;|支撑平台级设计| Phase4</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-每个阶段的关键问题清单"><a href="#2-每个阶段的关键问题清单" class="headerlink" title="2. 每个阶段的关键问题清单"></a>2. 每个阶段的关键问题清单</h3><h4 id="Phase-1-RAG-Core——把”知识”变成可查询的数据结构"><a href="#Phase-1-RAG-Core——把”知识”变成可查询的数据结构" class="headerlink" title="Phase 1: RAG Core——把”知识”变成可查询的数据结构"></a>Phase 1: RAG Core——把”知识”变成可查询的数据结构</h4><ul>
+<li>Embedding 到底是什么？它和 one-hot、TF-IDF 有什么本质区别？</li>
+<li>Chunk 大小、重叠度、语义边界如何影响检索？</li>
+<li>向量数据库的选型维度：容量、延迟、过滤能力、多租户、成本</li>
+<li>Retrieval 的三种模式：Dense、Sparse、Hybrid</li>
+<li>Reranking 为什么能显著提升最终准确率？</li>
+<li>RAG 评估不是只看”答案对不对”，而是要看 Retrieve、Generate、End-to-End 三层指标</li>
+</ul>
+<h4 id="Phase-2-Agent-Orchestration——给-LLM-装上”手和记忆”"><a href="#Phase-2-Agent-Orchestration——给-LLM-装上”手和记忆”" class="headerlink" title="Phase 2: Agent Orchestration——给 LLM 装上”手和记忆”"></a>Phase 2: Agent Orchestration——给 LLM 装上”手和记忆”</h4><ul>
+<li>Function Calling 与 Tool Use 的区别是什么？</li>
+<li>ReAct 为什么能让模型”边想边做”？</li>
+<li>Plan-and-Execute、Reflection、Tree-of-Thoughts 各适合什么场景？</li>
+<li>LangGraph 的状态机模型如何解决 Agent 循环、分支、持久化问题？</li>
+<li>Multi-Agent 的协作模式：Manager、Debate、Hierarchical、Graph</li>
+<li>Agent 记忆如何分层：工作记忆、短期记忆、长期记忆、语义记忆</li>
+</ul>
+<h4 id="Phase-3-Production-Engineering——让-AI-系统像数据库一样可靠"><a href="#Phase-3-Production-Engineering——让-AI-系统像数据库一样可靠" class="headerlink" title="Phase 3: Production Engineering——让 AI 系统像数据库一样可靠"></a>Phase 3: Production Engineering——让 AI 系统像数据库一样可靠</h4><ul>
+<li>延迟优化：首 token 延迟 vs 总 token 延迟，流式输出，缓存策略</li>
+<li>成本控制：模型路由、降级、批量、提示压缩、KV Cache</li>
+<li>安全：Prompt Injection、Jailbreak、数据泄露、供应链安全</li>
+<li>可观测性：Trace、Metric、Log 三层，OpenTelemetry + LangSmith &#x2F; Langfuse</li>
+<li>Guardrails：输入校验、输出结构化、敏感词、事实一致性检查</li>
+</ul>
+<h4 id="Phase-4-Advanced-Architecture-Interview-Prep——从实现者到设计者"><a href="#Phase-4-Advanced-Architecture-Interview-Prep——从实现者到设计者" class="headerlink" title="Phase 4: Advanced Architecture &amp; Interview Prep——从实现者到设计者"></a>Phase 4: Advanced Architecture &amp; Interview Prep——从实现者到设计者</h4><ul>
+<li>如何设计一个支持多租户、A&#x2F;B 测试、模型热切换的 RAG-Agent 平台？</li>
+<li>如何向面试官讲清楚一个项目的 Why、How、What、Result？</li>
+<li>Capstone 项目如何选择：真实业务痛点 + 可量化指标 + 可演示 Demo</li>
+<li>面试中的反模式：只说技术名词，不聊 trade-off 和失败模式</li>
+</ul>
+<h3 id="3-T-型能力模型：深度-广度"><a href="#3-T-型能力模型：深度-广度" class="headerlink" title="3. T 型能力模型：深度 + 广度"></a>3. T 型能力模型：深度 + 广度</h3><p>成为 AI 应用工程师，不是每个方向都精通，而是：</p>
+<ul>
+<li><strong>纵向深度（1-2 个）</strong>：比如 RAG 检索优化、LangGraph 状态机、AI 安全与 Guardrails</li>
+<li><strong>横向广度（全部了解）</strong>：能独立搭建完整链路，理解每个模块的输入输出和失败模式</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>能力维度</th>
+<th>初级（能跑通）</th>
+<th>中级（能优化）</th>
+<th>高级（能设计）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RAG</td>
+<td>能搭 LangChain 基础 RAG</td>
+<td>能调 Chunk、重排、Hybrid Search</td>
+<td>能设计多租户检索平台</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>能写 Function Calling</td>
+<td>能用 LangGraph 做状态持久化</td>
+<td>能设计 Multi-Agent 协作架构</td>
+</tr>
+<tr>
+<td>生产化</td>
+<td>能调用 API 拿到结果</td>
+<td>能加缓存、限流、降级</td>
+<td>能设计 SLA、成本模型、可观测体系</td>
+</tr>
+<tr>
+<td>系统设计</td>
+<td>能画单服务架构</td>
+<td>能画微服务 + 数据流</td>
+<td>能讲清 trade-off 和扩展路径</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="🔗-后端桥接：用-PostgreSQL-后端概念理解-AI-工程"><a href="#🔗-后端桥接：用-PostgreSQL-后端概念理解-AI-工程" class="headerlink" title="🔗 后端桥接：用 PostgreSQL &#x2F; 后端概念理解 AI 工程"></a>🔗 后端桥接：用 PostgreSQL &#x2F; 后端概念理解 AI 工程</h2><p>从 RDS PostgreSQL 后端转型，最大的捷径是<strong>用已有概念做类比</strong>。下面这张对照表能帮你快速建立直觉：</p>
+<table>
+<thead>
+<tr>
+<th>AI 工程概念</th>
+<th>PostgreSQL &#x2F; 后端类比</th>
+<th>关键差异</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Embedding</strong></td>
+<td>把一行数据序列化成向量，类似 <code>ROW()</code> 的语义化压缩</td>
+<td>向量捕获语义，不是精确值；不同模型向量空间不同</td>
+</tr>
+<tr>
+<td><strong>Vector Index</strong></td>
+<td>GiST &#x2F; GIN &#x2F; B-tree 索引，但查询目标是近似最近邻</td>
+<td>ANN 索引允许牺牲精度换速度，召回率可配置</td>
+</tr>
+<tr>
+<td><strong>RAG Retrieval</strong></td>
+<td>带有查询改写的复杂 SELECT</td>
+<td>检索结果是概率性的，需要 rerank 和阈值过滤</td>
+</tr>
+<tr>
+<td><strong>Prompt</strong></td>
+<td>SQL 查询 + 执行计划提示</td>
+<td>相同输入可能产生不同输出，需要版本化和 A&#x2F;B 测试</td>
+</tr>
+<tr>
+<td><strong>LLM Call</strong></td>
+<td>跨网络的 RPC，但响应延迟和成本极高</td>
+<td>非确定性输出，需要重试、超时、降级策略</td>
+</tr>
+<tr>
+<td><strong>Agent State</strong></td>
+<td>分布式事务状态或会话状态</td>
+<td>状态可能很大（上下文窗口），需要 checkpoint 和持久化</td>
+</tr>
+<tr>
+<td><strong>Tool Use</strong></td>
+<td>存储过程调用外部函数</td>
+<td>工具失败需要明确错误处理，不能静默吞掉</td>
+</tr>
+<tr>
+<td><strong>Guardrails</strong></td>
+<td>CHECK 约束、触发器、行级安全策略</td>
+<td>约束对象是自然语言，需要 LLM 自身或规则引擎配合</td>
+</tr>
+<tr>
+<td><strong>Eval Pipeline</strong></td>
+<td>自动化测试 + 基准测试</td>
+<td>评估指标是概率性的，需要统计显著性</td>
+</tr>
+<tr>
+<td><strong>Observability</strong></td>
+<td>pg_stat_statements + slow log + WAL</td>
+<td>需要追踪一次请求在 LLM、检索、工具间的完整链路</td>
+</tr>
+</tbody></table>
+<p><strong>一个特别有用的类比</strong>：RAG 系统就像是一个<strong>带物化视图和查询改写的数据仓库</strong>。</p>
+<ul>
+<li>文档 Chunk + Embedding &#x3D; 物化视图（预计算）</li>
+<li>Query Embedding &#x3D; 对查询进行”重写”</li>
+<li>Vector Search &#x3D; 近似索引扫描</li>
+<li>Reranker &#x3D; 二次过滤</li>
+<li>LLM Generate &#x3D; 在结果集上做聚合&#x2F;总结</li>
+</ul>
+<p>理解了这一点，很多 RAG 优化手段都变得很自然：预过滤（WHERE 子句）、索引选择（HNSW vs IVF）、查询改写（等价 SQL 改写）、缓存（结果缓存）等。</p>
+<hr>
+<h2 id="🛠️-微实战：生成你的个人-AI-能力雷达图"><a href="#🛠️-微实战：生成你的个人-AI-能力雷达图" class="headerlink" title="🛠️ 微实战：生成你的个人 AI 能力雷达图"></a>🛠️ 微实战：生成你的个人 AI 能力雷达图</h2><p>转型的焦虑往往来自”不知道自己在哪”。下面这个 Python 脚本会根据四个阶段的能力维度给你打分，并生成一张雷达图。你可以每个月重新跑一遍，直观看到成长。</p>
+<h3 id="1-能力自评-YAML"><a href="#1-能力自评-YAML" class="headerlink" title="1. 能力自评 YAML"></a>1. 能力自评 YAML</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ai_skills.yml</span></span><br><span class="line"><span class="attr">dimensions:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;RAG Core&quot;</span></span><br><span class="line">    <span class="attr">subskills:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Embedding 理解与选型&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Chunking 策略&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Vector DB 选型与调优&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Retrieval 与 Hybrid Search&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Reranking&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;RAG Evaluation&quot;</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;Agent Orchestration&quot;</span></span><br><span class="line">    <span class="attr">subskills:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Function Calling / Tool Use&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;ReAct / Plan-and-Execute&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;LangGraph 状态机&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Agent Memory&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Multi-Agent 协作&quot;</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;Production Engineering&quot;</span></span><br><span class="line">    <span class="attr">subskills:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;延迟优化&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;成本控制&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Prompt Injection 防御&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;可观测性&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Guardrails&quot;</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;Architecture &amp; Interview&quot;</span></span><br><span class="line">    <span class="attr">subskills:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;System Design&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Capstone 项目&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;Mock Interview&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;技术写作&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-雷达图生成脚本"><a href="#2-雷达图生成脚本" class="headerlink" title="2. 雷达图生成脚本"></a>2. 雷达图生成脚本</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># radar_chart.py</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">score_dimension</span>(<span class="params">skills: <span class="built_in">list</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    交互式打分：对每个子技能输入 0-5 分。</span></span><br><span class="line"><span class="string">    如果想批量评分，可以把这里改成读取 JSON/YAML 的固定分数。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n请为以下 <span class="subst">&#123;<span class="built_in">len</span>(skills)&#125;</span> 项能力打分（0=完全不会，5=能带团队做）：&quot;</span>)</span><br><span class="line">    total = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> s <span class="keyword">in</span> skills:</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                v = <span class="built_in">float</span>(<span class="built_in">input</span>(<span class="string">f&quot;  <span class="subst">&#123;s&#125;</span>: &quot;</span>))</span><br><span class="line">                <span class="keyword">if</span> <span class="number">0</span> &lt;= v &lt;= <span class="number">5</span>:</span><br><span class="line">                    total += v</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;请输入 0-5 之间的数字&quot;</span>)</span><br><span class="line">            <span class="keyword">except</span> ValueError:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;请输入数字&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> total / <span class="built_in">len</span>(skills)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plot_radar</span>(<span class="params">dimensions: <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="built_in">float</span>], output: <span class="built_in">str</span> = <span class="string">&quot;ai_radar.png&quot;</span></span>):</span><br><span class="line">    labels = <span class="built_in">list</span>(dimensions.keys())</span><br><span class="line">    values = <span class="built_in">list</span>(dimensions.values())</span><br><span class="line">    values += values[:<span class="number">1</span>]  <span class="comment"># 闭合</span></span><br><span class="line"></span><br><span class="line">    angles = np.linspace(<span class="number">0</span>, <span class="number">2</span> * math.pi, <span class="built_in">len</span>(labels), endpoint=<span class="literal">False</span>).tolist()</span><br><span class="line">    angles += angles[:<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    fig, ax = plt.subplots(figsize=(<span class="number">7</span>, <span class="number">7</span>), subplot_kw=<span class="built_in">dict</span>(polar=<span class="literal">True</span>))</span><br><span class="line">    ax.plot(angles, values, <span class="string">&quot;o-&quot;</span>, linewidth=<span class="number">2</span>, color=<span class="string">&quot;#2563eb&quot;</span>)</span><br><span class="line">    ax.fill(angles, values, alpha=<span class="number">0.25</span>, color=<span class="string">&quot;#2563eb&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 画目标线（中级水平 = 3.0）</span></span><br><span class="line">    target = [<span class="number">3.0</span>] * (<span class="built_in">len</span>(labels) + <span class="number">1</span>)</span><br><span class="line">    ax.plot(angles, target, <span class="string">&quot;--&quot;</span>, linewidth=<span class="number">1.5</span>, color=<span class="string">&quot;#ef4444&quot;</span>, alpha=<span class="number">0.7</span>, label=<span class="string">&quot;中级目标线&quot;</span>)</span><br><span class="line"></span><br><span class="line">    ax.set_xticks(angles[:-<span class="number">1</span>])</span><br><span class="line">    ax.set_xticklabels(labels, fontsize=<span class="number">11</span>)</span><br><span class="line">    ax.set_ylim(<span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">    ax.set_title(<span class="string">&quot;AI 应用工程师能力雷达图&quot;</span>, fontsize=<span class="number">14</span>, pad=<span class="number">20</span>)</span><br><span class="line">    ax.legend(loc=<span class="string">&quot;upper right&quot;</span>, bbox_to_anchor=(<span class="number">1.15</span>, <span class="number">1.1</span>))</span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    plt.savefig(output, dpi=<span class="number">150</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n雷达图已保存至: <span class="subst">&#123;output&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    spec = &#123;</span><br><span class="line">        <span class="string">&quot;RAG Core&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;Embedding 理解与选型&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Chunking 策略&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Vector DB 选型与调优&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Retrieval 与 Hybrid Search&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Reranking&quot;</span>,</span><br><span class="line">            <span class="string">&quot;RAG Evaluation&quot;</span>,</span><br><span class="line">        ],</span><br><span class="line">        <span class="string">&quot;Agent Orchestration&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;Function Calling / Tool Use&quot;</span>,</span><br><span class="line">            <span class="string">&quot;ReAct / Plan-and-Execute&quot;</span>,</span><br><span class="line">            <span class="string">&quot;LangGraph 状态机&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Agent Memory&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Multi-Agent 协作&quot;</span>,</span><br><span class="line">        ],</span><br><span class="line">        <span class="string">&quot;Production Engineering&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;延迟优化&quot;</span>,</span><br><span class="line">            <span class="string">&quot;成本控制&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Prompt Injection 防御&quot;</span>,</span><br><span class="line">            <span class="string">&quot;可观测性&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Guardrails&quot;</span>,</span><br><span class="line">        ],</span><br><span class="line">        <span class="string">&quot;Architecture &amp; Interview&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;System Design&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Capstone 项目&quot;</span>,</span><br><span class="line">            <span class="string">&quot;Mock Interview&quot;</span>,</span><br><span class="line">            <span class="string">&quot;技术写作&quot;</span>,</span><br><span class="line">        ],</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    scores = &#123;name: score_dimension(skills) <span class="keyword">for</span> name, skills <span class="keyword">in</span> spec.items()&#125;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n评分结果:&quot;</span>, json.dumps(scores, ensure_ascii=<span class="literal">False</span>, indent=<span class="number">2</span>))</span><br><span class="line">    plot_radar(scores)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-运行方式"><a href="#3-运行方式" class="headerlink" title="3. 运行方式"></a>3. 运行方式</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 安装依赖</span></span><br><span class="line">pip install matplotlib numpy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 运行并逐项打分</span></span><br><span class="line">python radar_chart.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 查看生成的 ai_radar.png</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-怎么用这个工具制定学习计划"><a href="#4-怎么用这个工具制定学习计划" class="headerlink" title="4. 怎么用这个工具制定学习计划"></a>4. 怎么用这个工具制定学习计划</h3><ul>
+<li><strong>低于 2.5 分</strong>的维度：需要补基础，优先看 Phase 1&#x2F;2 的文章</li>
+<li><strong>2.5-3.5 分</strong>的维度：可以进入优化阶段，做微实战和项目</li>
+<li><strong>高于 3.5 分</strong>的维度：考虑写博客、做分享、带队落地</li>
+</ul>
+<p>建议每 4 周重跑一次，把雷达图按时间命名（<code>ai_radar_2026_08.png</code>、<code>ai_radar_2026_09.png</code>），形成可视化的成长曲线。</p>
+<hr>
+<h2 id="📰-技术雷达：AI-应用工程的最新动态"><a href="#📰-技术雷达：AI-应用工程的最新动态" class="headerlink" title="📰 技术雷达：AI 应用工程的最新动态"></a>📰 技术雷达：AI 应用工程的最新动态</h2><h3 id="1-模型上下文协议（MCP）成为事实标准"><a href="#1-模型上下文协议（MCP）成为事实标准" class="headerlink" title="1. 模型上下文协议（MCP）成为事实标准"></a>1. 模型上下文协议（MCP）成为事实标准</h3><p>Anthropic 提出的 MCP（Model Context Protocol）正在从”一个厂商协议”向”跨 Agent 生态的标准接口”演进。2026 年 7 月发布的 MCP 规范继续扩展了远程服务、认证和采样能力。它的意义在于：让 LLM 与外部世界的连接方式从”每个框架自己造轮子”变成”统一协议 + 可插拔 Server”。</p>
+<p>对后端工程师来说，MCP Server 的编写体验和写一个 gRPC&#x2F;REST 服务非常接近：暴露资源（Resources）、工具（Tools）、提示模板（Prompts）。未来在设计 Agent 平台时，”是否支持 MCP”可能会成为一个基础能力项。</p>
+<blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2026-07-28">Model Context Protocol Specification</a>、<a target="_blank" rel="noopener" href="https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation">Anthropic 关于捐赠 MCP 的公告</a></p>
+</blockquote>
+<h3 id="2-Agent-Engineering-进入”生产化”深水区"><a href="#2-Agent-Engineering-进入”生产化”深水区" class="headerlink" title="2. Agent Engineering 进入”生产化”深水区"></a>2. Agent Engineering 进入”生产化”深水区</h3><p>LangChain 发布的 State of Agent Engineering 报告指出，2026 年 Agent 领域最核心的问题已经从”能不能跑通”转向”能不能稳定、可观测、可评估地跑在生产环境”。工程师开始关注：</p>
+<ul>
+<li>Agent 的<strong>可控性</strong>：如何在保持灵活性的同时避免无限循环和错误调用？</li>
+<li><strong>评估基础设施</strong>：从人工打分转向自动化、可回归的 Agent eval pipeline</li>
+<li><strong>人机协同（Human-in-the-Loop）</strong>：不是全自动化，而是在关键决策点引入人工确认</li>
+</ul>
+<blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.langchain.com/state-of-agent-engineering">State of Agent Engineering - LangChain</a></p>
+</blockquote>
+<h3 id="3-检索技术继续向”多模态-延迟敏感”演进"><a href="#3-检索技术继续向”多模态-延迟敏感”演进" class="headerlink" title="3. 检索技术继续向”多模态 + 延迟敏感”演进"></a>3. 检索技术继续向”多模态 + 延迟敏感”演进</h3><p>RAG 检索不再局限于文本向量。图像、音频、表格、代码都被纳入统一检索空间。同时，面向低延迟场景的 <strong>Late Interaction</strong> 模型（如 ColBERT）和面向端侧的 <strong>Small Embedding</strong> 模型正在成为工程选型的常规选项。</p>
+<h3 id="4-开源生态：本地推理与-Agent-框架"><a href="#4-开源生态：本地推理与-Agent-框架" class="headerlink" title="4. 开源生态：本地推理与 Agent 框架"></a>4. 开源生态：本地推理与 Agent 框架</h3><ul>
+<li><strong>vLLM &#x2F; SGLang</strong>：继续降低高并发 LLM 推理的延迟和成本</li>
+<li><strong>Ollama &#x2F; llama.cpp</strong>：让本地原型验证变得极低门槛</li>
+<li><strong>LangGraph</strong>：状态机 + checkpoint 模型成为复杂 Agent 的默认选择之一</li>
+<li><strong>DSPy</strong>：用编程方式优化提示和检索流程，取代手工 prompt engineering</li>
+</ul>
+<h3 id="5-给转型工程师的行动建议"><a href="#5-给转型工程师的行动建议" class="headerlink" title="5. 给转型工程师的行动建议"></a>5. 给转型工程师的行动建议</h3><ol>
+<li><strong>先成为”能用 AI 做成事”的工程师，再成为”懂 AI 原理”的研究者</strong></li>
+<li><strong>选一个垂直方向做深</strong>：RAG 优化、Agent 安全、可观测性、成本优化都可以</li>
+<li><strong>用项目说话</strong>：博客、GitHub、Demo 比简历上的关键词更有说服力</li>
+<li><strong>保持每周输出</strong>：写一篇文章、跑一个实验、读一篇论文，任何输出都行</li>
+</ol>
+<hr>
+<h2 id="✅-下一步行动清单"><a href="#✅-下一步行动清单" class="headerlink" title="✅ 下一步行动清单"></a>✅ 下一步行动清单</h2><p>把这 26 周路线图变成可执行的动作：</p>
+<ol>
+<li><strong>今天</strong>：跑一遍上面的雷达图脚本，记录四个维度的基线分数</li>
+<li><strong>本周</strong>：选一个低于 2.5 分的维度，复现前 25 天对应文章中的微实战代码</li>
+<li><strong>本月</strong>：基于一个真实业务场景，设计一个最小可运行的 Capstone 项目</li>
+<li><strong>未来 4 周</strong>：每周输出 1 篇技术文章 + 1 个可运行 Demo</li>
+<li><strong>第 8 周</strong>：完成第一个可评估的 RAG 系统</li>
+<li><strong>第 16 周</strong>：完成一个带状态持久化的 Agent</li>
+<li><strong>第 22 周</strong>：完成带完整可观测、Guardrails 的生产化部署</li>
+<li><strong>第 26 周</strong>：完成 Capstone + 通过至少 3 轮模拟面试</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>写在最后</strong>：从 PostgreSQL 到 AI 应用工程，不是丢弃过去，而是把”确定性系统的工程素养”迁移到”概率性系统”上。你能把数据库调稳定，就能把 LLM 系统调稳定。剩下的，就是持续输出、持续迭代。下一段旅程见。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/08/28/week4-day26-ai-transition-roadmap-final-review/">https://dive2cloud-bmz.github.io/2026/08/28/week4-day26-ai-transition-roadmap-final-review/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Capstone/">
+                                    <span class="chip bg-color">Capstone</span>
+                                </a>
+                            
+                                <a href="/tags/Career-Transition/">
+                                    <span class="chip bg-color">Career-Transition</span>
+                                </a>
+                            
+                                <a href="/tags/Week-26/">
+                                    <span class="chip bg-color">Week-26</span>
+                                </a>
+                            
+                                <a href="/tags/Roadmap/">
+                                    <span class="chip bg-color">Roadmap</span>
+                                </a>
+                            
+                                <a href="/tags/Self-Assessment/">
+                                    <span class="chip bg-color">Self-Assessment</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/08/28/week4-day26-ai-transition-roadmap-final-review/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单">
+                        
+                        <span class="card-title">Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-28
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Capstone/">
+                        <span class="chip bg-color">Capstone</span>
+                    </a>
+                    
+                    <a href="/tags/Career-Transition/">
+                        <span class="chip bg-color">Career-Transition</span>
+                    </a>
+                    
+                    <a href="/tags/Week-26/">
+                        <span class="chip bg-color">Week-26</span>
+                    </a>
+                    
+                    <a href="/tags/Roadmap/">
+                        <span class="chip bg-color">Roadmap</span>
+                    </a>
+                    
+                    <a href="/tags/Self-Assessment/">
+                        <span class="chip bg-color">Self-Assessment</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/27/week-3-day-5-rag-eval-ragas-ares-automation-pipeline/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="RAG 评估实战：用 RAGAS 与 ARES 搭建自动化评分流水线">
+                        
+                        <span class="card-title">RAG 评估实战：用 RAGAS 与 ARES 搭建自动化评分流水线</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/RAGAS/">
+                        <span class="chip bg-color">RAGAS</span>
+                    </a>
+                    
+                    <a href="/tags/Evaluation/">
+                        <span class="chip bg-color">Evaluation</span>
+                    </a>
+                    
+                    <a href="/tags/Week-3/">
+                        <span class="chip bg-color">Week-3</span>
+                    </a>
+                    
+                    <a href="/tags/ARES/">
+                        <span class="chip bg-color">ARES</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">332k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
