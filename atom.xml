@@ -112,9 +112,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
     <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
@@ -327,9 +327,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
-    
     <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
+    
+    <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
     
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
@@ -360,11 +360,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
-    
     <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
     
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
+    
+    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     

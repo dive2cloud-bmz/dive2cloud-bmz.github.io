@@ -94,9 +94,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> RAGAS </tag>
-            
             <tag> Evaluation </tag>
+            
+            <tag> RAGAS </tag>
             
             <tag> Week-3 </tag>
             
@@ -304,9 +304,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> RAGAS </tag>
-            
             <tag> Evaluation </tag>
+            
+            <tag> RAGAS </tag>
             
             <tag> Week-3 </tag>
             
@@ -337,11 +337,11 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Guardrails </tag>
-            
             <tag> Agent-Security </tag>
             
             <tag> Prompt-Injection </tag>
+            
+            <tag> Guardrails </tag>
             
             <tag> Week-4 </tag>
             
@@ -747,9 +747,9 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Plan-and-Execute </tag>
-            
             <tag> ReAct </tag>
+            
+            <tag> Plan-and-Execute </tag>
             
             <tag> Week-4 </tag>
             
@@ -854,11 +854,11 @@
             
             <tag> AI-Learning </tag>
             
-            <tag> Production </tag>
-            
             <tag> Week-4 </tag>
             
             <tag> Agent-Memory </tag>
+            
+            <tag> Production </tag>
             
             <tag> System-Design </tag>
             
@@ -1585,9 +1585,9 @@
             
             <tag> Week-1 </tag>
             
-            <tag> RAGAS </tag>
-            
             <tag> Evaluation </tag>
+            
+            <tag> RAGAS </tag>
             
         </tags>
       
@@ -1653,13 +1653,13 @@
             
             <tag> Week-2 </tag>
             
-            <tag> Plan-and-Execute </tag>
-            
-            <tag> Reflection </tag>
+            <tag> ReAct </tag>
             
             <tag> Agent </tag>
             
-            <tag> ReAct </tag>
+            <tag> Plan-and-Execute </tag>
+            
+            <tag> Reflection </tag>
             
             <tag> LangGraph </tag>
             
@@ -1692,11 +1692,11 @@
             
             <tag> Week-1 </tag>
             
-            <tag> RAG-Eval </tag>
+            <tag> Evaluation </tag>
             
             <tag> RAGAS </tag>
             
-            <tag> Evaluation </tag>
+            <tag> RAG-Eval </tag>
             
         </tags>
       
@@ -1725,13 +1725,13 @@
             
             <tag> Week-2 </tag>
             
-            <tag> Agent </tag>
+            <tag> Function-Calling </tag>
             
             <tag> ReAct </tag>
             
-            <tag> Function-Calling </tag>
-            
             <tag> Tool-Use </tag>
+            
+            <tag> Agent </tag>
             
             <tag> Reasoning </tag>
             
@@ -1828,11 +1828,11 @@
             
             <tag> Week-2 </tag>
             
-            <tag> ReAct </tag>
-            
             <tag> AI-Agent </tag>
             
             <tag> Function-Calling </tag>
+            
+            <tag> ReAct </tag>
             
             <tag> Tool-Use </tag>
             
