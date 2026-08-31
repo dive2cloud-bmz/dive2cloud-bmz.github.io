@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-28T03:10:40.315Z</updated>
+  <updated>2026-08-31T03:05:24.705Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4 Day27｜转型后第一课：把 26 周学习成果变成可演示的 AI 工程作品集</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/08/31/week4-day27-ai-engineering-portfolio-and-career-launch/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/08/31/week4-day27-ai-engineering-portfolio-and-career-launch/</id>
+    <published>2026-08-31T03:02:30.000Z</published>
+    <updated>2026-08-31T03:05:24.705Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Week4-Day27｜转型后第一课：把-26-周学习成果变成可演示的-AI-工程作品集&quot;&gt;&lt;a href=&quot;#Week4-Day27｜转型后第一课：把-26-周学习成果变成可演示的-AI-工程作品集&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
+    <category term="Career-Transition" scheme="https://dive2cloud-bmz.github.io/tags/Career-Transition/"/>
+    
+    <category term="Week-27" scheme="https://dive2cloud-bmz.github.io/tags/Week-27/"/>
+    
+    <category term="Portfolio" scheme="https://dive2cloud-bmz.github.io/tags/Portfolio/"/>
+    
+    <category term="Personal-Brand" scheme="https://dive2cloud-bmz.github.io/tags/Personal-Brand/"/>
+    
+  </entry>
   
   <entry>
     <title>Week4 Day26｜转型总复盘：26 周 AI 应用工程师学习路径全景图与下一步行动清单</title>
@@ -325,11 +360,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
+    
     <category term="Agent-Security" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Security/"/>
     
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
-    
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -619,9 +654,9 @@
     
     <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
     
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
     <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
+    
+    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
@@ -684,35 +719,6 @@
     <category term="LLM Wiki" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Wiki/"/>
     
     <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>GBrain：把记忆装进 Git 仓库的 AI Agent 记忆系统</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/31/GBrain-AI-Agent-Memory-System/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/31/GBrain-AI-Agent-Memory-System/</id>
-    <published>2026-07-31T08:49:21.000Z</published>
-    <updated>2026-07-31T08:56:21.685Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;什么是-GBrain&quot;&gt;&lt;a href=&quot;#什么是-GBrain&quot; class=&quot;headerlink&quot; title=&quot;什么是 GBrain&quot;&gt;&lt;/a&gt;什么是 GBrain&lt;/h2&gt;&lt;p&gt;GBrain 是 Y Combinator 现任总裁 Garry Tan</summary>
-        
-      
-    
-    
-    
-    <category term="AI Agent Memory" scheme="https://dive2cloud-bmz.github.io/categories/AI-Agent-Memory/"/>
-    
-    
-    <category term="AI" scheme="https://dive2cloud-bmz.github.io/tags/AI/"/>
-    
-    <category term="Agent Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="GBrain" scheme="https://dive2cloud-bmz.github.io/tags/GBrain/"/>
     
   </entry>
   
