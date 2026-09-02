@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-08-31T03:05:24.705Z</updated>
+  <updated>2026-09-02T03:06:36.512Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,43 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/02/week4-day28-postgresql-pgvector-enterprise-kb-prototype/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/02/week4-day28-postgresql-pgvector-enterprise-kb-prototype/</id>
+    <published>2026-09-02T03:01:42.000Z</published>
+    <updated>2026-09-02T03:06:36.512Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Week4-Day28｜转型后实战：30-天搭建-PostgreSQL-pgvector-企业知识库原型&quot;&gt;&lt;a href=&quot;#Week4-Day28｜转型后实战：30-天搭建-PostgreSQL-pgvector-企业知识库原型&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
+    
+    <category term="Multi-Tenant" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Tenant/"/>
+    
+    <category term="Week-28" scheme="https://dive2cloud-bmz.github.io/tags/Week-28/"/>
+    
+    <category term="PostgreSQL" scheme="https://dive2cloud-bmz.github.io/tags/PostgreSQL/"/>
+    
+    <category term="Enterprise-KB" scheme="https://dive2cloud-bmz.github.io/tags/Enterprise-KB/"/>
+    
+  </entry>
   
   <entry>
     <title>Week4 Day27｜转型后第一课：把 26 周学习成果变成可演示的 AI 工程作品集</title>
@@ -112,9 +149,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
@@ -327,9 +364,9 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
-    
     <category term="RAGAS" scheme="https://dive2cloud-bmz.github.io/tags/RAGAS/"/>
+    
+    <category term="Evaluation" scheme="https://dive2cloud-bmz.github.io/tags/Evaluation/"/>
     
     <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
     
@@ -364,9 +401,9 @@
     
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
     
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
-    
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
     
     <category term="Supply-Chain-Security" scheme="https://dive2cloud-bmz.github.io/tags/Supply-Chain-Security/"/>
     
@@ -688,37 +725,6 @@
     <category term="Agent Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
     
     <category term="MemOS" scheme="https://dive2cloud-bmz.github.io/tags/MemOS/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>LLM Wiki：Karpathy 提出的反 RAG 知识管理范式</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/07/31/LLM-Wiki-Karpathy-Knowledge-Management/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/07/31/LLM-Wiki-Karpathy-Knowledge-Management/</id>
-    <published>2026-07-31T08:49:22.000Z</published>
-    <updated>2026-07-31T08:56:21.877Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;什么是-LLM-Wiki&quot;&gt;&lt;a href=&quot;#什么是-LLM-Wiki&quot; class=&quot;headerlink&quot; title=&quot;什么是 LLM Wiki&quot;&gt;&lt;/a&gt;什么是 LLM Wiki&lt;/h2&gt;&lt;p&gt;LLM Wiki 是 Andrej Karpathy（前</summary>
-        
-      
-    
-    
-    
-    <category term="AI Agent Memory" scheme="https://dive2cloud-bmz.github.io/categories/AI-Agent-Memory/"/>
-    
-    
-    <category term="AI" scheme="https://dive2cloud-bmz.github.io/tags/AI/"/>
-    
-    <category term="Agent Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
-    
-    <category term="LLM Wiki" scheme="https://dive2cloud-bmz.github.io/tags/LLM-Wiki/"/>
-    
-    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
     
   </entry>
   

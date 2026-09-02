@@ -1,0 +1,1412 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型, BMZ BLOG">
+    <meta name="description" content="Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型
+目标：把 26 天学习的 RAG、Agent、Production Engineering 知识沉淀为一个可演示、可上线、可扩展的">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/RAG/">
+                                <span class="chip bg-color">RAG</span>
+                            </a>
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/pgvector/">
+                                <span class="chip bg-color">pgvector</span>
+                            </a>
+                        
+                            <a href="/tags/Multi-Tenant/">
+                                <span class="chip bg-color">Multi-Tenant</span>
+                            </a>
+                        
+                            <a href="/tags/Week-28/">
+                                <span class="chip bg-color">Week-28</span>
+                            </a>
+                        
+                            <a href="/tags/PostgreSQL/">
+                                <span class="chip bg-color">PostgreSQL</span>
+                            </a>
+                        
+                            <a href="/tags/Enterprise-KB/">
+                                <span class="chip bg-color">Enterprise-KB</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-09-02
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-09-02
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.8k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    21 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Week4-Day28｜转型后实战：30-天搭建-PostgreSQL-pgvector-企业知识库原型"><a href="#Week4-Day28｜转型后实战：30-天搭建-PostgreSQL-pgvector-企业知识库原型" class="headerlink" title="Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型"></a>Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型</h1><blockquote>
+<p>目标：把 26 天学习的 RAG、Agent、Production Engineering 知识沉淀为一个可演示、可上线、可扩展的企业级知识库原型。本篇是 30 天实战的第一天，聚焦架构设计、数据建模与可运行的最小版本。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察：企业知识库不是「能搜到」，而是「敢上线」"><a href="#🚀-核心洞察：企业知识库不是「能搜到」，而是「敢上线」" class="headerlink" title="🚀 核心洞察：企业知识库不是「能搜到」，而是「敢上线」"></a>🚀 核心洞察：企业知识库不是「能搜到」，而是「敢上线」</h2><p>很多 RAG 教程停在了 <code>similarity_search(query)</code> 能返回结果的那一刻。但企业知识库的真正门槛在于：<strong>你敢不敢把它挂到生产环境，让真实用户查询真实文档？</strong></p>
+<p>作为从 RDS PostgreSQL 转型而来的工程师，你对这个问题的理解比纯算法背景的人更深。你知道生产系统需要：</p>
+<ul>
+<li>多租户隔离，避免 A 部门看到 B 部门的文档；</li>
+<li>权限模型，确保同部门内不同角色只能访问授权内容；</li>
+<li>可观测性，知道每次检索用了多久、花了多少 token、命中了哪些 chunk；</li>
+<li>可回滚的 schema 与数据 pipeline，文档更新后 Embedding 必须同步更新；</li>
+<li>成本可控，向量索引不是建完就完，HNSW 的 <code>m</code>&#x2F;<code>ef_construction</code> 选错了会让存储和查询双崩。</li>
+</ul>
+<p>PostgreSQL + pgvector 的价值恰恰在这里：它把「关系型数据库的运维成熟度」和「向量检索的语义能力」合二为一。你不需要为了向量检索额外维护一套 Milvus&#x2F;Pinecone 集群，就能把知识库建立在已经很熟悉的 RDS 上。</p>
+<p>今天的核心洞察是：<strong>企业级知识库的竞争点不是 Retrieval 准确率，而是工程可信度。</strong> 准确率可以通过调 prompt、换模型、加 rerank 提升；但工程可信度需要在数据建模、权限、监控、回滚这些后端基本功上花功夫。</p>
+<hr>
+<h2 id="🧠-核心概念：企业知识库的-5-个设计维度"><a href="#🧠-核心概念：企业知识库的-5-个设计维度" class="headerlink" title="🧠 核心概念：企业知识库的 5 个设计维度"></a>🧠 核心概念：企业知识库的 5 个设计维度</h2><h3 id="1-数据模型：从文档到-Chunk-的三层结构"><a href="#1-数据模型：从文档到-Chunk-的三层结构" class="headerlink" title="1. 数据模型：从文档到 Chunk 的三层结构"></a>1. 数据模型：从文档到 Chunk 的三层结构</h3><p>企业知识库的数据模型通常分为三层：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表名</th>
+<th>职责</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>文档层</strong></td>
+<td><code>documents</code></td>
+<td>存储原始文档元数据（标题、作者、版本、ACL）</td>
+<td>关系表主表</td>
+</tr>
+<tr>
+<td><strong>片段层</strong></td>
+<td><code>chunks</code></td>
+<td>存储切分后的文本及指向文档的外键</td>
+<td>订单明细表</td>
+</tr>
+<tr>
+<td><strong>向量层</strong></td>
+<td><code>chunk_embeddings</code></td>
+<td>存储 Embedding 向量，与 chunks 1:1 或 1:N</td>
+<td>物化视图&#x2F;索引表</td>
+</tr>
+</tbody></table>
+<p>为什么要把向量和文本分开？三个原因：</p>
+<ol>
+<li><strong>模型可替换</strong>：换 Embedding 模型时，只需重建 <code>chunk_embeddings</code>，不影响 <code>chunks</code> 的文本内容；</li>
+<li><strong>维度可变化</strong>：不同模型输出维度不同（如 OpenAI text-embedding-3-small 是 1536，bge-large 是 1024），分开存储避免改主表；</li>
+<li><strong>审计友好</strong>：可以记录「这个 chunk 是用哪个模型、哪个版本、什么时候生成的」，和 schema 迁移一样可追溯。</li>
+</ol>
+<p>下面是一个支持多租户和模型版本追踪的简化 schema：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">erDiagram</span><br><span class="line">    TENANTS ||--o&#123; DOCUMENTS : owns</span><br><span class="line">    DOCUMENTS ||--o&#123; CHUNKS : contains</span><br><span class="line">    CHUNKS ||--o&#123; CHUNK_EMBEDDINGS : has</span><br><span class="line">    CHUNKS ||--o&#123; CHUNK_ACCESS : controlled_by</span><br><span class="line">    ROLES ||--o&#123; CHUNK_ACCESS : grants</span><br><span class="line"></span><br><span class="line">    TENANTS &#123;</span><br><span class="line">        uuid id PK</span><br><span class="line">        string name</span><br><span class="line">        string slug UK</span><br><span class="line">    &#125;</span><br><span class="line">    DOCUMENTS &#123;</span><br><span class="line">        uuid id PK</span><br><span class="line">        uuid tenant_id FK</span><br><span class="line">        string title</span><br><span class="line">        string source_url</span><br><span class="line">        string owner</span><br><span class="line">        jsonb acl</span><br><span class="line">        timestamp created_at</span><br><span class="line">    &#125;</span><br><span class="line">    CHUNKS &#123;</span><br><span class="line">        uuid id PK</span><br><span class="line">        uuid document_id FK</span><br><span class="line">        uuid tenant_id FK</span><br><span class="line">        int chunk_index</span><br><span class="line">        text content</span><br><span class="line">        jsonb metadata</span><br><span class="line">        timestamp created_at</span><br><span class="line">    &#125;</span><br><span class="line">    CHUNK_EMBEDDINGS &#123;</span><br><span class="line">        uuid chunk_id PK,FK</span><br><span class="line">        vector embedding</span><br><span class="line">        string model_name</span><br><span class="line">        string model_version</span><br><span class="line">        timestamp generated_at</span><br><span class="line">    &#125;</span><br><span class="line">    ROLES &#123;</span><br><span class="line">        uuid id PK</span><br><span class="line">        uuid tenant_id FK</span><br><span class="line">        string role_name</span><br><span class="line">        jsonb permissions</span><br><span class="line">    &#125;</span><br><span class="line">    CHUNK_ACCESS &#123;</span><br><span class="line">        uuid chunk_id FK</span><br><span class="line">        uuid role_id FK</span><br><span class="line">        string access_level</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-多租户隔离：三种策略的权衡"><a href="#2-多租户隔离：三种策略的权衡" class="headerlink" title="2. 多租户隔离：三种策略的权衡"></a>2. 多租户隔离：三种策略的权衡</h3><p>企业知识库几乎都是多租户的。常见策略有三种：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>实现方式</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>数据库级隔离</strong></td>
+<td>每个租户一个数据库</td>
+<td>最强隔离，可独立备份</td>
+<td>运维复杂，成本高</td>
+<td>大客户 &#x2F; 合规要求极高</td>
+</tr>
+<tr>
+<td><strong>Schema 级隔离</strong></td>
+<td>每个租户一个 schema</td>
+<td>隔离较好，共用连接池</td>
+<td>跨租户查询复杂</td>
+<td>中型 SaaS</td>
+</tr>
+<tr>
+<td><strong>行级隔离（RLS）</strong></td>
+<td>单表 + tenant_id + PostgreSQL RLS</td>
+<td>最简单，扩展性最好</td>
+<td>需要仔细设计策略</td>
+<td>中小规模 &#x2F; 快速迭代</td>
+</tr>
+</tbody></table>
+<p>对 30 天原型来说，<strong>行级隔离 + RLS</strong> 是最务实的选择。它让你用同一份 schema、同一套查询逻辑服务多个租户，同时通过策略保证租户不可越权。</p>
+<p>示例 RLS 策略：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> chunks ENABLE <span class="type">ROW</span> LEVEL SECURITY;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> POLICY tenant_isolation <span class="keyword">ON</span> chunks</span><br><span class="line">    <span class="keyword">FOR</span> <span class="keyword">ALL</span></span><br><span class="line">    <span class="keyword">TO</span> app_user</span><br><span class="line">    <span class="keyword">USING</span> (tenant_id <span class="operator">=</span> current_setting(<span class="string">&#x27;app.current_tenant&#x27;</span>)::uuid);</span><br></pre></td></tr></table></figure>
+
+<p>应用层在每次查询前执行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">LOCAL</span> app.current_tenant <span class="operator">=</span> <span class="string">&#x27;tenant-uuid-here&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-权限控制：Embedding-检索前的「预过滤」"><a href="#3-权限控制：Embedding-检索前的「预过滤」" class="headerlink" title="3. 权限控制：Embedding 检索前的「预过滤」"></a>3. 权限控制：Embedding 检索前的「预过滤」</h3><p>向量相似度搜索只能告诉你「哪些 chunk 语义相关」，不能告诉你「用户有没有权限看」。所以企业知识库的检索流程必须是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">用户查询</span><br><span class="line">  → 权限过滤（我能访问哪些文档/角色？）</span><br><span class="line">  → 向量检索（在这些可访问的 chunk 里找最相似的）</span><br><span class="line">  → 重排序 / 聚合</span><br><span class="line">  → LLM 生成答案</span><br></pre></td></tr></table></figure>
+
+<p>pgvector 支持在向量检索时加上 <code>WHERE</code> 条件做预过滤，这是关键：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c.id, c.content, ce.embedding <span class="operator">&lt;=&gt;</span> query_embedding <span class="keyword">AS</span> distance</span><br><span class="line"><span class="keyword">FROM</span> chunk_embeddings ce</span><br><span class="line"><span class="keyword">JOIN</span> chunks c <span class="keyword">ON</span> c.id <span class="operator">=</span> ce.chunk_id</span><br><span class="line"><span class="keyword">WHERE</span> c.tenant_id <span class="operator">=</span> :tenant_id</span><br><span class="line">  <span class="keyword">AND</span> c.document_id <span class="operator">=</span> <span class="keyword">ANY</span>(:allowed_document_ids)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> ce.embedding <span class="operator">&lt;=&gt;</span> :query_embedding</span><br><span class="line">LIMIT :top_k;</span><br></pre></td></tr></table></figure>
+
+<p>把权限过滤放在 SQL 里做，而不是把向量查出来再在 Python 里过滤，能显著减少数据传输和内存占用。</p>
+<h3 id="4-索引策略：HNSW-vs-IVFFlat，别再用默认参数"><a href="#4-索引策略：HNSW-vs-IVFFlat，别再用默认参数" class="headerlink" title="4. 索引策略：HNSW vs IVFFlat，别再用默认参数"></a>4. 索引策略：HNSW vs IVFFlat，别再用默认参数</h3><p>pgvector 主要支持两种近似最近邻索引：</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>构建成本</th>
+<th>查询速度</th>
+<th>召回率</th>
+<th>推荐场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>IVFFlat</strong></td>
+<td>低</td>
+<td>快</td>
+<td>依赖 <code>lists</code> 参数</td>
+<td>静态数据集、预算有限</td>
+</tr>
+<tr>
+<td><strong>HNSW</strong></td>
+<td>高</td>
+<td>更快</td>
+<td>更高，依赖 <code>m</code>&#x2F;<code>ef_construction</code></td>
+<td>动态更新、追求高召回</td>
+</tr>
+</tbody></table>
+<p>HNSW 的核心参数：</p>
+<ul>
+<li><code>m</code>：每个节点在图上的最大连接数。越大图越稠密，召回越高，但索引体积和构建时间也越大；</li>
+<li><code>ef_construction</code>：构建时搜索的候选集大小。越大构建越慢，但图质量越好；</li>
+<li><code>ef_search</code>：查询时搜索的候选集大小，可在会话级别动态设置。</li>
+</ul>
+<p>一个经验公式：</p>
+<ul>
+<li>数据集 &lt; 100k：<code>m=16</code>, <code>ef_construction=64</code></li>
+<li>数据集 100k-1M：<code>m=24-32</code>, <code>ef_construction=128-256</code></li>
+<li>数据集 &gt; 1M：<code>m=48-64</code>, <code>ef_construction=256-512</code></li>
+</ul>
+<p>创建索引示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX idx_chunk_embeddings_hnsw</span><br><span class="line"><span class="keyword">ON</span> chunk_embeddings</span><br><span class="line"><span class="keyword">USING</span> hnsw (embedding vector_cosine_ops)</span><br><span class="line"><span class="keyword">WITH</span> (m <span class="operator">=</span> <span class="number">24</span>, ef_construction <span class="operator">=</span> <span class="number">128</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Ingestion-Pipeline：文档更新必须同步-Embedding"><a href="#5-Ingestion-Pipeline：文档更新必须同步-Embedding" class="headerlink" title="5. Ingestion Pipeline：文档更新必须同步 Embedding"></a>5. Ingestion Pipeline：文档更新必须同步 Embedding</h3><p>企业文档是活的：合同会修订、产品手册会更新、政策会迭代。每次文档更新，必须回答三个问题：</p>
+<ol>
+<li>旧的 chunk 要不要删除？</li>
+<li>新的 chunk 如何重新切分？</li>
+<li>哪些依赖旧知识的检索结果会失效？</li>
+</ol>
+<p>推荐的最小 pipeline：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    Upload[文档上传/更新] --&gt; Extract[文本提取]</span><br><span class="line">    Extract --&gt; Chunk[Chunk 切分]</span><br><span class="line">    Chunk --&gt; Embed[生成 Embedding]</span><br><span class="line">    Embed --&gt; TX[&quot;BEGIN; DELETE 旧 chunks; INSERT 新 chunks; COMMIT&quot;]</span><br><span class="line">    TX --&gt; Audit[写入变更日志]</span><br></pre></td></tr></table></figure>
+
+<p>把整个 chunk 替换过程包在一个事务里，保证不会出现「文档是新的，但检索到旧片段」的中间状态。</p>
+<hr>
+<h2 id="🔗-后端桥接：把-AI-概念翻译成-PostgreSQL-语言"><a href="#🔗-后端桥接：把-AI-概念翻译成-PostgreSQL-语言" class="headerlink" title="🔗 后端桥接：把 AI 概念翻译成 PostgreSQL 语言"></a>🔗 后端桥接：把 AI 概念翻译成 PostgreSQL 语言</h2><p>作为后端工程师，理解新知识最快的方式是把它映射到熟悉的事物上。</p>
+<h3 id="1-Embedding-≈-行的「语义序列化」"><a href="#1-Embedding-≈-行的「语义序列化」" class="headerlink" title="1. Embedding ≈ 行的「语义序列化」"></a>1. Embedding ≈ 行的「语义序列化」</h3><p>普通的数据库行是结构化的：每一列有明确类型和含义。Embedding 则是把一段文本的语义信息压缩成一个固定长度的浮点数组。你可以把它理解为一种特殊的序列化格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">文本 → Embedding 模型 → [0.012, -0.034, ..., 0.009]  # 1536 维</span><br><span class="line">JSON 对象 → jsonb_serialize → 二进制存储</span><br></pre></td></tr></table></figure>
+
+<p>就像你不会把所有 JSON 都解析成 100 个列一样，你也不会把 Embedding 拆开存。pgvector 的 <code>vector</code> 类型就是为此设计的。</p>
+<h3 id="2-向量索引-≈-B-tree-索引的「近亲」"><a href="#2-向量索引-≈-B-tree-索引的「近亲」" class="headerlink" title="2. 向量索引 ≈ B-tree 索引的「近亲」"></a>2. 向量索引 ≈ B-tree 索引的「近亲」</h3><p>B-tree 适合做精确匹配和范围查询，因为它按值排序。向量索引则适合近似匹配，因为高维空间里没有绝对的「大小」。HNSW 和 IVFFlat 都是<strong>近似最近邻索引</strong>，它们牺牲一点点精度来换取极大的速度提升，这和 PostgreSQL 的 BRIN 索引「用近似边界框加速大范围扫描」是类似的工程思想。</p>
+<h3 id="3-Reranking-≈-SQL-的二次排序"><a href="#3-Reranking-≈-SQL-的二次排序" class="headerlink" title="3. Reranking ≈ SQL 的二次排序"></a>3. Reranking ≈ SQL 的二次排序</h3><p>后端开发中，我们经常先用一个粗粒度索引快速缩小范围，再用精确计算二次排序。向量检索 + Rerank 也是同样的道理：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 第一步：向量索引快速召回 top 100</span></span><br><span class="line"><span class="keyword">SELECT</span> id <span class="keyword">FROM</span> chunk_embeddings</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> :q LIMIT <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 第二步：Cross-encoder / 重排序模型精确打分</span></span><br><span class="line"><span class="comment">-- 在应用层完成，类似 ORDER BY 自定义函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Multi-Tenant-RLS-≈-连接池里的动态-schema"><a href="#4-Multi-Tenant-RLS-≈-连接池里的动态-schema" class="headerlink" title="4. Multi-Tenant RLS ≈ 连接池里的动态 schema"></a>4. Multi-Tenant RLS ≈ 连接池里的动态 schema</h3><p>RLS 让你在同一条数据库连接上切换租户视角，就像在后端服务里用 <code>SET LOCAL</code> 动态切换上下文一样。它避免了你为每个租户维护独立连接池，是一种非常「后端友好」的隔离方案。</p>
+<h3 id="5-Chunk-版本管理-≈-Schema-迁移"><a href="#5-Chunk-版本管理-≈-Schema-迁移" class="headerlink" title="5. Chunk 版本管理 ≈ Schema 迁移"></a>5. Chunk 版本管理 ≈ Schema 迁移</h3><p>每次换 Embedding 模型或 chunk 策略，都相当于对知识库做了一次「schema 迁移」：</p>
+<ul>
+<li>旧 Embedding 可以保留作为 rollback 选项；</li>
+<li>新 Embedding 用新的 <code>model_version</code> 标记；</li>
+<li>评估通过后再逐步淘汰旧版本。</li>
+</ul>
+<p>这种思维和 Alembic &#x2F; Flyway 管理数据库迁移完全一致。</p>
+<hr>
+<h2 id="🛠️-微实战：可运行的-PostgreSQL-pgvector-企业知识库原型"><a href="#🛠️-微实战：可运行的-PostgreSQL-pgvector-企业知识库原型" class="headerlink" title="🛠️ 微实战：可运行的 PostgreSQL + pgvector 企业知识库原型"></a>🛠️ 微实战：可运行的 PostgreSQL + pgvector 企业知识库原型</h2><p>下面这个脚本是一个完整可运行的最小版本。它包含：</p>
+<ol>
+<li>多租户 schema 创建；</li>
+<li>带 ACL 的文档与 chunk 写入；</li>
+<li>带租户和权限过滤的向量检索；</li>
+<li>简单的答案生成封装；</li>
+<li>基础评估指标计算。</li>
+</ol>
+<h3 id="前置依赖"><a href="#前置依赖" class="headerlink" title="前置依赖"></a>前置依赖</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install psycopg2-binary pgvector sentence-transformers python-dotenv openai</span><br></pre></td></tr></table></figure>
+
+<p>确保 PostgreSQL 已安装 pgvector 扩展：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> vector;</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">enterprise_kb_pgvector.py</span></span><br><span class="line"><span class="string">PostgreSQL + pgvector 企业知识库最小可运行原型</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span>, <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> psycopg2</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line">DB_URL = os.getenv(<span class="string">&quot;DATABASE_URL&quot;</span>, <span class="string">&quot;postgresql://localhost:5432/enterprise_kb&quot;</span>)</span><br><span class="line">EMBED_MODEL = os.getenv(<span class="string">&quot;EMBED_MODEL&quot;</span>, <span class="string">&quot;BAAI/bge-small-zh-v1.5&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@dataclass</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Document</span>:</span><br><span class="line">    title: <span class="built_in">str</span></span><br><span class="line">    content: <span class="built_in">str</span></span><br><span class="line">    owner: <span class="built_in">str</span></span><br><span class="line">    allowed_roles: <span class="type">List</span>[<span class="built_in">str</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">EnterpriseKnowledgeBase</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, db_url: <span class="built_in">str</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.conn = psycopg2.connect(db_url)</span><br><span class="line">        <span class="variable language_">self</span>.conn.autocommit = <span class="literal">False</span></span><br><span class="line">        <span class="variable language_">self</span>.model = SentenceTransformer(EMBED_MODEL)</span><br><span class="line">        <span class="variable language_">self</span>.vector_dim = <span class="variable language_">self</span>.model.get_sentence_embedding_dimension()</span><br><span class="line">        <span class="variable language_">self</span>._init_schema()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_init_schema</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(<span class="string">&quot;CREATE EXTENSION IF NOT EXISTS vector;&quot;</span>)</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE TABLE IF NOT EXISTS tenants (</span></span><br><span class="line"><span class="string">                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></span><br><span class="line"><span class="string">                    name TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    slug TEXT UNIQUE NOT NULL</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE TABLE IF NOT EXISTS roles (</span></span><br><span class="line"><span class="string">                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></span><br><span class="line"><span class="string">                    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,</span></span><br><span class="line"><span class="string">                    role_name TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    UNIQUE(tenant_id, role_name)</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE TABLE IF NOT EXISTS documents (</span></span><br><span class="line"><span class="string">                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></span><br><span class="line"><span class="string">                    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,</span></span><br><span class="line"><span class="string">                    title TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    owner TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    allowed_roles TEXT[] NOT NULL DEFAULT &#x27;&#123;&#123;&#125;&#125;&#x27;,</span></span><br><span class="line"><span class="string">                    created_at TIMESTAMP DEFAULT NOW()</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE TABLE IF NOT EXISTS chunks (</span></span><br><span class="line"><span class="string">                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></span><br><span class="line"><span class="string">                    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,</span></span><br><span class="line"><span class="string">                    document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,</span></span><br><span class="line"><span class="string">                    chunk_index INT NOT NULL,</span></span><br><span class="line"><span class="string">                    content TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    metadata JSONB DEFAULT &#x27;&#123;&#123;&#125;&#125;&#x27;,</span></span><br><span class="line"><span class="string">                    created_at TIMESTAMP DEFAULT NOW()</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE TABLE IF NOT EXISTS chunk_embeddings (</span></span><br><span class="line"><span class="string">                    chunk_id UUID PRIMARY KEY REFERENCES chunks(id) ON DELETE CASCADE,</span></span><br><span class="line"><span class="string">                    embedding vector(<span class="subst">&#123;self.vector_dim&#125;</span>),</span></span><br><span class="line"><span class="string">                    model_name TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    model_version TEXT NOT NULL,</span></span><br><span class="line"><span class="string">                    generated_at TIMESTAMP DEFAULT NOW()</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                CREATE INDEX IF NOT EXISTS idx_chunk_embeddings_hnsw</span></span><br><span class="line"><span class="string">                ON chunk_embeddings</span></span><br><span class="line"><span class="string">                USING hnsw (embedding vector_cosine_ops)</span></span><br><span class="line"><span class="string">                WITH (m = 16, ef_construction = 64);</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                ALTER TABLE chunks ENABLE ROW LEVEL SECURITY;</span></span><br><span class="line"><span class="string">                DROP POLICY IF EXISTS tenant_isolation ON chunks;</span></span><br><span class="line"><span class="string">                CREATE POLICY tenant_isolation ON chunks</span></span><br><span class="line"><span class="string">                    FOR ALL</span></span><br><span class="line"><span class="string">                    TO PUBLIC</span></span><br><span class="line"><span class="string">                    USING (tenant_id = current_setting(&#x27;app.current_tenant&#x27;)::UUID);</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            )</span><br><span class="line">            <span class="variable language_">self</span>.conn.commit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ensure_tenant</span>(<span class="params">self, slug: <span class="built_in">str</span>, name: <span class="built_in">str</span></span>) -&gt; uuid.UUID:</span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;INSERT INTO tenants (slug, name) VALUES (%s, %s) &quot;</span></span><br><span class="line">                <span class="string">&quot;ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name RETURNING id;&quot;</span>,</span><br><span class="line">                (slug, name),</span><br><span class="line">            )</span><br><span class="line">            tenant_id = cur.fetchone()[<span class="number">0</span>]</span><br><span class="line">            <span class="variable language_">self</span>.conn.commit()</span><br><span class="line">            <span class="keyword">return</span> tenant_id</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ensure_role</span>(<span class="params">self, tenant_id: uuid.UUID, role_name: <span class="built_in">str</span></span>) -&gt; uuid.UUID:</span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;INSERT INTO roles (tenant_id, role_name) VALUES (%s, %s) &quot;</span></span><br><span class="line">                <span class="string">&quot;ON CONFLICT (tenant_id, role_name) DO UPDATE SET role_name = EXCLUDED.role_name &quot;</span></span><br><span class="line">                <span class="string">&quot;RETURNING id;&quot;</span>,</span><br><span class="line">                (<span class="built_in">str</span>(tenant_id), role_name),</span><br><span class="line">            )</span><br><span class="line">            role_id = cur.fetchone()[<span class="number">0</span>]</span><br><span class="line">            <span class="variable language_">self</span>.conn.commit()</span><br><span class="line">            <span class="keyword">return</span> role_id</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_chunk_text</span>(<span class="params">self, text: <span class="built_in">str</span>, chunk_size: <span class="built_in">int</span> = <span class="number">200</span>, overlap: <span class="built_in">int</span> = <span class="number">50</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">        words = text.split()</span><br><span class="line">        chunks = []</span><br><span class="line">        start = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> start &lt; <span class="built_in">len</span>(words):</span><br><span class="line">            end = <span class="built_in">min</span>(start + chunk_size, <span class="built_in">len</span>(words))</span><br><span class="line">            chunks.append(<span class="string">&quot; &quot;</span>.join(words[start:end]))</span><br><span class="line">            <span class="keyword">if</span> end == <span class="built_in">len</span>(words):</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            start = end - overlap</span><br><span class="line">        <span class="keyword">return</span> chunks</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ingest</span>(<span class="params">self, tenant_id: uuid.UUID, doc: Document</span>):</span><br><span class="line">        chunks = <span class="variable language_">self</span>._chunk_text(doc.content)</span><br><span class="line">        embeddings = <span class="variable language_">self</span>.model.encode(chunks, normalize_embeddings=<span class="literal">True</span>).tolist()</span><br><span class="line">        model_name = EMBED_MODEL.split(<span class="string">&quot;/&quot;</span>)[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;INSERT INTO documents (tenant_id, title, owner, allowed_roles) &quot;</span></span><br><span class="line">                <span class="string">&quot;VALUES (%s, %s, %s, %s) RETURNING id;&quot;</span>,</span><br><span class="line">                (<span class="built_in">str</span>(tenant_id), doc.title, doc.owner, doc.allowed_roles),</span><br><span class="line">            )</span><br><span class="line">            document_id = cur.fetchone()[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> idx, (chunk_text, vec) <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">zip</span>(chunks, embeddings)):</span><br><span class="line">                cur.execute(</span><br><span class="line">                    <span class="string">&quot;INSERT INTO chunks (tenant_id, document_id, chunk_index, content, metadata) &quot;</span></span><br><span class="line">                    <span class="string">&quot;VALUES (%s, %s, %s, %s, %s) RETURNING id;&quot;</span>,</span><br><span class="line">                    (<span class="built_in">str</span>(tenant_id), <span class="built_in">str</span>(document_id), idx, chunk_text, <span class="string">&#x27;&#123;&quot;source&quot;: &quot;manual&quot;&#125;&#x27;</span>),</span><br><span class="line">                )</span><br><span class="line">                chunk_id = cur.fetchone()[<span class="number">0</span>]</span><br><span class="line">                cur.execute(</span><br><span class="line">                    <span class="string">&quot;INSERT INTO chunk_embeddings (chunk_id, embedding, model_name, model_version) &quot;</span></span><br><span class="line">                    <span class="string">&quot;VALUES (%s, %s, %s, %s);&quot;</span>,</span><br><span class="line">                    (<span class="built_in">str</span>(chunk_id), vec, model_name, <span class="string">&quot;1.0.0&quot;</span>),</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">            <span class="variable language_">self</span>.conn.commit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">set_tenant_context</span>(<span class="params">self, tenant_id: uuid.UUID</span>):</span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(<span class="string">&quot;SET LOCAL app.current_tenant = %s;&quot;</span>, (<span class="built_in">str</span>(tenant_id),))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        tenant_id: uuid.UUID,</span></span><br><span class="line"><span class="params">        query: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        user_roles: <span class="type">List</span>[<span class="built_in">str</span>],</span></span><br><span class="line"><span class="params">        top_k: <span class="built_in">int</span> = <span class="number">5</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="type">List</span>[<span class="built_in">dict</span>]:</span><br><span class="line">        query_vec = <span class="variable language_">self</span>.model.encode([query], normalize_embeddings=<span class="literal">True</span>)[<span class="number">0</span>].tolist()</span><br><span class="line">        <span class="variable language_">self</span>.set_tenant_context(tenant_id)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> <span class="variable language_">self</span>.conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                SELECT c.id, c.content, d.title, d.owner, d.allowed_roles,</span></span><br><span class="line"><span class="string">                       1 - (ce.embedding &lt;=&gt; %s::vector) AS cosine_similarity</span></span><br><span class="line"><span class="string">                FROM chunk_embeddings ce</span></span><br><span class="line"><span class="string">                JOIN chunks c ON c.id = ce.chunk_id</span></span><br><span class="line"><span class="string">                JOIN documents d ON d.id = c.document_id</span></span><br><span class="line"><span class="string">                WHERE c.tenant_id = %s</span></span><br><span class="line"><span class="string">                  AND d.allowed_roles &amp;&amp; %s</span></span><br><span class="line"><span class="string">                ORDER BY ce.embedding &lt;=&gt; %s::vector</span></span><br><span class="line"><span class="string">                LIMIT %s;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span>,</span><br><span class="line">                (query_vec, <span class="built_in">str</span>(tenant_id), user_roles, query_vec, top_k),</span><br><span class="line">            )</span><br><span class="line">            rows = cur.fetchall()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;chunk_id&quot;</span>: <span class="built_in">str</span>(r[<span class="number">0</span>]),</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: r[<span class="number">1</span>],</span><br><span class="line">                <span class="string">&quot;document&quot;</span>: r[<span class="number">2</span>],</span><br><span class="line">                <span class="string">&quot;owner&quot;</span>: r[<span class="number">3</span>],</span><br><span class="line">                <span class="string">&quot;allowed_roles&quot;</span>: r[<span class="number">4</span>],</span><br><span class="line">                <span class="string">&quot;score&quot;</span>: <span class="built_in">round</span>(<span class="built_in">float</span>(r[<span class="number">5</span>]), <span class="number">4</span>),</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> r <span class="keyword">in</span> rows</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">generate_answer</span>(<span class="params">self, query: <span class="built_in">str</span>, contexts: <span class="type">List</span>[<span class="built_in">dict</span>]</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;模拟 LLM 生成答案。真实环境可替换为 OpenAI / Claude 调用。&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> contexts:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;未找到相关文档，无法生成答案。&quot;</span></span><br><span class="line">        joined = <span class="string">&quot;\n---\n&quot;</span>.join([<span class="string">f&quot;[<span class="subst">&#123;i+<span class="number">1</span>&#125;</span>] <span class="subst">&#123;c[<span class="string">&#x27;content&#x27;</span>]&#125;</span>&quot;</span> <span class="keyword">for</span> i, c <span class="keyword">in</span> <span class="built_in">enumerate</span>(contexts)])</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            <span class="string">f&quot;基于以下 <span class="subst">&#123;<span class="built_in">len</span>(contexts)&#125;</span> 个相关片段回答问题：<span class="subst">&#123;query&#125;</span>\n\n&quot;</span></span><br><span class="line">            <span class="string">f&quot;<span class="subst">&#123;joined&#125;</span>\n\n&quot;</span></span><br><span class="line">            <span class="string">&quot;（此处为模拟输出，实际接入 LLM 后替换为模型生成内容。）&quot;</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">evaluate_retrieval</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        tenant_id: uuid.UUID,</span></span><br><span class="line"><span class="params">        query: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">        expected_chunk_ids: <span class="type">List</span>[uuid.UUID],</span></span><br><span class="line"><span class="params">        user_roles: <span class="type">List</span>[<span class="built_in">str</span>],</span></span><br><span class="line"><span class="params">        top_k: <span class="built_in">int</span> = <span class="number">5</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">        results = <span class="variable language_">self</span>.retrieve(tenant_id, query, user_roles, top_k=top_k)</span><br><span class="line">        retrieved_ids = &#123;uuid.UUID(r[<span class="string">&quot;chunk_id&quot;</span>]) <span class="keyword">for</span> r <span class="keyword">in</span> results&#125;</span><br><span class="line">        expected_set = <span class="built_in">set</span>(expected_chunk_ids)</span><br><span class="line">        hits = retrieved_ids &amp; expected_set</span><br><span class="line"></span><br><span class="line">        precision = <span class="built_in">len</span>(hits) / <span class="built_in">len</span>(results) <span class="keyword">if</span> results <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line">        recall = <span class="built_in">len</span>(hits) / <span class="built_in">len</span>(expected_set) <span class="keyword">if</span> expected_set <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line">        f1 = <span class="number">2</span> * precision * recall / (precision + recall) <span class="keyword">if</span> (precision + recall) <span class="keyword">else</span> <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;precision@k&quot;</span>: <span class="built_in">round</span>(precision, <span class="number">4</span>),</span><br><span class="line">            <span class="string">&quot;recall@k&quot;</span>: <span class="built_in">round</span>(recall, <span class="number">4</span>),</span><br><span class="line">            <span class="string">&quot;f1@k&quot;</span>: <span class="built_in">round</span>(f1, <span class="number">4</span>),</span><br><span class="line">            <span class="string">&quot;retrieved_count&quot;</span>: <span class="built_in">len</span>(results),</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">demo</span>():</span><br><span class="line">    kb = EnterpriseKnowledgeBase(DB_URL)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 1. 初始化租户与角色</span></span><br><span class="line">    tenant_id = kb.ensure_tenant(<span class="string">&quot;acme-corp&quot;</span>, <span class="string">&quot;Acme Corporation&quot;</span>)</span><br><span class="line">    kb.ensure_role(tenant_id, <span class="string">&quot;engineer&quot;</span>)</span><br><span class="line">    kb.ensure_role(tenant_id, <span class="string">&quot;hr&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 2. 写入两份文档，分别授权给不同角色</span></span><br><span class="line">    kb.ingest(</span><br><span class="line">        tenant_id,</span><br><span class="line">        Document(</span><br><span class="line">            title=<span class="string">&quot;PostgreSQL 索引优化手册&quot;</span>,</span><br><span class="line">            content=(</span><br><span class="line">                <span class="string">&quot;B-tree 索引是 PostgreSQL 默认的索引类型，适合等值查询和范围查询。 &quot;</span></span><br><span class="line">                <span class="string">&quot;对于高并发写入场景，过多的索引会显著降低 INSERT 和 UPDATE 性能。 &quot;</span></span><br><span class="line">                <span class="string">&quot;建议定期使用 pg_stat_user_indexes 检查索引使用频率，删除未使用索引。 &quot;</span></span><br><span class="line">                <span class="string">&quot;GIN 索引适合全文检索和 JSONB 字段。 BRIN 索引适合大块有序数据。&quot;</span></span><br><span class="line">            ),</span><br><span class="line">            owner=<span class="string">&quot;dba@acme.com&quot;</span>,</span><br><span class="line">            allowed_roles=[<span class="string">&quot;engineer&quot;</span>],</span><br><span class="line">        ),</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    kb.ingest(</span><br><span class="line">        tenant_id,</span><br><span class="line">        Document(</span><br><span class="line">            title=<span class="string">&quot;2026 年员工休假政策&quot;</span>,</span><br><span class="line">            content=(</span><br><span class="line">                <span class="string">&quot;所有全职员工每年享有 15 天带薪年假。年假需在当年 12 月 31 日前使用， &quot;</span></span><br><span class="line">                <span class="string">&quot;未使用部分不可结转至下一年。请假需提前 3 个工作日通过 OA 系统提交申请， &quot;</span></span><br><span class="line">                <span class="string">&quot;由直属主管审批。紧急病假可事后补交医院证明。&quot;</span></span><br><span class="line">            ),</span><br><span class="line">            owner=<span class="string">&quot;hr@acme.com&quot;</span>,</span><br><span class="line">            allowed_roles=[<span class="string">&quot;hr&quot;</span>],</span><br><span class="line">        ),</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3. 以 engineer 身份检索</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=== Engineer 检索：索引优化 ===&quot;</span>)</span><br><span class="line">    results = kb.retrieve(tenant_id, <span class="string">&quot;如何优化 PostgreSQL 查询性能？&quot;</span>, [<span class="string">&quot;engineer&quot;</span>])</span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> results:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;  [<span class="subst">&#123;r[<span class="string">&#x27;score&#x27;</span>]&#125;</span>] <span class="subst">&#123;r[<span class="string">&#x27;document&#x27;</span>]&#125;</span> | <span class="subst">&#123;r[<span class="string">&#x27;content&#x27;</span>][:<span class="number">60</span>]&#125;</span>...&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(kb.generate_answer(<span class="string">&quot;如何优化 PostgreSQL 查询性能？&quot;</span>, results))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 4. 以 hr 身份检索，应无法看到 engineer 文档</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== HR 检索：索引优化（应无结果） ===&quot;</span>)</span><br><span class="line">    hr_results = kb.retrieve(tenant_id, <span class="string">&quot;如何优化 PostgreSQL 查询性能？&quot;</span>, [<span class="string">&quot;hr&quot;</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;  命中数：<span class="subst">&#123;<span class="built_in">len</span>(hr_results)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 5. 评估</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== 检索评估 ===&quot;</span>)</span><br><span class="line">    <span class="comment"># 简单演示：engineer 查询期望命中第一个文档的某个 chunk</span></span><br><span class="line">    <span class="comment"># 实际评估需要预先标注 chunk id</span></span><br><span class="line">    <span class="built_in">print</span>(kb.evaluate_retrieval(tenant_id, <span class="string">&quot;PostgreSQL 索引&quot;</span>, [], [<span class="string">&quot;engineer&quot;</span>]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    demo()</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行方式"><a href="#运行方式" class="headerlink" title="运行方式"></a>运行方式</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> DATABASE_URL=<span class="string">&quot;postgresql://user:pass@localhost:5432/enterprise_kb&quot;</span></span><br><span class="line"><span class="built_in">export</span> EMBED_MODEL=<span class="string">&quot;BAAI/bge-small-zh-v1.5&quot;</span></span><br><span class="line">python enterprise_kb_pgvector.py</span><br></pre></td></tr></table></figure>
+
+<h3 id="这个原型已经覆盖的企业级能力"><a href="#这个原型已经覆盖的企业级能力" class="headerlink" title="这个原型已经覆盖的企业级能力"></a>这个原型已经覆盖的企业级能力</h3><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>实现位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多租户</td>
+<td><code>tenants</code> 表 + <code>tenant_id</code> 字段 + RLS</td>
+</tr>
+<tr>
+<td>角色级权限</td>
+<td><code>documents.allowed_roles</code> + <code>&amp;&amp;</code> 数组交集过滤</td>
+</tr>
+<tr>
+<td>模型版本追踪</td>
+<td><code>chunk_embeddings.model_name</code> &#x2F; <code>model_version</code></td>
+</tr>
+<tr>
+<td>可替换 Embedding</td>
+<td><code>EMBED_MODEL</code> 环境变量 + 模型名记录</td>
+</tr>
+<tr>
+<td>基础评估</td>
+<td><code>evaluate_retrieval</code> 计算 Precision &#x2F; Recall &#x2F; F1</td>
+</tr>
+<tr>
+<td>可观测埋点</td>
+<td>可在 <code>retrieve</code> 前后插入延迟&#x2F;调用日志</td>
+</tr>
+</tbody></table>
+<h3 id="下一步扩展方向"><a href="#下一步扩展方向" class="headerlink" title="下一步扩展方向"></a>下一步扩展方向</h3><ol>
+<li><strong>接入真实 LLM</strong>：把 <code>generate_answer</code> 换成 OpenAI &#x2F; 通义千问 &#x2F; Claude API；</li>
+<li><strong>加入重排序</strong>：用 Cross-encoder 对 top 20 结果二次打分；</li>
+<li><strong>接入 LangGraph</strong>：把检索 → 生成 → 事实校验做成状态机；</li>
+<li><strong>增加文档解析</strong>：支持 PDF、Word、Markdown 的文本提取；</li>
+<li><strong>添加审计日志</strong>：记录每次查询的用户、问题、命中 chunk、答案，用于合规和评估。</li>
+</ol>
+<hr>
+<h2 id="📰-技术雷达：pgvector-与-RAG-基础设施最新动态"><a href="#📰-技术雷达：pgvector-与-RAG-基础设施最新动态" class="headerlink" title="📰 技术雷达：pgvector 与 RAG 基础设施最新动态"></a>📰 技术雷达：pgvector 与 RAG 基础设施最新动态</h2><h3 id="1-pgvector-生态进展"><a href="#1-pgvector-生态进展" class="headerlink" title="1. pgvector 生态进展"></a>1. pgvector 生态进展</h3><ul>
+<li><strong>pgvector 0.8.x</strong>：持续优化 HNSW 索引构建速度，支持 <code>hnsw.ef_search</code> 会话级动态调整，新增更多距离函数实现。</li>
+<li><strong>pgvectorscale &#x2F; timescale</strong>：Timescale 推出的 pgvector 扩展增强版，针对超大规模向量数据做性能优化，适合已有 TimescaleDB 用户。</li>
+<li><strong>rds_pgvector</strong>：主流云厂商 RDS PostgreSQL 已普遍内置 pgvector，云上部署成本进一步降低。</li>
+</ul>
+<h3 id="2-RAG-框架与评估"><a href="#2-RAG-框架与评估" class="headerlink" title="2. RAG 框架与评估"></a>2. RAG 框架与评估</h3><ul>
+<li><strong>LangChain v0.3</strong>：更强调模块化与可观测性，与 LangGraph 的集成更紧密。</li>
+<li><strong>Ragas v0.2</strong>：新增对 Agentic RAG 和多轮对话的评估指标，支持工具调用链路追踪。</li>
+<li><strong>LlamaIndex 2026 路线</strong>：强化 “Agentic RAG” 与 “Knowledge Graph RAG”，把向量检索和图推理结合。</li>
+</ul>
+<h3 id="3-企业级安全与治理"><a href="#3-企业级安全与治理" class="headerlink" title="3. 企业级安全与治理"></a>3. 企业级安全与治理</h3><ul>
+<li><strong>LLM Guardrails 标准</strong>：越来越多企业要求 RAG 系统具备输出事实校验、敏感信息过滤、SQL&#x2F;代码生成审计。</li>
+<li><strong>RAG 审计与合规</strong>：金融、医疗行业开始要求记录每次检索的源文档、chunk 范围、模型版本，以满足可解释性要求。</li>
+</ul>
+<h3 id="4-值得跟进的-GitHub-项目"><a href="#4-值得跟进的-GitHub-项目" class="headerlink" title="4. 值得跟进的 GitHub 项目"></a>4. 值得跟进的 GitHub 项目</h3><ul>
+<li><code>pgvector/pgvector</code>：官方扩展，必读。</li>
+<li><code>langchain-ai/langgraph</code>：状态机 + 持久化，适合把 RAG 升级为 Agent。</li>
+<li><code>explodinggradients/ragas</code>：RAG 评估事实标准之一。</li>
+<li><code>microsoft/promptflow</code>：微软的 LLM 应用开发流水线工具，适合企业落地。</li>
+</ul>
+<hr>
+<h2 id="✅-30-天实战路线图"><a href="#✅-30-天实战路线图" class="headerlink" title="✅ 30 天实战路线图"></a>✅ 30 天实战路线图</h2><p>把今天作为 Day 1，后续 29 天可以按以下节奏推进：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>天数</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Week 1：地基</strong></td>
+<td>Day 1-7</td>
+<td>完成 schema、多租户、基础检索、Docker 化</td>
+</tr>
+<tr>
+<td><strong>Week 2：数据流</strong></td>
+<td>Day 8-14</td>
+<td>文档解析、chunk 策略、ingestion pipeline、版本管理</td>
+</tr>
+<tr>
+<td><strong>Week 3：智能化</strong></td>
+<td>Day 15-21</td>
+<td>接入 LLM、重排序、查询改写、Agentic RAG</td>
+</tr>
+<tr>
+<td><strong>Week 4：生产化</strong></td>
+<td>Day 22-28</td>
+<td>监控、评估流水线、Guardrails、CI&#x2F;CD</td>
+</tr>
+<tr>
+<td><strong>收尾</strong></td>
+<td>Day 29-30</td>
+<td>文档、演示视频、部署到 VPS&#x2F;Serverless、发布作品集</td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p>下一篇预告：我们将继续 30 天实战的第二天，深入文档解析与 chunk 策略，把「任意格式文档」可靠地转化为可检索的片段。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/09/02/week4-day28-postgresql-pgvector-enterprise-kb-prototype/">https://dive2cloud-bmz.github.io/2026/09/02/week4-day28-postgresql-pgvector-enterprise-kb-prototype/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/RAG/">
+                                    <span class="chip bg-color">RAG</span>
+                                </a>
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/pgvector/">
+                                    <span class="chip bg-color">pgvector</span>
+                                </a>
+                            
+                                <a href="/tags/Multi-Tenant/">
+                                    <span class="chip bg-color">Multi-Tenant</span>
+                                </a>
+                            
+                                <a href="/tags/Week-28/">
+                                    <span class="chip bg-color">Week-28</span>
+                                </a>
+                            
+                                <a href="/tags/PostgreSQL/">
+                                    <span class="chip bg-color">PostgreSQL</span>
+                                </a>
+                            
+                                <a href="/tags/Enterprise-KB/">
+                                    <span class="chip bg-color">Enterprise-KB</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/09/02/week4-day28-postgresql-pgvector-enterprise-kb-prototype/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型">
+                        
+                        <span class="card-title">Week4 Day28｜转型后实战：30 天搭建 PostgreSQL + pgvector 企业知识库原型</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-09-02
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/pgvector/">
+                        <span class="chip bg-color">pgvector</span>
+                    </a>
+                    
+                    <a href="/tags/Multi-Tenant/">
+                        <span class="chip bg-color">Multi-Tenant</span>
+                    </a>
+                    
+                    <a href="/tags/Week-28/">
+                        <span class="chip bg-color">Week-28</span>
+                    </a>
+                    
+                    <a href="/tags/PostgreSQL/">
+                        <span class="chip bg-color">PostgreSQL</span>
+                    </a>
+                    
+                    <a href="/tags/Enterprise-KB/">
+                        <span class="chip bg-color">Enterprise-KB</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/08/31/week4-day27-ai-engineering-portfolio-and-career-launch/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Week4 Day27｜转型后第一课：把 26 周学习成果变成可演示的 AI 工程作品集">
+                        
+                        <span class="card-title">Week4 Day27｜转型后第一课：把 26 周学习成果变成可演示的 AI 工程作品集</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-08-31
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Capstone/">
+                        <span class="chip bg-color">Capstone</span>
+                    </a>
+                    
+                    <a href="/tags/Career-Transition/">
+                        <span class="chip bg-color">Career-Transition</span>
+                    </a>
+                    
+                    <a href="/tags/Week-27/">
+                        <span class="chip bg-color">Week-27</span>
+                    </a>
+                    
+                    <a href="/tags/Portfolio/">
+                        <span class="chip bg-color">Portfolio</span>
+                    </a>
+                    
+                    <a href="/tags/Personal-Brand/">
+                        <span class="chip bg-color">Personal-Brand</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">340.9k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
