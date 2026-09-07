@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-09-03T03:04:35.602Z</updated>
+  <updated>2026-09-07T03:03:47.015Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,45 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Week4-Day30：Embedding 模型选型与微调——把 chunk 映射到更高效的向量空间</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/07/week4-day30-embedding-model-selection-and-fine-tuning/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/07/week4-day30-embedding-model-selection-and-fine-tuning/</id>
+    <published>2026-09-07T03:00:37.000Z</published>
+    <updated>2026-09-07T03:03:47.015Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;阅读时长：约 22 分钟&lt;br&gt;目标读者：有 PostgreSQL &amp;#x2F; 后端经验、正在构建 RAG 或 Agent 知识库的工程师&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Fine-Tuning" scheme="https://dive2cloud-bmz.github.io/tags/Fine-Tuning/"/>
+    
+    <category term="Vector-Space" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Space/"/>
+    
+  </entry>
   
   <entry>
     <title>从 PDF 到向量库：文档解析与 Chunk 策略的工程师实战</title>
@@ -48,6 +87,41 @@
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
     <category term="Document-Parsing" scheme="https://dive2cloud-bmz.github.io/tags/Document-Parsing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RAG检索评估实战：从Recall到MRR的指标体系与自动化评测流水线</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/03/week3-day7-rag-retrieval-evaluation-recall-mrr-metrics-pipeline/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/03/week3-day7-rag-retrieval-evaluation-recall-mrr-metrics-pipeline/</id>
+    <published>2026-09-03T01:00:00.000Z</published>
+    <updated>2026-09-03T13:58:11.397Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;RAG检索评估实战：从Recall到MRR的指标体系与自动化评测流水线&quot;&gt;&lt;a href=&quot;#RAG检索评估实战：从Recall到MRR的指标体系与自动化评测流水线&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Week-3" scheme="https://dive2cloud-bmz.github.io/tags/Week-3/"/>
+    
+    <category term="检索评估" scheme="https://dive2cloud-bmz.github.io/tags/%E6%A3%80%E7%B4%A2%E8%AF%84%E4%BC%B0/"/>
+    
+    <category term="Recall" scheme="https://dive2cloud-bmz.github.io/tags/Recall/"/>
+    
+    <category term="MRR" scheme="https://dive2cloud-bmz.github.io/tags/MRR/"/>
     
   </entry>
   
@@ -217,11 +291,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
-    
     <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
     
     <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
     <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
     
@@ -258,13 +332,13 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
     <category term="Interview-Prep" scheme="https://dive2cloud-bmz.github.io/tags/Interview-Prep/"/>
     
     <category term="RAG-Agent-Platform" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent-Platform/"/>
-    
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
   </entry>
   
@@ -665,72 +739,6 @@
     <category term="Branch-Replay" scheme="https://dive2cloud-bmz.github.io/tags/Branch-Replay/"/>
     
     <category term="Observability" scheme="https://dive2cloud-bmz.github.io/tags/Observability/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>LangGraph 状态持久化与人在回路：构建可中断、可恢复的 Agent 工作流</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/08/05/week4-day13-langgraph-state-persistence-human-in-the-loop/</id>
-    <published>2026-08-05T03:00:00.000Z</published>
-    <updated>2026-08-05T03:04:22.650Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;LangGraph-状态持久化与人在回路：构建可中断、可恢复的-Agent-工作流&quot;&gt;&lt;a href=&quot;#LangGraph-状态持久化与人在回路：构建可中断、可恢复的-Agent-工作流&quot; class=&quot;headerlink&quot; title=&quot;LangGraph</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Human-in-the-loop" scheme="https://dive2cloud-bmz.github.io/tags/Human-in-the-loop/"/>
-    
-    <category term="State-Persistence" scheme="https://dive2cloud-bmz.github.io/tags/State-Persistence/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>从单兵到编队：Multi-Agent 编排的架构模式与 LangGraph 实战</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/08/03/week4-day12-multi-agent-orchestration-patterns/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/08/03/week4-day12-multi-agent-orchestration-patterns/</id>
-    <published>2026-08-03T03:00:00.000Z</published>
-    <updated>2026-08-03T03:03:48.822Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;🚀-核心洞察：当-Agent-数量超过一个，架构比模型更重要&quot;&gt;&lt;a href=&quot;#🚀-核心洞察：当-Agent-数量超过一个，架构比模型更重要&quot; class=&quot;headerlink&quot; title=&quot;🚀 核心洞察：当 Agent</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Agent-Orchestration" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Orchestration/"/>
-    
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
   </entry>
   
