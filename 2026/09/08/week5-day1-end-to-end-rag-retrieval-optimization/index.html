@@ -1,0 +1,1453 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优, BMZ BLOG">
+    <meta name="description" content="端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优
+一位 RDS PostgreSQL 工程师进入 RAG 战场的第一天，应该先把「检索链路」当成一条慢 SQL 来治理。
+
+
+🚀 核心洞察（2 min）如果你已经在 P">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优 | BMZ BLOG</title>
+    <link rel="icon" type="image/jpeg" href="/hadoop-icon.jpg">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="BMZ BLOG" type="application/atom+xml">
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/hadoop.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">BMZ BLOG</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/hadoop.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">BMZ BLOG</div>
+        <div class="logo-desc">
+            
+            层楼终究误少年
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/dive2cloud-bmz" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/dive2cloud-bmz" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/RAG/">
+                                <span class="chip bg-color">RAG</span>
+                            </a>
+                        
+                            <a href="/tags/AI-Learning/">
+                                <span class="chip bg-color">AI-Learning</span>
+                            </a>
+                        
+                            <a href="/tags/Embedding/">
+                                <span class="chip bg-color">Embedding</span>
+                            </a>
+                        
+                            <a href="/tags/Chunking/">
+                                <span class="chip bg-color">Chunking</span>
+                            </a>
+                        
+                            <a href="/tags/pgvector/">
+                                <span class="chip bg-color">pgvector</span>
+                            </a>
+                        
+                            <a href="/tags/Retrieval/">
+                                <span class="chip bg-color">Retrieval</span>
+                            </a>
+                        
+                            <a href="/tags/Week-5/">
+                                <span class="chip bg-color">Week-5</span>
+                            </a>
+                        
+                            <a href="/tags/Vector-Index/">
+                                <span class="chip bg-color">Vector-Index</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                AI-Transition
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2026-09-08
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2026-09-08
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.7k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    15 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="端到端-RAG-召回优化：Embedding、分块与向量索引的协同调优"><a href="#端到端-RAG-召回优化：Embedding、分块与向量索引的协同调优" class="headerlink" title="端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优"></a>端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优</h1><blockquote>
+<p>一位 RDS PostgreSQL 工程师进入 RAG 战场的第一天，应该先把「检索链路」当成一条慢 SQL 来治理。</p>
+</blockquote>
+<hr>
+<h2 id="🚀-核心洞察（2-min）"><a href="#🚀-核心洞察（2-min）" class="headerlink" title="🚀 核心洞察（2 min）"></a>🚀 核心洞察（2 min）</h2><p>如果你已经在 PostgreSQL 里优化过慢查询，那么 RAG 的召回链路对你来说并不陌生。它本质上是一条多阶段的检索流水线：</p>
+<ol>
+<li><strong>文档解析与分块（Chunking）</strong> ≈ 表设计与行宽控制：分得太细会丢失上下文，分得太粗会降低精度。</li>
+<li><strong>Embedding 编码</strong> ≈ 把每一行数据序列化为一个高维向量主键。</li>
+<li><strong>向量索引（HNSW &#x2F; IVFFlat）</strong> ≈ 在高维空间上建一个近似 B-tree &#x2F; GiST 索引。</li>
+<li><strong>检索与重排序（Retrieval + Reranking）</strong> ≈ 先用索引做粗排召回，再用精确模型做精排。</li>
+<li><strong>评估与迭代</strong> ≈ 持续监控 P95 延迟与 Recall@K，像看 <code>pg_stat_statements</code> 一样看召回指标。</li>
+</ol>
+<p>RAG 系统的最大陷阱不是「模型不够强」，而是各个环节各自为政。Embedding 选得再好，分块策略错误也会把答案切碎；HNSW 建得再快，没有重排序也会把噪声塞进上下文。这篇文章从 PostgreSQL 工程师的视角出发，把整条召回链路当成一个需要端到端调优的分布式查询系统来看待。</p>
+<hr>
+<h2 id="🧠-核心概念（10-min）"><a href="#🧠-核心概念（10-min）" class="headerlink" title="🧠 核心概念（10 min）"></a>🧠 核心概念（10 min）</h2><h3 id="1-召回链路全景：从原始文档到最终上下文"><a href="#1-召回链路全景：从原始文档到最终上下文" class="headerlink" title="1. 召回链路全景：从原始文档到最终上下文"></a>1. 召回链路全景：从原始文档到最终上下文</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">    A[原始文档 / PDF / Markdown] --&gt; B[文档解析与清洗]</span><br><span class="line">    B --&gt; C[分块策略&lt;br/&gt;固定长度 / 语义分块 / 层次分块]</span><br><span class="line">    C --&gt; D[Embedding 编码&lt;br/&gt;dense / sparse / multi-vector]</span><br><span class="line">    D --&gt; E[向量索引&lt;br/&gt;HNSW / IVFFlat / Flat]</span><br><span class="line">    E --&gt; F[近似最近邻检索&lt;br/&gt;ANN Top-K]</span><br><span class="line">    F --&gt; G[重排序 Reranker&lt;br/&gt;交叉编码器 / LLM-based]</span><br><span class="line">    G --&gt; H[最终上下文&lt;br/&gt;注入 Prompt]</span><br></pre></td></tr></table></figure>
+
+<p>这条链路的总延迟可以近似写成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T_total = T_parse + T_chunk + T_embed + T_index_lookup + T_rerank + T_llm</span><br></pre></td></tr></table></figure>
+
+<p>对 PostgreSQL 后端工程师来说，这就像是分析一条涉及 JSONB 解析、函数调用、索引扫描、排序和 LIMIT 的慢 SQL。优化的核心不是单独调某个参数，而是找到整条链路中的瓶颈。</p>
+<h3 id="2-分块策略：行宽与上下文之间的权衡"><a href="#2-分块策略：行宽与上下文之间的权衡" class="headerlink" title="2. 分块策略：行宽与上下文之间的权衡"></a>2. 分块策略：行宽与上下文之间的权衡</h3><p>在 PostgreSQL 中，行太宽会导致：</p>
+<ul>
+<li><code>TOAST</code> 频繁解压缩；</li>
+<li>一个 page 能容纳的行数变少，IO 上升；</li>
+<li>索引扫描后回表成本增加。</li>
+</ul>
+<p>RAG 的分块完全同理。</p>
+<table>
+<thead>
+<tr>
+<th>分块策略</th>
+<th>类比 PG 概念</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>固定长度（Fixed）</td>
+<td><code>VARCHAR(n)</code> 定长切分</td>
+<td>简单、可预测、Embedding 批量生产方便</td>
+<td>容易切断语义边界</td>
+<td>结构化日志、FAQ、代码注释</td>
+</tr>
+<tr>
+<td>递归字符（Recursive）</td>
+<td>按段落&#x2F;句子自然边界拆分</td>
+<td>保留段落和句子结构</td>
+<td>块大小不均匀，需要 padding</td>
+<td>技术文档、论文</td>
+</tr>
+<tr>
+<td>语义分块（Semantic）</td>
+<td>按语义聚类分区</td>
+<td>上下文完整，召回相关性强</td>
+<td>计算成本高，需要额外模型</td>
+<td>长文档问答</td>
+</tr>
+<tr>
+<td>层次分块（Hierarchical）</td>
+<td>分区表 + 子分区</td>
+<td>父子关系清晰，支持多粒度检索</td>
+<td>存储和索引复杂度翻倍</td>
+<td>法律合同、知识库</td>
+</tr>
+</tbody></table>
+<p><strong>实践建议</strong>：</p>
+<ul>
+<li>起始值：代码&#x2F;FAQ 用 256-512 tokens；技术文档用 512-1024 tokens。</li>
+<li>重叠（overlap）建议 10%-20%，避免关键信息落在边界。</li>
+<li>对 PostgreSQL 文档类内容，优先按标题层级切分，而不是按 token 硬切。</li>
+</ul>
+<h3 id="3-Embedding-模型：向量空间就是数据的「隐式-schema」"><a href="#3-Embedding-模型：向量空间就是数据的「隐式-schema」" class="headerlink" title="3. Embedding 模型：向量空间就是数据的「隐式 schema」"></a>3. Embedding 模型：向量空间就是数据的「隐式 schema」</h3><p>Embedding 把一个文本块映射到一个高维向量。你可以把它理解为 PostgreSQL 中「把一行数据序列化成一个固定长度的二进制表示」，只是这个表示是在语义空间中学出来的。</p>
+<h4 id="3-1-选择-Embedding-模型的四个维度"><a href="#3-1-选择-Embedding-模型的四个维度" class="headerlink" title="3.1 选择 Embedding 模型的四个维度"></a>3.1 选择 Embedding 模型的四个维度</h4><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>PostgreSQL 类比</th>
+<th>关键问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>维度大小</td>
+<td>索引键长度</td>
+<td>768 vs 1024 vs 1536 维，直接影响 pgvector 存储和内存</td>
+</tr>
+<tr>
+<td>上下文窗口</td>
+<td><code>varchar(n)</code> 最大长度</td>
+<td>模型支持 512 &#x2F; 2048 &#x2F; 8192 tokens，决定能编码多大的块</td>
+</tr>
+<tr>
+<td>领域适配</td>
+<td>是否做了 domain fine-tuning</td>
+<td>通用模型在医疗&#x2F;法律&#x2F;代码领域可能语义偏移</td>
+</tr>
+<tr>
+<td>多语言支持</td>
+<td>collation 设置</td>
+<td>中英文混合场景优先选 multilingual 模型</td>
+</tr>
+</tbody></table>
+<h4 id="3-2-主流模型速查"><a href="#3-2-主流模型速查" class="headerlink" title="3.2 主流模型速查"></a>3.2 主流模型速查</h4><ul>
+<li><strong>OpenAI text-embedding-3-large</strong>：1536 维，综合能力强，成本高。</li>
+<li><strong>BGE-M3（智源）</strong>：支持 dense + sparse + multi-vector，中文场景性价比高。</li>
+<li>** voyage-3**：长上下文（32k），适合长文档。</li>
+<li><strong>E5-mistral &#x2F; GTE-large</strong>：开源可本地部署，适合私有化。</li>
+</ul>
+<h4 id="3-3-Dense-Sparse-混合检索"><a href="#3-3-Dense-Sparse-混合检索" class="headerlink" title="3.3 Dense + Sparse 混合检索"></a>3.3 Dense + Sparse 混合检索</h4><p>纯 dense 向量擅长语义匹配，但对 rare terms、ID、版本号、专有名词容易失效。这时可以引入 sparse embedding（如 BM25、SPLADE、BGE-M3 sparse）做混合检索：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">score_hybrid = α * score_dense + (1 - α) * score_sparse</span><br></pre></td></tr></table></figure>
+
+<p>这就好比 PostgreSQL 中同时建一个 GIN 全文索引和一个 B-tree 索引，查询时用 <code>ts_rank</code> 和 <code>=</code> 条件加权打分。</p>
+<h3 id="4-向量索引：HNSW-与-IVFFlat"><a href="#4-向量索引：HNSW-与-IVFFlat" class="headerlink" title="4. 向量索引：HNSW 与 IVFFlat"></a>4. 向量索引：HNSW 与 IVFFlat</h3><p>pgvector 支持 <code>ivfflat</code> 和 <code>hnsw</code> 两种索引。选择索引就是在「召回率、延迟、写入成本、内存占用」之间做 trade-off。</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>类比 PG 索引</th>
+<th>查询复杂度</th>
+<th>构建成本</th>
+<th>召回率</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Flat（无索引）</td>
+<td>Seq Scan</td>
+<td>O(N)</td>
+<td>无</td>
+<td>100%</td>
+<td>数据量 &lt; 1 万或离线实验</td>
+</tr>
+<tr>
+<td>IVFFlat</td>
+<td>GiST &#x2F; 分区聚合</td>
+<td>O(√N ~ N)</td>
+<td>中</td>
+<td>中</td>
+<td>数据量大但可接受少量漏召回</td>
+</tr>
+<tr>
+<td>HNSW</td>
+<td>B-tree 多层近似</td>
+<td>O(log N)</td>
+<td>高</td>
+<td>高</td>
+<td>在线服务、低延迟、高召回</td>
+</tr>
+</tbody></table>
+<h4 id="4-1-HNSW-参数"><a href="#4-1-HNSW-参数" class="headerlink" title="4.1 HNSW 参数"></a>4.1 HNSW 参数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX idx <span class="keyword">ON</span> documents</span><br><span class="line"><span class="keyword">USING</span> hnsw (embedding vector_cosine_ops)</span><br><span class="line"><span class="keyword">WITH</span> (m <span class="operator">=</span> <span class="number">16</span>, ef_construction <span class="operator">=</span> <span class="number">64</span>);</span><br></pre></td></tr></table></figure>
+
+<p>参数含义：</p>
+<ul>
+<li><code>m</code>：每个节点的最大连接数。类似 B-tree 的 <code>fillfactor</code>，越大图越稠密，查询越准但内存越大。</li>
+<li><code>ef_construction</code>：建图时的搜索宽度。越大建图越慢，但图质量越好。</li>
+<li><code>ef_search</code>：查询时的搜索宽度。可以在会话级设置：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> hnsw.ef_search <span class="operator">=</span> <span class="number">128</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>调优口诀</strong>：</p>
+<ul>
+<li>写入少、查询多：<code>m=24</code>, <code>ef_construction=128</code></li>
+<li>写入多、查询少：<code>m=12</code>, <code>ef_construction=64</code></li>
+<li>需要更高召回：提高 <code>ef_search</code>，而不是重建索引</li>
+</ul>
+<h4 id="4-2-IVFFlat-参数"><a href="#4-2-IVFFlat-参数" class="headerlink" title="4.2 IVFFlat 参数"></a>4.2 IVFFlat 参数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX idx_ivf <span class="keyword">ON</span> documents</span><br><span class="line"><span class="keyword">USING</span> ivfflat (embedding vector_l2_ops)</span><br><span class="line"><span class="keyword">WITH</span> (lists <span class="operator">=</span> <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>lists</code>：聚类中心数。经验值 <code>lists = sqrt(N)</code> 或 <code>N / 1000</code>。</li>
+<li>查询时 <code>probes</code> 控制扫描多少聚类：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> ivfflat.probes <span class="operator">=</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-检索与重排序：先粗排，再精排"><a href="#5-检索与重排序：先粗排，再精排" class="headerlink" title="5. 检索与重排序：先粗排，再精排"></a>5. 检索与重排序：先粗排，再精排</h3><h4 id="5-1-第一阶段：向量-ANN-召回"><a href="#5-1-第一阶段：向量-ANN-召回" class="headerlink" title="5.1 第一阶段：向量 ANN 召回"></a>5.1 第一阶段：向量 ANN 召回</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 伪代码</span></span><br><span class="line">query_embedding = embedder.encode(question)</span><br><span class="line">candidates = pg.execute(</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    SELECT id, content, embedding &lt;=&gt; %s::vector AS distance</span></span><br><span class="line"><span class="string">    FROM documents</span></span><br><span class="line"><span class="string">    ORDER BY embedding &lt;=&gt; %s::vector</span></span><br><span class="line"><span class="string">    LIMIT 100;</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span>,</span><br><span class="line">    (query_embedding, query_embedding)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这一步追求的是「高召回率下的低延迟」。通常取 Top-100，而不是直接取 Top-K 给 LLM。</p>
+<h4 id="5-2-第二阶段：Reranker-精排"><a href="#5-2-第二阶段：Reranker-精排" class="headerlink" title="5.2 第二阶段：Reranker 精排"></a>5.2 第二阶段：Reranker 精排</h4><p>交叉编码器（Cross-Encoder）把 query 和 document 一起输入，输出相关性分数。它比双塔 Embedding 更准，但计算成本高一个数量级。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> CrossEncoder</span><br><span class="line"></span><br><span class="line">reranker = CrossEncoder(<span class="string">&quot;BAAI/bge-reranker-large&quot;</span>)</span><br><span class="line">scores = reranker.predict([</span><br><span class="line">    [question, doc[<span class="string">&quot;content&quot;</span>]] <span class="keyword">for</span> doc <span class="keyword">in</span> candidates</span><br><span class="line">])</span><br><span class="line">top_k = <span class="built_in">sorted</span>(<span class="built_in">zip</span>(candidates, scores), key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="literal">True</span>)[:<span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+
+<p>这就像 PostgreSQL 中先用索引做 <code>ORDER BY ... LIMIT 100</code> 粗排，再用一个昂贵的标量函数对前 100 条做最终排序。</p>
+<h4 id="5-3-第三阶段：上下文压缩"><a href="#5-3-第三阶段：上下文压缩" class="headerlink" title="5.3 第三阶段：上下文压缩"></a>5.3 第三阶段：上下文压缩</h4><p>不是所有 Top-K 内容都值得塞进 Prompt。可以通过以下方式压缩：</p>
+<ul>
+<li>去除重复段落（使用相似度去重）。</li>
+<li>只保留与问题直接相关的句子。</li>
+<li>对长文档做摘要后作为上下文。</li>
+</ul>
+<h3 id="6-评估：没有指标就没有优化方向"><a href="#6-评估：没有指标就没有优化方向" class="headerlink" title="6. 评估：没有指标就没有优化方向"></a>6. 评估：没有指标就没有优化方向</h3><p>RAG 召回的评估指标体系可以分为三个层次：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>指标</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>索引质量</td>
+<td>Recall@K</td>
+<td>正确答案是否在 Top-K 中</td>
+</tr>
+<tr>
+<td>排序质量</td>
+<td>MRR &#x2F; NDCG@K</td>
+<td>正确答案排得多靠前</td>
+</tr>
+<tr>
+<td>端到端</td>
+<td>Answer Correctness &#x2F; Faithfulness</td>
+<td>LLM 最终回答是否正确、忠实</td>
+</tr>
+</tbody></table>
+<p><strong>建议建立的小数据集</strong>：</p>
+<ul>
+<li>从真实业务中收集 50-200 个 <code>(question, ground_truth_chunk_id)</code> 对。</li>
+<li>每次调整分块、Embedding、索引参数后，跑一遍评估脚本。</li>
+<li>把结果记录到类似 <code>rag_experiments</code> 的表中，方便对比。</li>
+</ul>
+<hr>
+<h2 id="🔗-后端桥接（3-min）"><a href="#🔗-后端桥接（3-min）" class="headerlink" title="🔗 后端桥接（3 min）"></a>🔗 后端桥接（3 min）</h2><h3 id="PostgreSQL-视角下的-RAG-组件映射"><a href="#PostgreSQL-视角下的-RAG-组件映射" class="headerlink" title="PostgreSQL 视角下的 RAG 组件映射"></a>PostgreSQL 视角下的 RAG 组件映射</h3><table>
+<thead>
+<tr>
+<th>RAG 组件</th>
+<th>PostgreSQL 对应物</th>
+<th>核心启示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文档</td>
+<td>表中的一行 &#x2F; TOAST 大字段</td>
+<td>不要把整本书塞进一行，要分块</td>
+</tr>
+<tr>
+<td>分块</td>
+<td>行宽控制 + 规范化</td>
+<td>太宽影响 IO，太窄丢失关联</td>
+</tr>
+<tr>
+<td>Embedding</td>
+<td>高维向量主键 &#x2F; 序列化表示</td>
+<td>不同模型就是不同的序列化协议</td>
+</tr>
+<tr>
+<td>向量索引</td>
+<td>GiST &#x2F; GIN &#x2F; BRIN 近似版</td>
+<td>HNSW 是近似索引，不是精确索引</td>
+</tr>
+<tr>
+<td>ANN 检索</td>
+<td>索引扫描 + ORDER BY LIMIT</td>
+<td>先用索引粗排，再用函数精排</td>
+</tr>
+<tr>
+<td>Reranker</td>
+<td>窗口函数 &#x2F; 复杂表达式排序</td>
+<td>成本高，只对 Top-N 执行</td>
+</tr>
+<tr>
+<td>评估指标</td>
+<td><code>pg_stat_statements</code> + 慢查询日志</td>
+<td>没有监控就无法优化</td>
+</tr>
+</tbody></table>
+<h3 id="一个具体的-SQL-类比"><a href="#一个具体的-SQL-类比" class="headerlink" title="一个具体的 SQL 类比"></a>一个具体的 SQL 类比</h3><p>假设你在 PostgreSQL 中优化这样一条查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, content</span><br><span class="line"><span class="keyword">FROM</span> docs</span><br><span class="line"><span class="keyword">WHERE</span> category <span class="operator">=</span> <span class="string">&#x27;pgvector&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;</span><span class="operator">-</span><span class="operator">&gt;</span> query_vec</span><br><span class="line">LIMIT <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这条查询的问题和 RAG 链路一模一样：</p>
+<ol>
+<li><code>WHERE category = &#39;pgvector&#39;</code> 是 metadata filter，如果向量索引不支持过滤，会导致索引失效或需要后过滤。</li>
+<li><code>ORDER BY embedding &lt;-&gt; query_vec</code> 是 ANN 检索，需要 <code>hnsw</code> 索引。</li>
+<li><code>LIMIT 5</code> 直接取 Top-5，没有重排序阶段，可能把相关但不够精确的文档送进去。</li>
+</ol>
+<p>优化后的版本：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 第一步：粗排召回 Top-100</span></span><br><span class="line"><span class="keyword">WITH</span> candidates <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, content, embedding <span class="operator">&lt;=&gt;</span> query_vec <span class="keyword">AS</span> dist</span><br><span class="line">    <span class="keyword">FROM</span> docs</span><br><span class="line">    <span class="keyword">WHERE</span> category <span class="operator">=</span> <span class="string">&#x27;pgvector&#x27;</span></span><br><span class="line">    <span class="keyword">ORDER</span> <span class="keyword">BY</span> embedding <span class="operator">&lt;=&gt;</span> query_vec</span><br><span class="line">    LIMIT <span class="number">100</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">-- 第二步：交给 Reranker 精排（在应用层完成）</span></span><br><span class="line"><span class="keyword">SELECT</span> id, content <span class="keyword">FROM</span> candidates;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🛠️-微实战（5-min）"><a href="#🛠️-微实战（5-min）" class="headerlink" title="🛠️ 微实战（5 min）"></a>🛠️ 微实战（5 min）</h2><h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>搭建一个可运行的最小 RAG 召回优化实验：</p>
+<ol>
+<li>用 PostgreSQL + pgvector 建表并插入文档。</li>
+<li>对比三种分块长度（256 &#x2F; 512 &#x2F; 1024 tokens）的召回率。</li>
+<li>对比 HNSW 不同 <code>ef_search</code> 下的 Recall@10。</li>
+<li>加入 BGE-Reranker 做精排，观察 MRR 提升。</li>
+</ol>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install sentence-transformers psycopg2-binary pgvector tiktoken</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库初始化"><a href="#数据库初始化" class="headerlink" title="数据库初始化"></a>数据库初始化</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 在 PostgreSQL 中执行</span></span><br><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> vector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> rag_chunks (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    doc_id TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    chunk_size <span class="type">INT</span> <span class="keyword">NOT NULL</span>,</span><br><span class="line">    content TEXT <span class="keyword">NOT NULL</span>,</span><br><span class="line">    embedding VECTOR(<span class="number">768</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> INDEX idx_hnsw_768 <span class="keyword">ON</span> rag_chunks</span><br><span class="line"><span class="keyword">USING</span> hnsw (embedding vector_cosine_ops)</span><br><span class="line"><span class="keyword">WITH</span> (m <span class="operator">=</span> <span class="number">16</span>, ef_construction <span class="operator">=</span> <span class="number">64</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Python-实验脚本"><a href="#Python-实验脚本" class="headerlink" title="Python 实验脚本"></a>Python 实验脚本</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> psycopg2</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer, CrossEncoder</span><br><span class="line"><span class="keyword">import</span> tiktoken</span><br><span class="line"></span><br><span class="line">DB = <span class="string">&quot;dbname=rag_demo user=postgres password=secret host=localhost&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 双塔编码器 + 交叉编码器 Reranker</span></span><br><span class="line">embedder = SentenceTransformer(<span class="string">&quot;BAAI/bge-large-zh-v1.5&quot;</span>)</span><br><span class="line">reranker = CrossEncoder(<span class="string">&quot;BAAI/bge-reranker-large&quot;</span>)</span><br><span class="line">encoder = tiktoken.get_encoding(<span class="string">&quot;cl100k_base&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">chunk_text</span>(<span class="params">text: <span class="built_in">str</span>, max_tokens: <span class="built_in">int</span>, overlap: <span class="built_in">int</span> = <span class="number">50</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;按 token 切分并保留重叠。&quot;&quot;&quot;</span></span><br><span class="line">    tokens = encoder.encode(text)</span><br><span class="line">    chunks = []</span><br><span class="line">    start = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> start &lt; <span class="built_in">len</span>(tokens):</span><br><span class="line">        end = <span class="built_in">min</span>(start + max_tokens, <span class="built_in">len</span>(tokens))</span><br><span class="line">        chunk_tokens = tokens[start:end]</span><br><span class="line">        chunks.append(encoder.decode(chunk_tokens))</span><br><span class="line">        <span class="keyword">if</span> end == <span class="built_in">len</span>(tokens):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        start += max_tokens - overlap</span><br><span class="line">    <span class="keyword">return</span> chunks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">insert_chunks</span>(<span class="params">doc_id: <span class="built_in">str</span>, text: <span class="built_in">str</span>, size: <span class="built_in">int</span></span>):</span><br><span class="line">    chunks = chunk_text(text, size)</span><br><span class="line">    embeddings = embedder.encode(chunks, normalize_embeddings=<span class="literal">True</span>).tolist()</span><br><span class="line">    <span class="keyword">with</span> psycopg2.connect(DB) <span class="keyword">as</span> conn:</span><br><span class="line">        <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            <span class="keyword">for</span> content, emb <span class="keyword">in</span> <span class="built_in">zip</span>(chunks, embeddings):</span><br><span class="line">                cur.execute(</span><br><span class="line">                    <span class="string">&quot;INSERT INTO rag_chunks (doc_id, chunk_size, content, embedding) VALUES (%s, %s, %s, %s)&quot;</span>,</span><br><span class="line">                    (doc_id, size, content, emb),</span><br><span class="line">                )</span><br><span class="line">            conn.commit()</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(chunks)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">question: <span class="built_in">str</span>, size: <span class="built_in">int</span>, top_k: <span class="built_in">int</span> = <span class="number">10</span>, ef_search: <span class="built_in">int</span> = <span class="number">64</span></span>):</span><br><span class="line">    q_emb = embedder.encode([question], normalize_embeddings=<span class="literal">True</span>)[<span class="number">0</span>].tolist()</span><br><span class="line">    <span class="keyword">with</span> psycopg2.connect(DB) <span class="keyword">as</span> conn:</span><br><span class="line">        <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cur:</span><br><span class="line">            cur.execute(<span class="string">f&quot;SET hnsw.ef_search = <span class="subst">&#123;ef_search&#125;</span>&quot;</span>)</span><br><span class="line">            cur.execute(</span><br><span class="line">                <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                SELECT id, content, 1 - (embedding &lt;=&gt; %s::vector) AS score</span></span><br><span class="line"><span class="string">                FROM rag_chunks</span></span><br><span class="line"><span class="string">                WHERE chunk_size = %s</span></span><br><span class="line"><span class="string">                ORDER BY embedding &lt;=&gt; %s::vector</span></span><br><span class="line"><span class="string">                LIMIT %s</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span>,</span><br><span class="line">                (q_emb, size, q_emb, top_k),</span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">return</span> cur.fetchall()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rerank</span>(<span class="params">question: <span class="built_in">str</span>, candidates</span>):</span><br><span class="line">    pairs = [[question, c[<span class="number">1</span>]] <span class="keyword">for</span> c <span class="keyword">in</span> candidates]</span><br><span class="line">    scores = reranker.predict(pairs)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sorted</span>(</span><br><span class="line">        <span class="built_in">zip</span>(candidates, scores), key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 运行实验 ---</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment"># 1. 准备一篇示例长文档</span></span><br><span class="line">    long_doc = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    PostgreSQL 的 pgvector 扩展为向量检索提供了强大的支持。它支持 IVFFlat 和 HNSW 两种近似最近邻索引。</span></span><br><span class="line"><span class="string">    HNSW 基于分层可导航小世界图，能够在高维空间中实现对数级查询复杂度。</span></span><br><span class="line"><span class="string">    在实际部署中，m 参数控制每个节点的最大连接数，ef_construction 控制建图时的搜索范围，</span></span><br><span class="line"><span class="string">    ef_search 控制查询时的搜索范围。合理调优这三个参数，可以在召回率、延迟和内存占用之间取得平衡。</span></span><br><span class="line"><span class="string">    此外，pgvector 还支持向量与标量条件的混合过滤，但需要注意索引对过滤条件的支持程度。</span></span><br><span class="line"><span class="string">    对于高并发场景，建议使用连接池，并将大表做分区。对于超高维度向量，可以考虑降低维度或使用量化技术。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span> * <span class="number">20</span>  <span class="comment"># 模拟长文档</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 2. 插入三种 chunk_size 的数据</span></span><br><span class="line">    <span class="keyword">for</span> size <span class="keyword">in</span> [<span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span>]:</span><br><span class="line">        n = insert_chunks(<span class="string">&quot;pgvector-guide&quot;</span>, long_doc, size)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;chunk_size=<span class="subst">&#123;size&#125;</span>: inserted <span class="subst">&#123;n&#125;</span> chunks&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3. 测试不同 ef_search 与 chunk_size 的召回表现</span></span><br><span class="line">    question = <span class="string">&quot;HNSW 的三个关键参数是什么？&quot;</span></span><br><span class="line">    <span class="keyword">for</span> size <span class="keyword">in</span> [<span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span>]:</span><br><span class="line">        <span class="keyword">for</span> ef <span class="keyword">in</span> [<span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>]:</span><br><span class="line">            results = retrieve(question, size, top_k=<span class="number">10</span>, ef_search=ef)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;size=<span class="subst">&#123;size&#125;</span>, ef=<span class="subst">&#123;ef&#125;</span>: top scores=<span class="subst">&#123;[<span class="built_in">round</span>(r[<span class="number">2</span>], <span class="number">3</span>) <span class="keyword">for</span> r <span class="keyword">in</span> results[:<span class="number">3</span>]]&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 4. 加入 Reranker 精排</span></span><br><span class="line">    base = retrieve(question, size=<span class="number">512</span>, top_k=<span class="number">20</span>, ef_search=<span class="number">64</span>)</span><br><span class="line">    reranked = rerank(question, base)[:<span class="number">5</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n--- After Reranker ---&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> (idx, content, _), score <span class="keyword">in</span> reranked:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;score=<span class="subst">&#123;score:<span class="number">.3</span>f&#125;</span>: <span class="subst">&#123;content[:<span class="number">80</span>]&#125;</span>...&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="实验预期结论"><a href="#实验预期结论" class="headerlink" title="实验预期结论"></a>实验预期结论</h3><ol>
+<li><strong>chunk_size&#x3D;512</strong> 通常能在上下文完整性和粒度之间取得平衡。</li>
+<li><strong>ef_search 从 32 提升到 128</strong> 时，召回率显著提升，但延迟线性增加。</li>
+<li><strong>加入 Reranker 后</strong>，Top-3 的相关性分数分布更陡峭，噪声文档被有效压低。</li>
+</ol>
+<hr>
+<h2 id="📰-技术雷达"><a href="#📰-技术雷达" class="headerlink" title="📰 技术雷达"></a>📰 技术雷达</h2><h3 id="论文与开源"><a href="#论文与开源" class="headerlink" title="论文与开源"></a>论文与开源</h3><ul>
+<li><strong>arXiv:2406.15498</strong> — <em>RAG-Fusion</em>: 提出多查询扩展与倒数排序融合（RRF），在不需要重排序模型的情况下提升召回稳定性。</li>
+<li><strong>ColBERTv2 &#x2F; late interaction</strong>: 把 query 和 document 编码成多向量矩阵，保留 token 级交互，兼顾效率和精度。</li>
+<li><strong>LlamaIndex &#x2F; LangChain 2024 Q3 更新</strong>: 均增加了 <code>Metadata Replacement + Node Sentence Window</code> 模式，在检索时自动扩展上下文窗口。</li>
+</ul>
+<h3 id="工具推荐"><a href="#工具推荐" class="headerlink" title="工具推荐"></a>工具推荐</h3><ul>
+<li><strong>RAGAS</strong>: RAG 评估框架，支持 <code>context_recall</code>、<code>context_precision</code>、<code>answer_relevancy</code> 等指标。</li>
+<li><strong>Ares &#x2F; MLflow LLM</strong>: 用于持续记录 Embedding 模型和分块参数的实验对比。</li>
+<li><strong>pgvector 0.7.x</strong>: 新增 <code>halfvec</code>、<code>sparsevec</code> 类型，显著降低高维向量存储成本。</li>
+</ul>
+<h3 id="行业动态"><a href="#行业动态" class="headerlink" title="行业动态"></a>行业动态</h3><ul>
+<li>OpenAI 发布 <code>text-embedding-3</code> 系列后，国产模型（BGE、Jina、Voyage）在多语言和长上下文上追赶明显，私有化部署成为企业 RAG 首选。</li>
+<li>向量数据库领域呈现「PG + pgvector 一统中小型 RAG，专用向量库（Milvus&#x2F;Pinecone）服务超大规模」的格局。</li>
+</ul>
+<hr>
+<h2 id="今日小结"><a href="#今日小结" class="headerlink" title="今日小结"></a>今日小结</h2><p>端到端 RAG 召回优化不是单一参数的调优，而是「分块 → Embedding → 索引 → 检索 → 重排序」全链路的协同治理。对 PostgreSQL 后端工程师来说，最自然的思维方式是：把 Embedding 当成高维索引键，把 ANN 当成近似索引扫描，把 Reranker 当成窗口函数精排。只要像治理慢 SQL 一样建立评估指标、持续 A&#x2F;B 实验，就能让 RAG 系统的召回率稳步提升。</p>
+<hr>
+<blockquote>
+<p>下一篇预告：Week 5 Day 2，将深入探讨 <strong>混合检索（Dense + Sparse + BM25）在 PostgreSQL 中的工程实现</strong>，包括如何同时利用 pgvector 与 tsvector 完成多路召回与加权融合。</p>
+</blockquote>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">Sam Bie</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://dive2cloud-bmz.github.io/2026/09/08/week5-day1-end-to-end-rag-retrieval-optimization/">https://dive2cloud-bmz.github.io/2026/09/08/week5-day1-end-to-end-rag-retrieval-optimization/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">Sam Bie</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/RAG/">
+                                    <span class="chip bg-color">RAG</span>
+                                </a>
+                            
+                                <a href="/tags/AI-Learning/">
+                                    <span class="chip bg-color">AI-Learning</span>
+                                </a>
+                            
+                                <a href="/tags/Embedding/">
+                                    <span class="chip bg-color">Embedding</span>
+                                </a>
+                            
+                                <a href="/tags/Chunking/">
+                                    <span class="chip bg-color">Chunking</span>
+                                </a>
+                            
+                                <a href="/tags/pgvector/">
+                                    <span class="chip bg-color">pgvector</span>
+                                </a>
+                            
+                                <a href="/tags/Retrieval/">
+                                    <span class="chip bg-color">Retrieval</span>
+                                </a>
+                            
+                                <a href="/tags/Week-5/">
+                                    <span class="chip bg-color">Week-5</span>
+                                </a>
+                            
+                                <a href="/tags/Vector-Index/">
+                                    <span class="chip bg-color">Vector-Index</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2026/09/08/week5-day1-end-to-end-rag-retrieval-optimization/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优">
+                        
+                        <span class="card-title">端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-09-08
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Embedding/">
+                        <span class="chip bg-color">Embedding</span>
+                    </a>
+                    
+                    <a href="/tags/Chunking/">
+                        <span class="chip bg-color">Chunking</span>
+                    </a>
+                    
+                    <a href="/tags/pgvector/">
+                        <span class="chip bg-color">pgvector</span>
+                    </a>
+                    
+                    <a href="/tags/Retrieval/">
+                        <span class="chip bg-color">Retrieval</span>
+                    </a>
+                    
+                    <a href="/tags/Week-5/">
+                        <span class="chip bg-color">Week-5</span>
+                    </a>
+                    
+                    <a href="/tags/Vector-Index/">
+                        <span class="chip bg-color">Vector-Index</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2026/09/07/week4-day30-embedding-model-selection-and-fine-tuning/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="Week4-Day30：Embedding 模型选型与微调——把 chunk 映射到更高效的向量空间">
+                        
+                        <span class="card-title">Week4-Day30：Embedding 模型选型与微调——把 chunk 映射到更高效的向量空间</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2026-09-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/AI-Transition/" class="post-category">
+                                    AI-Transition
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/RAG/">
+                        <span class="chip bg-color">RAG</span>
+                    </a>
+                    
+                    <a href="/tags/AI-Learning/">
+                        <span class="chip bg-color">AI-Learning</span>
+                    </a>
+                    
+                    <a href="/tags/Embedding/">
+                        <span class="chip bg-color">Embedding</span>
+                    </a>
+                    
+                    <a href="/tags/Week-4/">
+                        <span class="chip bg-color">Week-4</span>
+                    </a>
+                    
+                    <a href="/tags/Fine-Tuning/">
+                        <span class="chip bg-color">Fine-Tuning</span>
+                    </a>
+                    
+                    <a href="/tags/Vector-Space/">
+                        <span class="chip bg-color">Vector-Space</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('88')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE' || selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: BMZ BLOG<br />'
+            + '文章作者: Sam Bie<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2026</span>
+            
+            <a href="/about" target="_blank">Sam Bie</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            
+            <br>
+            
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">356k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/dive2cloud-bmz" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:biemingzhou@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+    
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-09-07T03:03:47.015Z</updated>
+  <updated>2026-09-08T03:03:34.281Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,45 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/08/week5-day1-end-to-end-rag-retrieval-optimization/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/08/week5-day1-end-to-end-rag-retrieval-optimization/</id>
+    <published>2026-09-08T02:00:00.000Z</published>
+    <updated>2026-09-08T03:03:34.281Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;端到端-RAG-召回优化：Embedding、分块与向量索引的协同调优&quot;&gt;&lt;a href=&quot;#端到端-RAG-召回优化：Embedding、分块与向量索引的协同调优&quot; class=&quot;headerlink&quot; title=&quot;端到端 RAG</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Embedding/"/>
+    
+    <category term="Chunking" scheme="https://dive2cloud-bmz.github.io/tags/Chunking/"/>
+    
+    <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
+    
+    <category term="Retrieval" scheme="https://dive2cloud-bmz.github.io/tags/Retrieval/"/>
+    
+    <category term="Week-5" scheme="https://dive2cloud-bmz.github.io/tags/Week-5/"/>
+    
+    <category term="Vector-Index" scheme="https://dive2cloud-bmz.github.io/tags/Vector-Index/"/>
+    
+  </entry>
   
   <entry>
     <title>Week4-Day30：Embedding 模型选型与微调——把 chunk 映射到更高效的向量空间</title>
@@ -291,11 +330,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
     <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
     
     <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
-    
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
     <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
     
@@ -332,13 +371,13 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
-    
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
     <category term="Interview-Prep" scheme="https://dive2cloud-bmz.github.io/tags/Interview-Prep/"/>
     
     <category term="RAG-Agent-Platform" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent-Platform/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
   </entry>
   
@@ -702,43 +741,6 @@
     <category term="Subgraph" scheme="https://dive2cloud-bmz.github.io/tags/Subgraph/"/>
     
     <category term="Remote-Callable-Graph" scheme="https://dive2cloud-bmz.github.io/tags/Remote-Callable-Graph/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>LangGraph 时间旅行与分支重放：像 DBA 回放 WAL 一样调试 Agent 轨迹</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/08/06/week4-day14-langgraph-time-travel-branch-replay/</id>
-    <published>2026-08-06T03:00:00.000Z</published>
-    <updated>2026-08-06T03:04:50.821Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹&quot;&gt;&lt;a href=&quot;#LangGraph-时间旅行与分支重放：像-DBA-回放-WAL-一样调试-Agent-轨迹&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Time-Travel" scheme="https://dive2cloud-bmz.github.io/tags/Time-Travel/"/>
-    
-    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
-    
-    <category term="Branch-Replay" scheme="https://dive2cloud-bmz.github.io/tags/Branch-Replay/"/>
-    
-    <category term="Observability" scheme="https://dive2cloud-bmz.github.io/tags/Observability/"/>
     
   </entry>
   
