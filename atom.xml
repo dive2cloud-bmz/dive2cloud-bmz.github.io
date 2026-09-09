@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-09-09T03:04:15.197Z</updated>
+  <updated>2026-09-09T08:56:51.832Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hindsight 深度解析：让 Agent 记忆从“检索历史”进化为“持续学习”</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/09/hindsight-agent-memory-project-overview/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/09/hindsight-agent-memory-project-overview/</id>
+    <published>2026-09-09T08:42:13.000Z</published>
+    <updated>2026-09-09T08:56:51.832Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Hindsight-深度解析：让-Agent-记忆从“检索历史”进化为“持续学习”&quot;&gt;&lt;a href=&quot;#Hindsight-深度解析：让-Agent-记忆从“检索历史”进化为“持续学习”&quot; class=&quot;headerlink&quot; title=&quot;Hindsight</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="Agent-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Agent-Memory/"/>
+    
+    <category term="Hindsight" scheme="https://dive2cloud-bmz.github.io/tags/Hindsight/"/>
+    
+    <category term="Long-Term-Memory" scheme="https://dive2cloud-bmz.github.io/tags/Long-Term-Memory/"/>
+    
+    <category term="Memory-Consolidation" scheme="https://dive2cloud-bmz.github.io/tags/Memory-Consolidation/"/>
+    
+    <category term="Open-Source" scheme="https://dive2cloud-bmz.github.io/tags/Open-Source/"/>
+    
+  </entry>
   
   <entry>
     <title>混合检索实战：在 PostgreSQL 中融合 Dense、Sparse 与 BM25</title>
@@ -707,41 +742,6 @@
     <category term="Alerting" scheme="https://dive2cloud-bmz.github.io/tags/Alerting/"/>
     
     <category term="SLA" scheme="https://dive2cloud-bmz.github.io/tags/SLA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>LangGraph 检查点持久化与跨会话恢复：让 Agent 长事务扛住宕机与重启</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/08/13/week4-day16-langgraph-checkpoint-persistence-cross-session-recovery/</id>
-    <published>2026-08-13T03:01:02.000Z</published>
-    <updated>2026-08-13T03:04:59.720Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启&quot;&gt;&lt;a href=&quot;#LangGraph-检查点持久化与跨会话恢复：让-Agent-长事务扛住宕机与重启&quot; class=&quot;headerlink&quot; title=&quot;LangGraph</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Checkpoint" scheme="https://dive2cloud-bmz.github.io/tags/Checkpoint/"/>
-    
-    <category term="Persistence" scheme="https://dive2cloud-bmz.github.io/tags/Persistence/"/>
-    
-    <category term="Cross-Session-Recovery" scheme="https://dive2cloud-bmz.github.io/tags/Cross-Session-Recovery/"/>
     
   </entry>
   
