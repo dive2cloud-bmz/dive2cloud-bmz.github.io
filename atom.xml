@@ -6,7 +6,7 @@
   <link href="https://dive2cloud-bmz.github.io/atom.xml" rel="self"/>
   
   <link href="https://dive2cloud-bmz.github.io/"/>
-  <updated>2026-09-08T03:03:34.281Z</updated>
+  <updated>2026-09-09T03:04:15.197Z</updated>
   <id>https://dive2cloud-bmz.github.io/</id>
   
   <author>
@@ -15,6 +15,45 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>混合检索实战：在 PostgreSQL 中融合 Dense、Sparse 与 BM25</title>
+    <link href="https://dive2cloud-bmz.github.io/2026/09/09/week5-day2-hybrid-search-dense-sparse-bm25-postgresql/"/>
+    <id>https://dive2cloud-bmz.github.io/2026/09/09/week5-day2-hybrid-search-dense-sparse-bm25-postgresql/</id>
+    <published>2026-09-09T03:00:42.000Z</published>
+    <updated>2026-09-09T03:04:15.197Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;混合检索实战：在-PostgreSQL-中融合-Dense、Sparse-与-BM25&quot;&gt;&lt;a href=&quot;#混合检索实战：在-PostgreSQL-中融合-Dense、Sparse-与-BM25&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
+    
+    
+    <category term="RAG" scheme="https://dive2cloud-bmz.github.io/tags/RAG/"/>
+    
+    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
+    
+    <category term="pgvector" scheme="https://dive2cloud-bmz.github.io/tags/pgvector/"/>
+    
+    <category term="BM25" scheme="https://dive2cloud-bmz.github.io/tags/BM25/"/>
+    
+    <category term="Hybrid-Search" scheme="https://dive2cloud-bmz.github.io/tags/Hybrid-Search/"/>
+    
+    <category term="PostgreSQL" scheme="https://dive2cloud-bmz.github.io/tags/PostgreSQL/"/>
+    
+    <category term="Week-5" scheme="https://dive2cloud-bmz.github.io/tags/Week-5/"/>
+    
+    <category term="Sparse-Embedding" scheme="https://dive2cloud-bmz.github.io/tags/Sparse-Embedding/"/>
+    
+  </entry>
   
   <entry>
     <title>端到端 RAG 召回优化：Embedding、分块与向量索引的协同调优</title>
@@ -330,11 +369,11 @@
     
     <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
     
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
-    
     <category term="Week-25" scheme="https://dive2cloud-bmz.github.io/tags/Week-25/"/>
     
     <category term="Mock-Interview" scheme="https://dive2cloud-bmz.github.io/tags/Mock-Interview/"/>
+    
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
     <category term="RAG-Agent" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent/"/>
     
@@ -371,13 +410,13 @@
     
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
     
+    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
+    
     <category term="System-Design" scheme="https://dive2cloud-bmz.github.io/tags/System-Design/"/>
     
     <category term="Interview-Prep" scheme="https://dive2cloud-bmz.github.io/tags/Interview-Prep/"/>
     
     <category term="RAG-Agent-Platform" scheme="https://dive2cloud-bmz.github.io/tags/RAG-Agent-Platform/"/>
-    
-    <category term="Capstone" scheme="https://dive2cloud-bmz.github.io/tags/Capstone/"/>
     
   </entry>
   
@@ -549,9 +588,9 @@
     
     <category term="Prompt-Injection" scheme="https://dive2cloud-bmz.github.io/tags/Prompt-Injection/"/>
     
-    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
-    
     <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
+    
+    <category term="Guardrails" scheme="https://dive2cloud-bmz.github.io/tags/Guardrails/"/>
     
     <category term="Supply-Chain-Security" scheme="https://dive2cloud-bmz.github.io/tags/Supply-Chain-Security/"/>
     
@@ -703,44 +742,6 @@
     <category term="Persistence" scheme="https://dive2cloud-bmz.github.io/tags/Persistence/"/>
     
     <category term="Cross-Session-Recovery" scheme="https://dive2cloud-bmz.github.io/tags/Cross-Session-Recovery/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>从单体 Agent 到模块化服务：LangGraph 子图与远程可调用图实战</title>
-    <link href="https://dive2cloud-bmz.github.io/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/"/>
-    <id>https://dive2cloud-bmz.github.io/2026/08/09/week4-day15-langgraph-subgraphs-remote-callable-graphs/</id>
-    <published>2026-08-09T03:00:33.000Z</published>
-    <updated>2026-08-09T03:03:01.196Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;后端工程师转型 AI 应用工程师 · Week 4 Day 15&lt;br&gt;主题：LangGraph 子图与远程可调用图：构建模块化 Agent 服务&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;🚀-核心洞察&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="AI-Transition" scheme="https://dive2cloud-bmz.github.io/categories/AI-Transition/"/>
-    
-    
-    <category term="AI-Learning" scheme="https://dive2cloud-bmz.github.io/tags/AI-Learning/"/>
-    
-    <category term="LangGraph" scheme="https://dive2cloud-bmz.github.io/tags/LangGraph/"/>
-    
-    <category term="Multi-Agent" scheme="https://dive2cloud-bmz.github.io/tags/Multi-Agent/"/>
-    
-    <category term="Week-4" scheme="https://dive2cloud-bmz.github.io/tags/Week-4/"/>
-    
-    <category term="Subgraph" scheme="https://dive2cloud-bmz.github.io/tags/Subgraph/"/>
-    
-    <category term="Remote-Callable-Graph" scheme="https://dive2cloud-bmz.github.io/tags/Remote-Callable-Graph/"/>
     
   </entry>
   
